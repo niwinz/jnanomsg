@@ -11,5 +11,8 @@
 
   :source-paths ["src/clojure"]
   :java-source-paths ["src/java"]
+  :plugins [[lein-javadoc "0.1.1"]]
+  :javadoc-opts {:output-dir "doc/"
+                 :package-names ["nanomsg" "nanomsg.ffi" "nanomsg.pubsub"]}
   :main nanomsg.test
   :profiles {:uberjar {:aot :all}})
