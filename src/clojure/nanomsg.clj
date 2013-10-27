@@ -31,11 +31,22 @@
   (.subscribe sock pattern))
 
 (defn send
-  "Send data throught socket."
+  "Send string data"
   [^Socket sock, ^String data]
-  (.send sock data))
+  {:pre [(string? data)]}
+  (.sendString sock data))
 
 (defn recv
-  "Recv data throught socket."
+  "Recv data as string"
   [^Socket sock]
-  (.recv sock))
+  (.recvString sock))
+
+(defn send-bytes
+  "Send bytes data"
+  [^Socket sock, data]
+  (.sendBytes sock data))
+
+(defn recv-bytes
+  "Recv data as bytes"
+  [^Socket sock]
+  (.recvBytes sock))

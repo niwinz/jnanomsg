@@ -1,5 +1,7 @@
 package nanomsg.pubsub;
 
+import java.nio.charset.Charset;
+
 import nanomsg.ffi.NanoMsgFfi;
 import nanomsg.Socket;
 import nanomsg.Constants;
@@ -13,11 +15,13 @@ public class PubSocket extends Socket {
         this(Constants.AF_SP);
     }
 
-    public void send(String data) {
-        byte[] byteData = data.getBytes();
-        int length = byteData.length;
+    public void sendString(String data) {
+        Charset encoding = Charset.forName("UTF-8");
+        this.sendBytes(data.getBytes(encoding));
+    }
 
-        int rc = NanoMsgFfi.nn_send(this.socket, byteData, length, 0);
+    public void sendBytes(byte[] data) {
+        int rc = NanoMsgFfi.nn_send(this.socket, data, data.length, 0);
         if (rc < 0) {
             System.out.println("Error");
         }
