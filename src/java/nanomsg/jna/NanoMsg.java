@@ -1,9 +1,9 @@
-package nanomsg.ffi;
+package nanomsg.jna;
 
 import com.sun.jna.*;
 import com.sun.jna.ptr.*;
 
-public class NanoMsgFfi {
+public class NanoMsg {
     public static native int nn_socket(int domain, int protocol);
     public static native int nn_close (int s);
     public static native int nn_bind (int s, String addr);

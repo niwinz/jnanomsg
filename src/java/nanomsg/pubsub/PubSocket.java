@@ -2,7 +2,7 @@ package nanomsg.pubsub;
 
 import java.nio.charset.Charset;
 
-import nanomsg.ffi.NanoMsgFfi;
+import nanomsg.jna.NanoMsg;
 import nanomsg.Socket;
 import nanomsg.Constants;
 
@@ -21,7 +21,7 @@ public class PubSocket extends Socket {
     }
 
     public void sendBytes(byte[] data) {
-        int rc = NanoMsgFfi.nn_send(this.socket, data, data.length, 0);
+        int rc = NanoMsg.nn_send(this.socket, data, data.length, 0);
         if (rc < 0) {
             System.out.println("Error");
         }

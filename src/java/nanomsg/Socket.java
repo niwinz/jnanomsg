@@ -1,6 +1,6 @@
 package nanomsg;
 
-import nanomsg.ffi.NanoMsgFfi;
+import nanomsg.jna.NanoMsg;
 import com.sun.jna.Pointer;
 
 public abstract class Socket {
@@ -14,14 +14,14 @@ public abstract class Socket {
     public Socket(int domain, int protocol) {
         this.domain = domain;
         this.protocol = protocol;
-        this.socket = NanoMsgFfi.nn_socket(domain, protocol);
+        this.socket = NanoMsg.nn_socket(domain, protocol);
         this.opened = true;
     }
 
     public void close() {
         if (this.opened && !this.closed) {
             this.closed = true;
-            NanoMsgFfi.nn_close(this.socket);
+            NanoMsg.nn_close(this.socket);
         }
     }
 
@@ -30,7 +30,7 @@ public abstract class Socket {
     }
 
     public void bind(String dir) throws RuntimeException {
-        int endpoint = NanoMsgFfi.nn_bind(this.socket, dir);
+        int endpoint = NanoMsg.nn_bind(this.socket, dir);
 
         if (endpoint < 0) {
             throw new RuntimeException("bind error");
@@ -38,7 +38,7 @@ public abstract class Socket {
     }
 
     public void connect(String dir) throws RuntimeException {
-        int endpoint = NanoMsgFfi.nn_connect(this.socket, dir);
+        int endpoint = NanoMsg.nn_connect(this.socket, dir);
 
         if (endpoint < 0) {
             throw new RuntimeException("bind error");
