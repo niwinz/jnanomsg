@@ -1,3 +1,5 @@
 # jnanomsg
 
-Clojure and Java bindings to nanomsg build on top of jna.
+Clojure and Java bindings for nanomsg (build on top of JNA)
+
+(http://nanomsg.org/) 
