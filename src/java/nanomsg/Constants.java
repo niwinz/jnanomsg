@@ -30,6 +30,19 @@ public class Constants {
     public static final int NN_REP = NN_PROTO_REQREP * 16 + 1;
     public static final int NN_REQ_RESEND_IVL = 1;
 
+    /* Pair */
+    public static final int NN_PROTO_PAIR = 1;
+    public static final int NN_PAIR = NN_PROTO_PAIR * 16 + 0;
+
+    /* Pipeline */
+    public static final int NN_PROTO_PIPELINE = 5;
+    public static final int NN_PUSH = NN_PROTO_PIPELINE * 16 + 0;
+    public static final int NN_PULL = NN_PROTO_PIPELINE * 16 + 1;
+
+    /* Bus */
+    public static final int NN_PROTO_BUS = 7;
+    public static final int NN_BUS = NN_PROTO_BUS * 16 + 0;
+
     public static final HashMap<String, Integer> getSymbols() throws InterruptedException {
         HashMap<String, Integer> result = new HashMap<String, Integer>();
 
