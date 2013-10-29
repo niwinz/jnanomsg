@@ -1,8 +1,5 @@
 package nanomsg.pubsub;
 
-import java.nio.charset.Charset;
-
-import nanomsg.jna.NanoMsg;
 import nanomsg.RWSocket;
 import nanomsg.Constants;
 
