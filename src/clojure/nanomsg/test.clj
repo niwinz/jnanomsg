@@ -5,6 +5,7 @@
 
 (defn -main
   [& args]
+  (println (nn/symbols))
   (let [pub-sock (nn/socket :pub)
         sub-sock (nn/socket :sub)]
     (nn/bind pub-sock "ipc:///tmp/test.ipc")

@@ -1,7 +1,7 @@
 (ns nanomsg
   (:refer-clojure :exclude [send])
   (:import (nanomsg.pubsub PubSocket SubSocket)
-           (nanomsg Socket)))
+           (nanomsg Socket Constants)))
 
 (def ^:private supported-sockets {:pub PubSocket
                                   :sub SubSocket})
@@ -50,3 +50,9 @@
   "Recv data as bytes"
   [^Socket sock]
   (.recvBytes sock))
+
+(defn symbols
+  "Get all symbols."
+  []
+  (into {} (for [[k v] (Constants/getSymbols)]
+             [(keyword (.toLowerCase k)) v])))
