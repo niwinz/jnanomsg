@@ -13,6 +13,7 @@ public class Constants {
     public static final int EAFNOSUPPORT = NN_HAUSNUMERO + 10;
     public static final int ETERM = NN_HAUSNUMERO + 53;
     public static final int EFSM = NN_HAUSNUMERO + 54;
+    public static final int NN_DONTWAIT = 1;
     public static final int AF_SP = 1;
     public static final int AF_SP_RAW = 2;
     public static final int NN_MSG = -1;
@@ -42,6 +43,11 @@ public class Constants {
     /* Bus */
     public static final int NN_PROTO_BUS = 7;
     public static final int NN_BUS = NN_PROTO_BUS * 16 + 0;
+
+    /* Generic static functions. */
+    public static final int getErrorNum() {
+        return NanoMsg.nn_errno();
+    }
 
     public static final HashMap<String, Integer> getSymbols() throws InterruptedException {
         HashMap<String, Integer> result = new HashMap<String, Integer>();
