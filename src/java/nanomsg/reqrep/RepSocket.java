@@ -6,7 +6,7 @@ import nanomsg.Constants;
 
 public class RepSocket extends RWSocket {
     public RepSocket(int domain) {
-        super(domain, Constants.NN_REQ);
+        super(domain, Constants.NN_REP);
     }
 
     public RepSocket() {
