@@ -93,7 +93,7 @@ public abstract class RWSocket extends Socket {
 
         int received = NanoMsg.nn_recv(this.socket, ptrBuff, Constants.NN_MSG, blocking ? 0: Constants.NN_DONTWAIT);
         if (received < 0) {
-            throw new RuntimeException("error on rcv");
+            throw new RuntimeException(NanoMsg.getError());
         }
 
         Pointer result = ptrBuff.getValue();
