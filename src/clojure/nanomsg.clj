@@ -1,10 +1,14 @@
 (ns nanomsg
   (:refer-clojure :exclude [send])
   (:import (nanomsg.pubsub PubSocket SubSocket)
+           (nanomsg.reqrep ReqSocket RepSocket)
+           (nanomsg.pair PairSocket)
+           (nanomsg.bus BusSocket)
            (nanomsg Socket Constants)))
 
-(def ^:private supported-sockets {:pub PubSocket
-                                  :sub SubSocket})
+(def ^:private supported-sockets {:pub PubSocket :sub SubSocket
+                                  :req ReqSocket :rep RepSocket
+                                  :bus BusSocket :pair PairSocket})
 (defn socket
   "Create a new socket."
   [^clojure.lang.Keyword socktype]
