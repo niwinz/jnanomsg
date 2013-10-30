@@ -55,6 +55,11 @@
   [^Socket sock & {:keys [blocking] :or {blocking true}}]
   (.recvBytes sock blocking))
 
+(defn close
+  "Close socket."
+  [^Socket sock]
+  (.close sock))
+
 (defn- resolve-symbols
   []
   (into {} (for [[k v] (Constants/getSymbols)]
