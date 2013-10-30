@@ -1,4 +1,4 @@
-package nanomsg.reqrep;
+package nanomsg.bus;
 
 import nanomsg.RWSocket;
 import nanomsg.Constants;
