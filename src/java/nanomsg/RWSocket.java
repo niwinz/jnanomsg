@@ -40,7 +40,7 @@ public abstract class RWSocket extends Socket {
      * @return receved data as unicode string.
      */
     public void sendBytes(byte[] data, boolean blocking) {
-        int rc = NanoMsg.nn_send(this.socket, data, data.length, blocking ? Constants.NN_DONTWAIT : 0);
+        int rc = NanoMsg.nn_send(this.socket, data, data.length, blocking ? 0 : Constants.NN_DONTWAIT);
         if (rc < 0) {
             System.out.println("Error");
         }
@@ -91,7 +91,7 @@ public abstract class RWSocket extends Socket {
         Pointer buff = Pointer.NULL;
         PointerByReference ptrBuff = new PointerByReference(buff);
 
-        int received = NanoMsg.nn_recv(this.socket, ptrBuff, Constants.NN_MSG, blocking ? Constants.NN_DONTWAIT : 0);
+        int received = NanoMsg.nn_recv(this.socket, ptrBuff, Constants.NN_MSG, blocking ? 0: Constants.NN_DONTWAIT);
         if (received < 0) {
             throw new RuntimeException("error on rcv");
         }
