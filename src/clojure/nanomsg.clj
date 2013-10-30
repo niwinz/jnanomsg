@@ -32,27 +32,29 @@
 
 (defn send
   "Send string data"
-  [^Socket sock, ^String data]
+  [^Socket sock, ^String data & {:keys [blocking] :or {blocking true}}]
   {:pre [(string? data)]}
-  (.sendString sock data))
+  (.sendString sock data blocking))
 
 (defn recv
   "Recv data as string"
-  [^Socket sock]
-  (.recvString sock))
+  [^Socket sock & {:keys [blocking] :or {blocking true}}]
+  (.recvString sock blocking))
 
 (defn send-bytes
   "Send bytes data"
-  [^Socket sock, data]
-  (.sendBytes sock data))
+  [^Socket sock, data & {:keys [blocking] :or {blocking true}}]
+  (.sendBytes sock data blocking))
 
 (defn recv-bytes
   "Recv data as bytes"
-  [^Socket sock]
-  (.recvBytes sock))
+  [^Socket sock & {:keys [blocking] :or {blocking true}}]
+  (.recvBytes sock blocking))
 
-(defn symbols
-  "Get all symbols."
+(defn- resolve-symbols
   []
   (into {} (for [[k v] (Constants/getSymbols)]
              [(keyword (.toLowerCase k)) v])))
+
+(def ^{:doc "Get all symbols"}
+  symbols (memoize resolve-symbols))
