@@ -52,10 +52,10 @@
             
   <div class="section" id="jnanomsg">
 <h1>jnanomsg<a class="headerlink" href="#jnanomsg" title="Permalink to this headline">¶</a></h1>
-<p><strong>nanomsg</strong> is a socket library that provides several common communication patterns. It aims to make the networking layer fast,
+<p><a class="reference external" href="http://nanomsg.org/">nanomsg</a> is a socket library that provides several common communication patterns. It aims to make the networking layer fast,
 scalable, and easy to use. Implemented in C, it works on a wide range of operating systems with no further dependencies.</p>
-<p><strong>jnanomsg</strong> is a clojure bindings to nanomsg. It is build using java with JNA libraries (also exposes a very powerful java api)
-but it focused mainly on clojure.</p>
+<p><strong>jnanomsg</strong> is a clojure and java bindings to nanomsg native library (using JNA). It exposes api for both languages, but is
+mainly focused on clojure.</p>
 <div class="section" id="feature-support">
 <h2>Feature Support<a class="headerlink" href="#feature-support" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="transports">
@@ -90,6 +90,7 @@ directly to nanomsg page.</p>
 <span class="c1">;; Subscriber</span>
 <span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">sock</span> <span class="p">(</span><span class="nf">nn/socket</span> <span class="ss">:sub</span><span class="p">)]</span>
   <span class="p">(</span><span class="nf">nn/connect</span> <span class="nv">sock</span> <span class="s">&quot;ipc:///tmp/sock&quot;</span><span class="p">)</span>
+  <span class="p">(</span><span class="nf">nn/subscribe</span> <span class="nv">sock</span> <span class="s">&quot;test&quot;</span><span class="p">)</span>
   <span class="p">(</span><span class="nb">println </span><span class="p">(</span><span class="nf">nn/recv</span> <span class="nv">sock</span><span class="p">))</span>
   <span class="p">(</span><span class="nf">nn/close</span> <span class="nv">sock</span><span class="p">))</span>
 </pre></div>
@@ -146,7 +147,7 @@ limitations under the License.</p>
     <div class="footer">
       &copy; Copyright 2013, Andrey Antukh.
     </div>
-    <a href="https://github.com/niwibe/django-jinja" class="github">
+    <a href="https://github.com/niwibe/jnanomsg" class="github">
         <img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
     </a>
   </body>
