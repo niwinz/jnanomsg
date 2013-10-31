@@ -116,4 +116,4 @@ Api documentation
 The java library exposes many clasess distributed in packagas for implement all supported socket types. You can
 see javadoc_ for obtain a more detail about which packages/classes are available.
 
-.. _javadoc: https://github.com/niwibe/jnanomsg
+.. _javadoc: http://niwibe.github.io/jnanomsg/javadoc/
