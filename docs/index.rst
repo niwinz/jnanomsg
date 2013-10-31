@@ -6,11 +6,13 @@
 jnanomsg
 ========
 
-**nanomsg** is a socket library that provides several common communication patterns. It aims to make the networking layer fast,
+nanomsg_ is a socket library that provides several common communication patterns. It aims to make the networking layer fast,
 scalable, and easy to use. Implemented in C, it works on a wide range of operating systems with no further dependencies.
 
-**jnanomsg** is a clojure bindings to nanomsg. It is build using java with JNA libraries (also exposes a very powerful java api)
-but it focused mainly on clojure.
+**jnanomsg** is a clojure and java bindings to nanomsg native library (using JNA). It exposes api for both languages, but is
+mainly focused on clojure.
+
+.. _nanomsg: http://nanomsg.org/
 
 
 Feature Support
@@ -54,6 +56,7 @@ Quickstart
     ;; Subscriber
     (let [sock (nn/socket :sub)]
       (nn/connect sock "ipc:///tmp/sock")
+      (nn/subscribe sock "test")
       (println (nn/recv sock))
       (nn/close sock))
 
@@ -67,6 +70,7 @@ Contents
     install.rst
     gettings-started-clojure.rst
     gettings-started-java.rst
+
 
 License
 -------

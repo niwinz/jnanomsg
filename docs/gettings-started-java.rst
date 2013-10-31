@@ -3,9 +3,6 @@ Getting started with Java
 
 This part of the documentation covers the introduction to jnanomsg and basic usage of it, using two examples.
 
-
-
-
 Using Pub/Sub sockets
 ---------------------
 
