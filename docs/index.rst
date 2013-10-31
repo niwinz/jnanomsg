@@ -16,16 +16,26 @@ but it focused mainly on clojure.
 Feature Support
 ---------------
 
-**jnanomsg** at the moment only supports a limited set of protocols available on nanomsg v2.0 (alpha):
+Transports
+""""""""""
 
-* REQREP (:req :rep) - allows to build clusters of stateless services to process user requests
-* PUBSUB (:pub :sub) - distributes messages to large sets of interested subscribers
+jnanomsg supports all transports supported by their backend (nanomsg): ipc, inproc, tcp
 
-But, the rest are will be available in near future:
 
-* PAIR (:pair) - simple one-to-one communication
-* BUS (:bus) - simple many-to-many communication
-* PIPELINE (:pipeline) - aggregates messages from multiple sources and load balances them among many destinations
+Protocols
+"""""""""
+
+jnanomsg intends to support all available protocols from nanomsg but at the moment only supports a few ones:
+
+- `:pub` - this socket type is used to distribute messages to multiple destinations. Receive operation is not defined.
+- `:sub` - this socket typee is used to receives messages from the publisher. Send operation is not defined on this socket.
+- `:req` - this socket type is used to implement the client application that sends requests and receives replies.
+- `:rep` - this socket type is used to implement the stateless worker that receives requests and sends replies.
+- `:bus` - this socket type is used to send messages to all nodes in the topology.
+- `:pair` - this socket type is uded to implement communication with exactly one peer.
+
+**Note**: you can see more description of each protocol of main page of this documentation or going
+directly to nanomsg page.
 
 
 Quickstart
@@ -52,10 +62,11 @@ Contents
 --------
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 3
 
     install.rst
-    usage.rst
+    gettings-started-clojure.rst
+    gettings-started-java.rst
 
 License
 -------
