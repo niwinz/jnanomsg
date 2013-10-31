@@ -1,0 +1,136 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Getting started using clojure &mdash; jnanomsg 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="jnanomsg 0.1 documentation" href="index.html" />
+    <link rel="next" title="Getting started with Java" href="gettings-started-java.html" />
+    <link rel="prev" title="Installation" href="install.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="gettings-started-java.html" title="Getting started with Java"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="install.html" title="Installation"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">jnanomsg 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="getting-started-using-clojure">
+<h1>Getting started using clojure<a class="headerlink" href="#getting-started-using-clojure" title="Permalink to this headline">¶</a></h1>
+<p>This part of the documentation covers the introduction to jnanomsg and basic usage of it (using examples).</p>
+<div class="section" id="import-namespace">
+<h2>Import namespace<a class="headerlink" href="#import-namespace" title="Permalink to this headline">¶</a></h2>
+<p>All available functions for work with nanomsag with clojure are available on <cite>nanomsg</cite> namespace.</p>
+<p>This is a recommended way to import nanomsg ns on repl:</p>
+<div class="highlight-clojure"><div class="highlight"><pre><span class="p">(</span><span class="nf">require</span> <span class="p">[</span><span class="nv">nanomsg</span> <span class="ss">:as</span> <span class="nv">nn</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Or on ns macro:</p>
+<div class="highlight-clojure"><div class="highlight"><pre><span class="p">(</span><span class="kd">ns </span><span class="nv">yours.samplens</span>
+  <span class="p">(</span><span class="ss">:require</span> <span class="p">[</span><span class="nv">nanomsg</span> <span class="ss">:as</span> <span class="nv">nn</span><span class="p">]))</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="using-pub-sub-sockets">
+<h2>Using Pub/Sub sockets<a class="headerlink" href="#using-pub-sub-sockets" title="Permalink to this headline">¶</a></h2>
+<p>This protocol has two socket types: <cite>:pub</cite> and <cite>:sub</cite>. The first socket type works as published and is used
+to broadcast messages to subscribers (the second socket type).</p>
+<p>Subscriber sockets always need subscribe to some topic, in other case no messages will be received.</p>
+<p>Simple way to declare publisher socket:</p>
+<div class="highlight-clojure"><div class="highlight"><pre><span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">sock</span> <span class="p">(</span><span class="nf">nn/socket</span> <span class="ss">:pub</span><span class="p">)]</span>
+  <span class="p">(</span><span class="nf">nn/bind</span> <span class="nv">sock</span> <span class="s">&quot;ipc:///tmp/sock&quot;</span><span class="p">)</span>
+  <span class="p">(</span><span class="nb">dotimes </span><span class="p">[</span><span class="nv">i</span> <span class="mi">5</span><span class="p">]</span>
+    <span class="p">(</span><span class="nf">nn/send</span> <span class="nv">sock</span> <span class="s">&quot;test msg&quot;</span><span class="p">))</span>
+  <span class="p">(</span><span class="nf">nn/close</span> <span class="nv">sock</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>And this is a simple subscriber client code:</p>
+<div class="highlight-clojure"><div class="highlight"><pre><span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">sock</span> <span class="p">(</span><span class="nf">nn/socket</span> <span class="ss">:sub</span><span class="p">)]</span>
+  <span class="p">(</span><span class="nf">nn/connect</span> <span class="nv">sock</span> <span class="s">&quot;ipc:///tmp/sock&quot;</span><span class="p">)</span>
+  <span class="p">(</span><span class="nf">nn/subscribe</span> <span class="nv">sock</span> <span class="s">&quot;test&quot;</span><span class="p">)</span>
+  <span class="p">(</span><span class="nb">dotimes </span><span class="p">[</span><span class="nv">i</span> <span class="mi">5</span><span class="p">]</span>
+    <span class="p">(</span><span class="nb">println </span><span class="p">(</span><span class="nf">nn/recv</span> <span class="nv">sock</span><span class="p">)))</span>
+  <span class="p">(</span><span class="nf">nn/close</span> <span class="nv">sock</span><span class="p">))</span>
+</pre></div>
+</div>
+<p><strong>Note</strong>: With <cite>:sub</cite> sockets, only messages that the socket is subscribed to are received. When the socket is created there are
+no subscriptions and thus no messages will be received.</p>
+</div>
+<div class="section" id="using-req-rep-sockets">
+<h2>Using Req/Rep sockets<a class="headerlink" href="#using-req-rep-sockets" title="Permalink to this headline">¶</a></h2>
+<p>This protocol, like pub/sub has two socket types: <cite>:req</cite> and <cite>:rep</cite>. The first socket type (<cite>:req</cite>) works as client that
+sends messages and receives replies. The second socket type (<cite>:rep</cite>) works as stateless server that receives requests
+messages and send replies.</p>
+<p>Both sockets implements read and write methods.</p>
+<p>This is a simple way to declare <cite>:rep</cite> sockets (echo server example):</p>
+<div class="highlight-clojure"><div class="highlight"><pre><span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">sock</span> <span class="p">(</span><span class="nf">nn/socket</span> <span class="ss">:rep</span><span class="p">)]</span>
+  <span class="p">(</span><span class="nf">nn/bind</span> <span class="nv">sock</span> <span class="s">&quot;tcp://*:6789&quot;</span><span class="p">)</span>
+  <span class="p">(</span><span class="k">loop </span><span class="p">[]</span>
+    <span class="p">(</span><span class="nf">nn/send</span> <span class="nv">sock</span> <span class="p">(</span><span class="nf">nn/recv</span> <span class="nv">sock</span><span class="p">))</span>
+    <span class="p">(</span><span class="nf">recur</span><span class="p">)))</span>
+</pre></div>
+</div>
+<p>And this is a simple client:</p>
+<div class="highlight-clojure"><div class="highlight"><pre><span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">sock</span> <span class="p">(</span><span class="nf">nn/socket</span> <span class="ss">:req</span><span class="p">)]</span>
+  <span class="p">(</span><span class="nf">nn/bind</span> <span class="nv">sock</span> <span class="s">&quot;tcp://localhost:6789&quot;</span><span class="p">)</span>
+  <span class="p">(</span><span class="nb">dotimes </span><span class="p">[</span><span class="nv">i</span> <span class="mi">5</span><span class="p">]</span>
+    <span class="p">(</span><span class="nf">nn/send</span> <span class="nv">sock</span> <span class="p">(</span><span class="nb">str </span><span class="s">&quot;msg:&quot;</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="p">(</span><span class="nb">println </span><span class="s">&quot;Received:&quot;</span> <span class="p">(</span><span class="nf">nn/recv</span> <span class="nv">sock</span><span class="p">))))</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2013, Andrey Antukh.
+    </div>
+    <a href="https://github.com/niwibe/django-jinja" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+  </body>
+</html>

@@ -1,0 +1,153 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>jnanomsg &mdash; jnanomsg 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="jnanomsg 0.1 documentation" href="#" />
+    <link rel="next" title="Installation" href="install.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="install.html" title="Installation"
+             accesskey="N">next</a> |</li>
+        <li><a href="#">jnanomsg 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="jnanomsg">
+<h1>jnanomsg<a class="headerlink" href="#jnanomsg" title="Permalink to this headline">¶</a></h1>
+<p><strong>nanomsg</strong> is a socket library that provides several common communication patterns. It aims to make the networking layer fast,
+scalable, and easy to use. Implemented in C, it works on a wide range of operating systems with no further dependencies.</p>
+<p><strong>jnanomsg</strong> is a clojure bindings to nanomsg. It is build using java with JNA libraries (also exposes a very powerful java api)
+but it focused mainly on clojure.</p>
+<div class="section" id="feature-support">
+<h2>Feature Support<a class="headerlink" href="#feature-support" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="transports">
+<h3>Transports<a class="headerlink" href="#transports" title="Permalink to this headline">¶</a></h3>
+<p>jnanomsg supports all transports supported by their backend (nanomsg): ipc, inproc, tcp</p>
+</div>
+<div class="section" id="protocols">
+<h3>Protocols<a class="headerlink" href="#protocols" title="Permalink to this headline">¶</a></h3>
+<p>jnanomsg intends to support all available protocols from nanomsg but at the moment only supports a few ones:</p>
+<ul class="simple">
+<li><cite>:pub</cite> - this socket type is used to distribute messages to multiple destinations. Receive operation is not defined.</li>
+<li><cite>:sub</cite> - this socket typee is used to receives messages from the publisher. Send operation is not defined on this socket.</li>
+<li><cite>:req</cite> - this socket type is used to implement the client application that sends requests and receives replies.</li>
+<li><cite>:rep</cite> - this socket type is used to implement the stateless worker that receives requests and sends replies.</li>
+<li><cite>:bus</cite> - this socket type is used to send messages to all nodes in the topology.</li>
+<li><cite>:pair</cite> - this socket type is uded to implement communication with exactly one peer.</li>
+</ul>
+<p><strong>Note</strong>: you can see more description of each protocol of main page of this documentation or going
+directly to nanomsg page.</p>
+</div>
+</div>
+<div class="section" id="quickstart">
+<h2>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-clojure"><div class="highlight"><pre><span class="p">(</span><span class="nf">require</span> <span class="p">[</span><span class="nv">nanomsg</span> <span class="ss">:as</span> <span class="nv">nn</span><span class="p">])</span>
+
+<span class="c1">;; Publisher</span>
+<span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">sock</span> <span class="p">(</span><span class="nf">nn/socket</span> <span class="ss">:pub</span><span class="p">)]</span>
+  <span class="p">(</span><span class="nf">nn/bind</span> <span class="nv">sock</span> <span class="s">&quot;ipc:///tmp/sock&quot;</span><span class="p">)</span>
+  <span class="p">(</span><span class="nf">nn/send</span> <span class="nv">sock</span> <span class="p">(</span><span class="nb">str </span><span class="s">&quot;msg: hello &quot;</span> <span class="nv">i</span><span class="p">))</span>
+  <span class="p">(</span><span class="nf">nn/close</span> <span class="nv">sock</span><span class="p">))</span>
+
+<span class="c1">;; Subscriber</span>
+<span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">sock</span> <span class="p">(</span><span class="nf">nn/socket</span> <span class="ss">:sub</span><span class="p">)]</span>
+  <span class="p">(</span><span class="nf">nn/connect</span> <span class="nv">sock</span> <span class="s">&quot;ipc:///tmp/sock&quot;</span><span class="p">)</span>
+  <span class="p">(</span><span class="nb">println </span><span class="p">(</span><span class="nf">nn/recv</span> <span class="nv">sock</span><span class="p">))</span>
+  <span class="p">(</span><span class="nf">nn/close</span> <span class="nv">sock</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="contents">
+<h2>Contents<a class="headerlink" href="#contents" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="install.html#leiningen">Leiningen</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.html#graddle">Graddle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.html#maven">Maven</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.html#get-the-code">Get the code</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="gettings-started-clojure.html">Getting started using clojure</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="gettings-started-clojure.html#import-namespace">Import namespace</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gettings-started-clojure.html#using-pub-sub-sockets">Using Pub/Sub sockets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gettings-started-clojure.html#using-req-rep-sockets">Using Req/Rep sockets</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="gettings-started-java.html">Getting started with Java</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="gettings-started-java.html#using-pub-sub-sockets">Using Pub/Sub sockets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gettings-started-java.html#using-req-rep-sockets">Using Req/Rep sockets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gettings-started-java.html#api-documentation">Api documentation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="license">
+<h2>License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h2>
+<p>Copyright 2013 Andrey Antukh &lt;<a class="reference external" href="mailto:niwi&#37;&#52;&#48;niwi&#46;be">niwi<span>&#64;</span>niwi<span>&#46;</span>be</a>&gt;</p>
+<p>Licensed under the Apache License, Version 2.0 (the &#8220;License&#8221;)
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at</p>
+<blockquote>
+<div><a class="reference external" href="http://www.apache.org/licenses/LICENSE-2.0">http://www.apache.org/licenses/LICENSE-2.0</a></div></blockquote>
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an &#8220;AS IS&#8221; BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2013, Andrey Antukh.
+    </div>
+    <a href="https://github.com/niwibe/django-jinja" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+  </body>
+</html>

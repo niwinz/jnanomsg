@@ -1,0 +1,6 @@
+nanomsg
+nanomsg.bus
+nanomsg.jna
+nanomsg.pair
+nanomsg.pubsub
+nanomsg.reqrep
