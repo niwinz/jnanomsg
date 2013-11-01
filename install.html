@@ -59,18 +59,36 @@
 <p>This part of the documentation covers the installation of <strong>jnanomsg</strong>.</p>
 <div class="section" id="leiningen">
 <h2>Leiningen<a class="headerlink" href="#leiningen" title="Permalink to this headline">¶</a></h2>
-<p>TODO</p>
+<p>You can add this library as dependence, putting this on yours <cite>:dependencies</cite> map
+on <strong>project.clj</strong>:</p>
+<div class="highlight-clojure"><div class="highlight"><pre><span class="p">[</span><span class="nv">jnanomsg</span> <span class="s">&quot;0.1.0&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="maven">
+<h2>Maven<a class="headerlink" href="#maven" title="Permalink to this headline">¶</a></h2>
+<p>Add Clojars repository definition to your pom.xml:</p>
+<div class="highlight-xml"><div class="highlight"><pre><span class="nt">&lt;repository&gt;</span>
+    <span class="nt">&lt;id&gt;</span>clojars.org<span class="nt">&lt;/id&gt;</span>
+    <span class="nt">&lt;url&gt;</span>http://clojars.org/repo<span class="nt">&lt;/url&gt;</span>
+<span class="nt">&lt;/repository&gt;</span>
+</pre></div>
+</div>
+<p>And then the dependency:</p>
+<div class="highlight-xml"><div class="highlight"><pre><span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>jnanomsg<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>jnanomsg<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;version&gt;</span>0.1.0<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="graddle">
 <h2>Graddle<a class="headerlink" href="#graddle" title="Permalink to this headline">¶</a></h2>
 <p>TODO</p>
 </div>
-<div class="section" id="maven">
-<h2>Maven<a class="headerlink" href="#maven" title="Permalink to this headline">¶</a></h2>
-<p>TODO</p>
-</div>
-<div class="section" id="get-the-code">
-<h2>Get the code<a class="headerlink" href="#get-the-code" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="ge-the-thecode">
+<h2>Ge the thecode<a class="headerlink" href="#ge-the-thecode" title="Permalink to this headline">¶</a></h2>
 <p><strong>jnanomsg</strong> is developed on Github, and you can clone the public repsitory:</p>
 <div class="highlight-text"><div class="highlight"><pre>$ git clone https://github.com/niwibe/jnanomsg.git
 </pre></div>
