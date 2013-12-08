@@ -64,7 +64,7 @@ public abstract class RWSocket extends Socket {
      * @param blocking set blocking or non blocking flag.
      * @return receved data as unicode string.
      */
-    public String recvString(boolean blocking) throws RuntimeException {
+    public String recvString(boolean blocking) {
         final byte[] received = this.recvBytes(blocking);
         final Charset encoding = Charset.forName("UTF-8");
 
@@ -78,7 +78,7 @@ public abstract class RWSocket extends Socket {
      *
      * @return receved data as unicode string.
      */
-    public String recvString() throws RuntimeException {
+    public String recvString() {
         return this.recvString(true);
     }
 
@@ -109,7 +109,7 @@ public abstract class RWSocket extends Socket {
      *
      * @return receved data as unicode string.
      */
-    public byte[] recvBytes() throws RuntimeException {
+    public byte[] recvBytes() {
         return this.recvBytes(true);
     }
 }
