@@ -38,10 +38,12 @@ And then the dependency:
     </dependency>
 
 
-Graddle
+Gradle
 -------
 
-TODO
+.. code-block:: groovy
+
+    compile "jnanomsg:jnanomsg:0.1.0"
 
 
 Ge the thecode
