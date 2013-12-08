@@ -4,12 +4,12 @@ import nanomsg.jna.NanoMsg;
 import com.sun.jna.Pointer;
 
 public abstract class Socket {
-    protected int domain;
-    protected int protocol;
-    protected int socket;
+    private final int domain;
+    private final int protocol;
+    private final int socket;
 
-    protected boolean closed = false;
-    protected boolean opened = false;
+    private boolean closed = false;
+    private boolean opened = false;
 
     public Socket(int domain, int protocol) {
         this.domain = domain;
@@ -30,7 +30,7 @@ public abstract class Socket {
     }
 
     public void bind(String dir) throws RuntimeException {
-        int endpoint = NanoMsg.nn_bind(this.socket, dir);
+        final int endpoint = NanoMsg.nn_bind(this.socket, dir);
 
         if (endpoint < 0) {
             throw new RuntimeException("bind error");
@@ -38,7 +38,7 @@ public abstract class Socket {
     }
 
     public void connect(String dir) throws RuntimeException {
-        int endpoint = NanoMsg.nn_connect(this.socket, dir);
+        final int endpoint = NanoMsg.nn_connect(this.socket, dir);
 
         if (endpoint < 0) {
             throw new RuntimeException("bind error");

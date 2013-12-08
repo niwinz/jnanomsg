@@ -12,14 +12,10 @@ public class NanoMsg {
     public static native int nn_recv (int s, PointerByReference buff, int len, int flags);
     public static native String nn_strerror (int errnum);
     public static native int nn_setsockopt (int s, int level, int option, String optval, int optvallen);
-    public static native Pointer nn_symbol(int i, IntByReference value);
+    public static native Pointer nn_symbol (int i, IntByReference value);
     public static native int nn_freemsg (Pointer msg);
     public static native int nn_errno ();
 
-    public static final String getError() {
-        int currentError = NanoMsg.nn_errno();
-        return NanoMsg.nn_strerror(currentError);
-    }
 
     static {
         Native.register("nanomsg");

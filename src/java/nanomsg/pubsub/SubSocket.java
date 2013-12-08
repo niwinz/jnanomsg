@@ -15,6 +15,7 @@ public class SubSocket extends RWSocket {
     }
 
     public void subscribe(String pattern) {
-        NanoMsg.nn_setsockopt(this.socket, Constants.NN_SUB, Constants.NN_SUB_SUBSCRIBE, pattern, pattern.length());
+        final int socket = getSocket();
+        NanoMsg.nn_setsockopt(socket, Constants.NN_SUB, Constants.NN_SUB_SUBSCRIBE, pattern, pattern.length());
     }
 }

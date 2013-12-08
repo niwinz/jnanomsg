@@ -18,7 +18,7 @@ public abstract class RWSocket extends Socket {
      * @return receved data as unicode string.
      */
     public void sendString(String data, boolean blocking) {
-        Charset encoding = Charset.forName("UTF-8");
+        final Charset encoding = Charset.forName("UTF-8");
         this.sendBytes(data.getBytes(encoding), blocking);
     }
 
@@ -40,7 +40,8 @@ public abstract class RWSocket extends Socket {
      * @return receved data as unicode string.
      */
     public void sendBytes(byte[] data, boolean blocking) {
-        int rc = NanoMsg.nn_send(this.socket, data, data.length, blocking ? 0 : Constants.NN_DONTWAIT);
+        final int socket = getSocket();
+        final int rc = NanoMsg.nn_send(socket, data, data.length, blocking ? 0 : Constants.NN_DONTWAIT);
         if (rc < 0) {
             System.out.println("Error");
         }
@@ -64,8 +65,8 @@ public abstract class RWSocket extends Socket {
      * @return receved data as unicode string.
      */
     public String recvString(boolean blocking) throws RuntimeException {
-        byte[] received = this.recvBytes(blocking);
-        Charset encoding = Charset.forName("UTF-8");
+        final byte[] received = this.recvBytes(blocking);
+        final Charset encoding = Charset.forName("UTF-8");
 
         return new String(received, encoding);
     }
@@ -88,15 +89,17 @@ public abstract class RWSocket extends Socket {
      * @return receved data as unicode string.
      */
     public byte[] recvBytes(boolean blocking) throws RuntimeException {
-        Pointer buff = Pointer.NULL;
-        PointerByReference ptrBuff = new PointerByReference(buff);
+        final Pointer buff = Pointer.NULL;
+        final PointerByReference ptrBuff = new PointerByReference(buff);
 
-        int received = NanoMsg.nn_recv(this.socket, ptrBuff, Constants.NN_MSG, blocking ? 0: Constants.NN_DONTWAIT);
+        final int socket = getSocket();
+        final int received = NanoMsg.nn_recv(socket, ptrBuff, Constants.NN_MSG, blocking ? 0: Constants.NN_DONTWAIT);
+
         if (received < 0) {
-            throw new RuntimeException(NanoMsg.getError());
+            throw new RuntimeException(Constants.getError());
         }
 
-        Pointer result = ptrBuff.getValue();
+        final Pointer result = ptrBuff.getValue();
         return result.getByteArray(0, received);
     }
 
