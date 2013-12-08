@@ -88,9 +88,8 @@ public abstract class RWSocket extends Socket {
      * @param blocking set blocking or non blocking flag.
      * @return receved data as unicode string.
      */
-    public byte[] recvBytes(boolean blocking) throws RuntimeException {
-        final Pointer buff = Pointer.NULL;
-        final PointerByReference ptrBuff = new PointerByReference(buff);
+    public byte[] recvBytes(boolean blocking) {
+        final PointerByReference ptrBuff = new PointerByReference();
 
         final int socket = getSocket();
         final int received = NanoMsg.nn_recv(socket, ptrBuff, Constants.NN_MSG, blocking ? 0: Constants.NN_DONTWAIT);
