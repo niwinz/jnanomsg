@@ -1,5 +1,11 @@
 package nanomsg.pubsub;
 
+import com.sun.jna.Pointer;
+import com.sun.jna.Memory;
+import com.sun.jna.ptr.*;
+
+import java.io.UnsupportedEncodingException;
+
 import nanomsg.jna.NanoMsg;
 import nanomsg.RWSocket;
 import nanomsg.Constants;
@@ -14,8 +20,17 @@ public class SubSocket extends RWSocket {
         this(Constants.AF_SP);
     }
 
-    public void subscribe(String pattern) {
+    public void subscribe(final String data) {
         final int socket = getSocket();
-        NanoMsg.nn_setsockopt(socket, Constants.NN_SUB, Constants.NN_SUB_SUBSCRIBE, pattern, pattern.length());
+
+        try {
+            final byte[] patternBytes = data.getBytes("utf-8");
+            final Memory mem = new Memory(patternBytes.length);
+            mem.write(0, patternBytes, 0, patternBytes.length);
+
+            NanoMsg.nn_setsockopt(socket, Constants.NN_SUB, Constants.NN_SUB_SUBSCRIBE, mem, patternBytes.length);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
