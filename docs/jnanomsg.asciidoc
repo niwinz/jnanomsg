@@ -1,0 +1,195 @@
+jnanomsg documentation
+======================
+Andrey Antukh, <niwi@niwi.be>
+1.0, 2014-01-02
+
+:toc:
+:numbered:
+
+
+Introduction
+------------
+
+link:http://nanomsg.org[nanomsg] is a socket library that provides common communication patterns.
+
+Install
+-------
+
+This section covers a installation of _jnanomsg_.
+
+Leiningen
+~~~~~~~~~
+
+The simplest way to use _jnanomsg_ on clojure project, is including it on dependency
+vector of your *_project.clj_* file:
+
+.Part of _project.clj_
+[source,clojure]
+----
+[jnanomsg "0.1.0"]
+----
+
+Maven
+-----
+
+Also, you can use it on your java projects with maven. As first step add a clojars repository:
+
+[source,xml]
+----
+<repository>
+    <id>clojars.org</id>
+    <url>http://clojars.org/repo</url>
+</repository>
+----
+
+Following of jnanomsg package dependecy:
+
+[source,xml]
+----
+<dependency>
+    <groupId>jnanomsg</groupId>
+    <artifactId>jnanomsg</artifactId>
+    <version>0.1.0</version>
+</dependency>
+----
+
+Supported features
+------------------
+
+Transports
+~~~~~~~~~~
+
+jnanomsg supports all transports supported by their backend (nanomsg): ipc, inproc, tcp
+
+Protocols
+~~~~~~~~~
+
+jnanomsg intends to support all available protocols from nanomsg but at the moment only supports a few ones:
+
+* `:pub` - this socket type is used to distribute messages to multiple destinations. Receive operation is not defined.
+* `:sub` - this socket typee is used to receives messages from the publisher. Send operation is not defined on this socket.
+* `:req` - this socket type is used to implement the client application that sends requests and receives replies.
+* `:rep` - this socket type is used to implement the stateless worker that receives requests and sends replies.
+* `:bus` - this socket type is used to send messages to all nodes in the topology.
+* `:pair` - this socket type is uded to implement communication with exactly one peer.
+
+[NOTE]
+You can see more description of each protocol of main page of this documentation or going
+directly to nanomsg page.
+
+User guide
+----------
+
+Using clojure
+~~~~~~~~~~~~~
+
+This section covers the introduction to jnanomsg using clojure language.
+
+Import namespace
+^^^^^^^^^^^^^^^^
+
+All available functions for work with nanomsag with clojure are available on `nanomsg` namespace.
+
+This is a recommended way to import nanomsg ns on repl:
+
+[source,clojure]
+----
+(require [nanomsg :as nn])
+----
+
+Or on ns macro:
+
+._yours/samplens.clj_
+[source,clojure]
+----
+(ns yours.samplens
+  (:require [nanomsg :as nn]))
+----
+
+Pub/Sub Sockets
+^^^^^^^^^^^^^^^
+
+This protocol has two socket types: `:pub` and `:sub`. The first socket type works as published and is used
+to broadcast messages to subscribers (the second socket type).
+
+Subscriber sockets always need subscribe to some topic, in other case no messages will be received.
+
+Simple way to declare publisher socket:
+
+[source,clojure]
+----
+(let [sock (nn/socket :pub)]
+  (nn/bind sock "ipc:///tmp/sock")
+  (dotimes [i 5]
+    (nn/send sock "test msg"))
+  (nn/close sock))
+----
+
+
+And this is a simple subscriber client code:
+
+[source,clojure]
+----
+(let [sock (nn/socket :sub)]
+  (nn/connect sock "ipc:///tmp/sock")
+  (nn/subscribe sock "test")
+  (dotimes [i 5]
+    (println (nn/recv sock)))
+  (nn/close sock))
+----
+
+[NOTE]
+With `:sub` sockets, only messages that the socket is subscribed to are received. When the socket is created there are
+no subscriptions and thus no messages will be received.
+
+Req/Rep Sockets
+^^^^^^^^^^^^^^^
+
+This protocol, like pub/sub has two socket types: `:req` and `:rep`. The first socket type (`:req`) works as client that
+sends messages and receives replies. The second socket type (`:rep`) works as stateless server that receives requests
+messages and send replies.
+
+Both sockets implements read and write methods.
+
+This is a simple way to declare `:rep` sockets (echo server example):
+
+[source,clojure]
+----
+(let [sock (nn/socket :rep)]
+  (nn/bind sock "tcp://*:6789")
+  (loop []
+    (nn/send sock (nn/recv sock))
+    (recur)))
+----
+
+
+And this is a simple client:
+
+[source,clojure]
+----
+(let [sock (nn/socket :req)]
+  (nn/bind sock "tcp://localhost:6789")
+  (dotimes [i 5]
+    (nn/send sock (str "msg:" 1))
+    (println "Received:" (nn/recv sock))))
+----
+
+
+License
+-------
+
+----
+Copyright 2013 Andrey Antukh <niwi@niwi.be>
+
+Licensed under the Apache License, Version 2.0 (the "License")
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+----
