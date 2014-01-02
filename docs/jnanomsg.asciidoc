@@ -23,7 +23,7 @@ Leiningen
 The simplest way to use _jnanomsg_ on clojure project, is including it on dependency
 vector of your *_project.clj_* file:
 
-.Part of _project.clj_
+._`:requirements` vectory entry_
 [source,clojure]
 ----
 [jnanomsg "0.1.0"]
@@ -64,38 +64,26 @@ jnanomsg supports all transports supported by their backend (nanomsg): ipc, inpr
 Protocols
 ~~~~~~~~~
 
-jnanomsg intends to support all available protocols from nanomsg but at the moment only supports a few ones:
+jnanomsg intends support all protocols supported by a native nanomsg library:
 
-* `:pub` - this socket type is used to distribute messages to multiple destinations. Receive operation is not defined.
-* `:sub` - this socket typee is used to receives messages from the publisher. Send operation is not defined on this socket.
-* `:req` - this socket type is used to implement the client application that sends requests and receives replies.
-* `:rep` - this socket type is used to implement the stateless worker that receives requests and sends replies.
-* `:bus` - this socket type is used to send messages to all nodes in the topology.
-* `:pair` - this socket type is uded to implement communication with exactly one peer.
+* pub/sub protocol
+* req/rep protocol
+* bus protocol
+* pair protocol
+
 
 [NOTE]
-You can see more description of each protocol of main page of this documentation or going
-directly to nanomsg page.
+This documentation not intends explain how works each protocol. It intends only explain
+a public api of idiomatic library for java and clojure.
+
 
 User guide
 ----------
 
-Import namespace/package
-~~~~~~~~~~~~~~~~~~~~~~~~
+All public api for work with nanomsg library is exposed under `nanomsg` clojure namespace. However,
+with java api, each socket type has it own package and it own class.
 
-Using Clojure
-^^^^^^^^^^^^^
-
-All available functions for work with nanomsag with clojure are available on `nanomsg` namespace.
-
-This is a recommended way to import nanomsg ns on repl:
-
-[source,clojure]
-----
-(require [nanomsg :as nn])
-----
-
-Or on ns macro:
+Example requiring namespace on clojure file:
 
 ._yours/samplens.clj_
 [source,clojure]
@@ -104,30 +92,23 @@ Or on ns macro:
   (:require [nanomsg :as nn]))
 ----
 
-Using java
-^^^^^^^^^^
-
-On java api, each socket type is located on their own package and all import depend of
-socket type that are you going to use. For more precise information, see import 
-statements on on java examples on the following sections.
-
 
 Pub/Sub Sockets
 ~~~~~~~~~~~~~~~
 
-This protocol has two socket types: publisher and subscriber. Publisher socket broadcast messages 
-to subscribers clients.
+This protocol has two socket types:
 
-Subscriber sockets always need subscribe to some topic, in other case no messages will be received.
+- _publisher_ - This socket is used to distribute messages to multiple destinations. Receive operation is not defined.
+- _subscriber_ - Receives messages from the publisher. Only messages that the socket is subscribed to are received. When the socket is created there are no subscriptions and thus no messages will be received. Send operation is not defined on this socket.
 
-Using Clojure
-^^^^^^^^^^^^^
+
+Clojure
+^^^^^^^
 
 On clojure, a socket types are represented by keywords and this socket pair is represented by
 `:pub` and `:sub` keyworks (publisher and subscriber sockets respectivelly).
 
 Example:
-
 
 ._publisher.clj_
 [source,clojure]
@@ -153,10 +134,7 @@ Example:
 Using java
 ^^^^^^^^^^
 
-On java, publisher and subscriber has own classes thar represent distinct socket 
-type (all located on `nanomsg.pubsub` package).
-
-Examples:
+On java, publisher and subscriber has own classes that are available on `nanomsg.pubsub` package:
 
 ._Publisher.java_
 [source,java]
@@ -201,15 +179,20 @@ public class Subscriber {
 Req/Rep Sockets
 ~~~~~~~~~~~~~~~
 
+
+
 This protocol is used to distribute the workload among multiple stateless workers, and it's represented
-by two socket types: req (client) and rep (server).
+by two socket types:
 
-Both sockets implements read and write methods.
+- _req_ - Used to implement the client application that sends requests and receives replies.
+- _rep_ - Used to implement the stateless worker that receives requests and sends replies.
 
-Using clojure
-^^^^^^^^^^^^^
+NOTE: Both sockets implements read and write methods.
 
-This is a simple example implementing a hello world echo server:
+Clojure
+^^^^^^^
+
+"Hello World" echo server using clojure:
 
 ._rep.clj (server)_
 [source,clojure]
@@ -231,8 +214,10 @@ This is a simple example implementing a hello world echo server:
     (println "Received:" (nn/recv sock))))
 ----
 
-Using java
-^^^^^^^^^^
+Java
+^^^^
+
+Same examples as on clojure section, but using java:
 
 ._EchoServer.java_
 [source,java]
