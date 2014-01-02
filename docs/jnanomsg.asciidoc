@@ -30,7 +30,7 @@ vector of your *_project.clj_* file:
 ----
 
 Maven
------
+~~~~~
 
 Also, you can use it on your java projects with maven. As first step add a clojars repository:
 
@@ -131,8 +131,8 @@ Example:
   (nn/close sock))
 ----
 
-Using java
-^^^^^^^^^^
+Java
+^^^^
 
 On java, publisher and subscriber has own classes that are available on `nanomsg.pubsub` package:
 
@@ -178,8 +178,6 @@ public class Subscriber {
 
 Req/Rep Sockets
 ~~~~~~~~~~~~~~~
-
-
 
 This protocol is used to distribute the workload among multiple stateless workers, and it's represented
 by two socket types:
