@@ -39,7 +39,7 @@ public abstract class RWSocket extends Socket {
      * @param blocking set blocking or non blocking flag.
      * @return receved data as unicode string.
      */
-    public void sendBytes(byte[] data, boolean blocking) {
+    public synchronized void sendBytes(byte[] data, boolean blocking) {
         final int socket = getSocket();
         final int rc = NanoMsg.nn_send(socket, data, data.length, blocking ? 0 : Constants.NN_DONTWAIT);
         if (rc < 0) {
@@ -78,7 +78,7 @@ public abstract class RWSocket extends Socket {
      *
      * @return receved data as unicode string.
      */
-    public String recvString() {
+    public synchronized String recvString() {
         return this.recvString(true);
     }
 
@@ -88,7 +88,7 @@ public abstract class RWSocket extends Socket {
      * @param blocking set blocking or non blocking flag.
      * @return receved data as unicode string.
      */
-    public byte[] recvBytes(boolean blocking) {
+    public synchronized byte[] recvBytes(boolean blocking) {
         final PointerByReference ptrBuff = new PointerByReference();
 
         final int socket = getSocket();
