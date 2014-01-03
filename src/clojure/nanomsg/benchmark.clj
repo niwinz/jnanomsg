@@ -17,7 +17,7 @@
   (let [sended    (atom 0)
         received  (atom 0)
         pubsock   (nn/socket :pub)]
-    (nn/bind pubsock "ipc:///tmp/bench")
+    (nn/bind! pubsock "ipc:///tmp/bench")
     (sleep 1000)
 
     (let [reporter (fn []
@@ -30,10 +30,10 @@
                        (recur @sended @received)))
           receiver (fn []
                      (let [sock (nn/socket :sub)]
-                       (nn/connect sock "ipc:///tmp/bench")
-                       (nn/subscribe sock "test")
+                       (nn/connect! sock "ipc:///tmp/bench")
+                       (nn/subscribe! sock "test")
                        (loop []
-                         (let [r (nn/recv sock)]
+                         (let [r (nn/recv! sock)]
                            (swap! received inc))
                          (recur))))]
 
@@ -44,5 +44,5 @@
       (thread reporter)
 
       (doseq [x (range 1000000000000)]
-        (nn/send pubsock "test foobar")
+        (nn/send! pubsock "test foobar")
         (swap! sended inc)))))
