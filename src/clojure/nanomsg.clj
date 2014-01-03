@@ -10,14 +10,14 @@
                                  :req ReqSocket :rep RepSocket
                                  :bus BusSocket :pair PairSocket})
 
-(defn bind
+(defn bind!
   "Given a socket and connection string,
   add a local endpoint to the socket."
   [^RWSocket sock, ^String dir]
   (.bind sock dir)
   sock)
 
-(defn connect
+(defn connect!
   "Given a socket and connection string,
   connect to remote socket."
   [^RWSocket sock, ^String dir]
@@ -37,35 +37,35 @@
        (:connect opts) (connect instance (:connect opts)))
      instance)))
 
-(defn subscribe
+(defn subscribe!
   "Subscribe a current subscriber socket
   to specified string pattern."
   [^SubSocket sock, ^String pattern]
   {:pre [(instance? SubSocket sock)]}
   (.subscribe sock pattern))
 
-(defn send
+(defn send!
   "Send string data"
   [^RWSocket sock, ^String data & {:keys [blocking] :or {blocking true}}]
   {:pre [(string? data)]}
   (.sendString sock data blocking))
 
-(defn recv
+(defn recv!
   "Recv data as string"
   [^RWSocket sock & {:keys [blocking] :or {blocking true}}]
   (.recvString sock blocking))
 
-(defn send-bytes
+(defn send-bytes!
   "Send bytes data"
   [^RWSocket sock, data & {:keys [blocking] :or {blocking true}}]
   (.sendBytes sock data blocking))
 
-(defn recv-bytes
+(defn recv-bytes!
   "Recv data as bytes"
   [^RWSocket sock & {:keys [blocking] :or {blocking true}}]
   (.recvBytes sock blocking))
 
-(defn close
+(defn close!
   "Close socket."
   [^RWSocket sock]
   (.close sock))
