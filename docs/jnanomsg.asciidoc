@@ -72,6 +72,7 @@ it only has support for this few protocols:
 
 * pub/sub protocol
 * req/rep protocol
+* push/pull (pipeline) protocol
 * bus protocol
 * pair protocol
 
@@ -345,6 +346,90 @@ public class EchoClient {
         for (int i=0; i<5; i++) {
             sock.sendString("Hello!" + 1);
             System.out.println("Received:" + sock.recvString());
+        }
+
+        sock.close()
+    }
+}
+----
+
+
+
+Push/Pull Sockets
+~~~~~~~~~~~~~~~~~
+
+Scalability protocol for passing tasks through a series of processing steps and it's represented
+by two socket types:
+
+- _push_ - This socket is used to send messages to a cluster of load-balanced nodes. Receive operation is not implemented on this socket type.
+- _pull_ - This socket is used to receive a message from a cluster of nodes. Send operation is not implemented on this socket type.
+
+
+Clojure
+^^^^^^^
+
+"Hello World" task generator:
+
+._push.clj (server)_
+[source,clojure]
+----
+(let [sock (nn/socket :push {:bind "tcp://*:6789"})]
+  (doseq [name ["Foo" "Bar" "Baz"]]
+    (nn/send! sock name))
+  (nn/close! sock))
+----
+
+._pull.clj (client)_
+[source,clojure]
+----
+(let [sock (nn/socket :pull {:connect "tcp://localhost:6789"})]
+  (dotimes [i 3]
+    (println "Hello " (nn/recv! sock))))
+----
+
+Java
+^^^^
+
+Same examples as on clojure section, but using java:
+
+._Dispatcher.java_
+[source,java]
+----
+import nanomsg.pipeline.PushSocket;
+import java.util.ArrayList;
+import java.util.List;
+
+public class Dispatcher {
+    public static void main(String[] args) {
+        PushSocket sock = new PushSocket();
+        sock.bind("tcp://*:6789");
+
+        List<String> people = new ArrayList<String>();
+        people.add("Foo");
+        people.add("Bar");
+        people.add("Baz");
+
+        for(int i=0; i<people.size(); ++i) {
+            sock.sendString(people.get(i));
+        }
+
+        sock.close();
+    }
+}
+----
+
+._Greeter.java_
+[source,java]
+----
+import nanomsg.pipeline.PullSocket;
+
+public class Greeter {
+    public static void main(String[] args) {
+        PullSocket sock = new PullSocket();
+        sock.connect("tcp://localhost:6789");
+
+        for (int i=0; i<3; i++) {
+            System.out.println("Hello " + sock.recvString());
         }
 
         sock.close()
