@@ -4,11 +4,18 @@
            (nanomsg.reqrep ReqSocket RepSocket)
            (nanomsg.pair PairSocket)
            (nanomsg.bus BusSocket)
+           (nanomsg.pipeline PushSocket PullSocket)
            (nanomsg RWSocket Constants)))
 
-(def ^:static supported-sockets {:pub PubSocket :sub SubSocket
-                                 :req ReqSocket :rep RepSocket
-                                 :bus BusSocket :pair PairSocket})
+(def ^:static ^:private supported-sockets
+  {:pub PubSocket
+   :sub SubSocket
+   :req ReqSocket
+   :rep RepSocket
+   :bus BusSocket
+   :pair PairSocket
+   :push PushSocket
+   :pull PullSocket})
 
 (defn bind!
   "Given a socket and connection string,
