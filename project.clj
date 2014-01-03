@@ -10,8 +10,8 @@
   :source-paths ["src/clojure"]
   :java-source-paths ["src/java"]
   :plugins [[lein-javadoc "0.1.1"]]
-  :javadoc-opts {:output-dir "docs/_build/javadoc"
-                 :package-names ["nanomsg" "nanomsg.jna" "nanomsg.pubsub"
+  :javadoc-opts {:output-dir "docs/javadoc"
+                 :package-names ["nanomsg" "nanomsg.jna" "nanomsg.pubsub" "nanomsg.exceptions"
                                  "nanomsg.reqrep" "nanomsg.bus" "nanomsg.pair"]}
   :main nanomsg.benchmark
   :profiles {:uberjar {:aot :all}})
