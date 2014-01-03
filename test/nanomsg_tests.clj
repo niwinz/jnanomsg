@@ -45,6 +45,18 @@
         (is (= @recvd1 "ss1 bar"))
         (is (= @recvd2 "ss2 foo")))))
 
+  (testing "Pipeline"
+    (let [sockname  (str s-bind-ipc "pipeline")
+          push-sock (nn/socket :push {:bind sockname})
+          receiver  (future
+                      (let [pull-sock (nn/socket :pull {:connect sockname})
+                            received  (nn/recv! pull-sock)]
+                        (nn/close! pull-sock)
+                        received))]
+      (sleep 500)
+      (nn/send! push-sock "message1")
+      (is (= @receiver "message1"))))
+
   (testing "Pair"
     (let [sock (nn/socket :pair)]
       (nn/bind! sock s-bind-tcp)
