@@ -10,7 +10,10 @@ Andrey Antukh, <niwi@niwi.be>
 Introduction
 ------------
 
-link:http://nanomsg.org[nanomsg] is a socket library that provides common communication patterns.
+link:http://nanomsg.org[nanomsg] is a socket library that provides common communication patterns. 
+It aims to make the networking layer fast, scalable, and easy to use.
+
+Api documentation for link:api/clojure/index.html[Clojure] and link:api/java/index.html[Java].
 
 Install
 -------
@@ -23,7 +26,7 @@ Leiningen
 The simplest way to use _jnanomsg_ on clojure project, is including it on dependency
 vector of your *_project.clj_* file:
 
-._`:requirements` vectory entry_
+._on project.clj_
 [source,clojure]
 ----
 [jnanomsg "0.1.0"]
@@ -64,7 +67,8 @@ jnanomsg supports all transports supported by their backend (nanomsg): ipc, inpr
 Protocols
 ~~~~~~~~~
 
-jnanomsg intends support all protocols supported by a native nanomsg library:
+jnanomsg intends support all protocols supported by a native nanomsg library, but currently
+it only has support for this few protocols:
 
 * pub/sub protocol
 * req/rep protocol
@@ -80,10 +84,14 @@ a public api of idiomatic library for java and clojure.
 User guide
 ----------
 
-All public api for work with nanomsg library is exposed under `nanomsg` clojure namespace. However,
-with java api, each socket type has it own package and it own class.
+Introduction
+~~~~~~~~~~~~
 
-Example requiring namespace on clojure file:
+All public clojure api for work with nanomsg library is exposed under `nanomsg` namespace, 
+and it consist on only few functions: `connect!`, `bind!`, `subscribe!`, `socket`, `send!`, 
+`recv!`, `send-bytes!`, `recv-bytes!`, `close!` and `symbols` that are fairly self-descriptive.
+
+Example importing `nanomsg` namespace on clojure file:
 
 ._yours/samplens.clj_
 [source,clojure]
@@ -91,6 +99,96 @@ Example requiring namespace on clojure file:
 (ns yours.samplens
   (:require [nanomsg :as nn]))
 ----
+
+However, on java api, each protocol has it own package that contains a corresponding socket classes.
+
+
+Connect/Bind
+^^^^^^^^^^^^
+
+Clojure
++++++++
+
+With clojure, you have two ways a do this: creating a socket and connection or do the
+two operations in one, using `socket!` function optional parameters.
+
+Example of connect/bind operation using two steps:
+
+._client.clj_
+[source,clojure]
+----
+(let [s (nn/socket :req)]
+  (nn/connect! s "tcp:///tmp/sock"))
+----
+
+._server.clj_
+[source,clojure]
+----
+(let [s (nn/socket :rep)]
+  (nn/bind! s "tcp:///tmp/sock"))
+----
+
+Example of connect/bind operation using a single step:
+
+._client.clj_
+[source,clojure]
+----
+(nn/socket :req {:connect "tcp:///tmp/sock"})
+----
+
+._server.clj_
+[source,clojure]
+----
+(nn/socket :rep {:bind "tcp:///tmp/sock"})
+----
+
+NOTE: On clojure, a socket types are represented by keywords. With this approach,
+you can create any socket type with one unique function: `socket`. As you can see
+on previous examples, I have used `:req` and `:rep` keywords for create respectively
+_request_ and _reply_ socket types that are part of 
+link:http://nanomsg.org/v0.2/nn_reqrep.7.html[Req/Rep protocol]
+
+
+Java
+++++
+
+With java, each socket class has it own connect/bind method.
+
+Here one example of how connect to a remote socket:
+
+._Client.java_
+[source,java]
+----
+import nanomsg.reqrep.ReqSocket
+
+public class Client {
+    public static void main(String[] args) {
+        final ReqSocket s = new ReqSocket();
+        s.connect("tcp:///tmp/sock");
+    }
+}
+----
+
+And, here an example how to bind and listen on local socket:
+
+
+._Server.java_
+[source,java]
+----
+import nanomsg.reqrep.RepSocket
+
+public class Server {
+    public static void main(String[] args) {
+        final RepSocket s = new RepSocket();
+        s.bind("tcp:///tmp/sock");
+    }
+}
+----
+
+INFO: You can see in more detail a java api on link:api/java/index.html[javadoc].
+
+NOTE: With both languages, you can execute bind multiple times for listen 
+in multiple socket locations.
 
 
 Pub/Sub Sockets
@@ -105,10 +203,7 @@ This protocol has two socket types:
 Clojure
 ^^^^^^^
 
-On clojure, a socket types are represented by keywords and this socket pair is represented by
-`:pub` and `:sub` keyworks (publisher and subscriber sockets respectivelly).
-
-Example:
+Example of using pub/sub protocols in clojure:
 
 ._publisher.clj_
 [source,clojure]
@@ -134,7 +229,7 @@ Example:
 Java
 ^^^^
 
-On java, publisher and subscriber has own classes that are available on `nanomsg.pubsub` package:
+Example of using pub/sub protocols in clojure:
 
 ._Publisher.java_
 [source,java]
