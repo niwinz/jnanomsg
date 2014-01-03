@@ -13,10 +13,11 @@ public final class Constants {
     public static final int EAFNOSUPPORT = NN_HAUSNUMERO + 10;
     public static final int ETERM = NN_HAUSNUMERO + 53;
     public static final int EFSM = NN_HAUSNUMERO + 54;
+    public static final int EAGAIN = (NN_HAUSNUMERO + 12);
     public static final int NN_DONTWAIT = 1;
+    public static final int NN_MSG = -1;
     public static final int AF_SP = 1;
     public static final int AF_SP_RAW = 2;
-    public static final int NN_MSG = -1;
 
     /* PubSub */
     public static final int NN_PROTO_PUBSUB = 2;
