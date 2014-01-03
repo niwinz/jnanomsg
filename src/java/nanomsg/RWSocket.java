@@ -3,7 +3,10 @@ package nanomsg;
 import java.nio.charset.Charset;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.PointerByReference;
+
 import nanomsg.jna.NanoMsg;
+import nanomsg.exceptions.IOException;
+import nanomsg.exceptions.EmptyResponseException;
 
 
 public abstract class RWSocket extends Socket {
@@ -17,9 +20,9 @@ public abstract class RWSocket extends Socket {
      * @param blocking set blocking or non blocking flag.
      * @return receved data as unicode string.
      */
-    public void sendString(String data, boolean blocking) {
+    public int sendString(String data, boolean blocking) throws IOException, EmptyResponseException {
         final Charset encoding = Charset.forName("UTF-8");
-        this.sendBytes(data.getBytes(encoding), blocking);
+        return this.sendBytes(data.getBytes(encoding), blocking);
     }
 
     /**
@@ -29,8 +32,8 @@ public abstract class RWSocket extends Socket {
      *
      * @return receved data as unicode string.
      */
-    public void sendString(String data) {
-        this.sendString(data, true);
+    public int sendString(String data) throws IOException, EmptyResponseException {
+        return this.sendString(data, true);
     }
 
     /**
@@ -39,12 +42,21 @@ public abstract class RWSocket extends Socket {
      * @param blocking set blocking or non blocking flag.
      * @return receved data as unicode string.
      */
-    public synchronized void sendBytes(byte[] data, boolean blocking) {
+    public synchronized int sendBytes(byte[] data, boolean blocking) throws IOException, EmptyResponseException {
         final int socket = getSocket();
         final int rc = NanoMsg.nn_send(socket, data, data.length, blocking ? 0 : Constants.NN_DONTWAIT);
-        if (rc < 0) {
-            System.out.println("Error");
+        if (!blocking && rc < 0) {
+            final int errno = Constants.getErrorNum();
+            if (errno == Constants.EAGAIN) {
+                throw new EmptyResponseException("eagain");
+            }
         }
+
+        if (rc < 0) {
+            throw new IOException(Constants.getError());
+        }
+
+        return rc;
     }
 
     /**
@@ -54,8 +66,8 @@ public abstract class RWSocket extends Socket {
      *
      * @return receved data as unicode string.
      */
-    public void sendBytes(byte[] data) {
-        this.sendBytes(data, true);
+    public int sendBytes(byte[] data) throws IOException, EmptyResponseException {
+        return this.sendBytes(data, true);
     }
 
     /**
@@ -64,10 +76,9 @@ public abstract class RWSocket extends Socket {
      * @param blocking set blocking or non blocking flag.
      * @return receved data as unicode string.
      */
-    public String recvString(boolean blocking) {
+    public String recvString(boolean blocking) throws IOException, EmptyResponseException {
         final byte[] received = this.recvBytes(blocking);
         final Charset encoding = Charset.forName("UTF-8");
-
         return new String(received, encoding);
     }
 
@@ -78,7 +89,7 @@ public abstract class RWSocket extends Socket {
      *
      * @return receved data as unicode string.
      */
-    public synchronized String recvString() {
+    public String recvString() throws IOException, EmptyResponseException {
         return this.recvString(true);
     }
 
@@ -88,14 +99,23 @@ public abstract class RWSocket extends Socket {
      * @param blocking set blocking or non blocking flag.
      * @return receved data as unicode string.
      */
-    public synchronized byte[] recvBytes(boolean blocking) {
+    public synchronized byte[] recvBytes(boolean blocking) throws IOException, EmptyResponseException {
         final PointerByReference ptrBuff = new PointerByReference();
 
         final int socket = getSocket();
         final int received = NanoMsg.nn_recv(socket, ptrBuff, Constants.NN_MSG, blocking ? 0: Constants.NN_DONTWAIT);
 
+        // Fast exit on nonblocking sockets and
+        // EAGAIN is received.
+        if (!blocking && received < 0) {
+            final int errno = Constants.getErrorNum();
+            if (errno == Constants.EAGAIN) {
+                throw new EmptyResponseException("eagain");
+            }
+        }
+
         if (received < 0) {
-            throw new RuntimeException(Constants.getError());
+            throw new IOException(Constants.getError());
         }
 
         final Pointer result = ptrBuff.getValue();
@@ -109,7 +129,7 @@ public abstract class RWSocket extends Socket {
      *
      * @return receved data as unicode string.
      */
-    public byte[] recvBytes() {
+    public byte[] recvBytes() throws IOException, EmptyResponseException {
         return this.recvBytes(true);
     }
 }
