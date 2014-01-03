@@ -5,7 +5,7 @@
             :url "http://www.apache.org/licenses/LICENSE-2.0.txt"}
   :dependencies [[org.clojure/clojure "1.5.1"]
                  [net.java.dev.jna/jna "4.0.0"]]
-  :jvm-opts ["-server" "-Xmx1g" "-XX:+TieredCompilation" "-XX:TieredStopAtLevel=1"]
+  :jvm-opts ["-server" "-Xmx2g" "-XX:+UseG1GC"]
   :source-paths ["src/clojure"]
   :java-source-paths ["src/java"]
   :plugins [[lein-javadoc "0.1.1"]]
