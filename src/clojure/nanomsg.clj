@@ -24,6 +24,19 @@
   (.connect sock dir)
   sock)
 
+(defn socket
+  "Geiven a socket type, create a new instance
+  of corresponding socket."
+  ([^RWSocket socktype] (socket socktype {}))
+  ([^RWSocket socktype opts]
+   {:pre [(supported-sockets socktype)]}
+   (let [cls      (-> socktype supported-sockets)
+         instance (.newInstance cls)]
+     (cond
+       (:bind opts) (bind instance (:bind opts))
+       (:connect opts) (connect instance (:connect opts)))
+     instance)))
+
 (defn subscribe
   "Subscribe a current subscriber socket
   to specified string pattern."
