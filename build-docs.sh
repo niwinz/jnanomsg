@@ -1,5 +1,7 @@
 #!/bin/sh
 (cd docs; make)
+lein doc
+lein javadoc
 cp -vr docs/index.html /tmp/index.html;
 cp -vr docs/api /tmp/api
 git checkout gh-pages;
