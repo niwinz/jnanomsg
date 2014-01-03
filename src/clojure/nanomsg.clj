@@ -4,54 +4,57 @@
            (nanomsg.reqrep ReqSocket RepSocket)
            (nanomsg.pair PairSocket)
            (nanomsg.bus BusSocket)
-           (nanomsg Socket Constants)))
+           (nanomsg RWSocket Constants)))
 
 (def ^:static supported-sockets {:pub PubSocket :sub SubSocket
                                  :req ReqSocket :rep RepSocket
                                  :bus BusSocket :pair PairSocket})
 
 (defn bind
-  "Bind socket."
-  [^Socket sock, ^String dir]
+  "Given a socket and connection string,
+  add a local endpoint to the socket."
+  [^RWSocket sock, ^String dir]
   (.bind sock dir)
   sock)
 
 (defn connect
-  "Connect socket to dir."
-  [^Socket sock, ^String dir]
+  "Given a socket and connection string,
+  connect to remote socket."
+  [^RWSocket sock, ^String dir]
   (.connect sock dir)
   sock)
 
 (defn subscribe
-  "Subscribe to some string pattern."
+  "Subscribe a current subscriber socket
+  to specified string pattern."
   [^SubSocket sock, ^String pattern]
   {:pre [(instance? SubSocket sock)]}
   (.subscribe sock pattern))
 
 (defn send
   "Send string data"
-  [^Socket sock, ^String data & {:keys [blocking] :or {blocking true}}]
+  [^RWSocket sock, ^String data & {:keys [blocking] :or {blocking true}}]
   {:pre [(string? data)]}
   (.sendString sock data blocking))
 
 (defn recv
   "Recv data as string"
-  [^Socket sock & {:keys [blocking] :or {blocking true}}]
+  [^RWSocket sock & {:keys [blocking] :or {blocking true}}]
   (.recvString sock blocking))
 
 (defn send-bytes
   "Send bytes data"
-  [^Socket sock, data & {:keys [blocking] :or {blocking true}}]
+  [^RWSocket sock, data & {:keys [blocking] :or {blocking true}}]
   (.sendBytes sock data blocking))
 
 (defn recv-bytes
   "Recv data as bytes"
-  [^Socket sock & {:keys [blocking] :or {blocking true}}]
+  [^RWSocket sock & {:keys [blocking] :or {blocking true}}]
   (.recvBytes sock blocking))
 
 (defn close
   "Close socket."
-  [^Socket sock]
+  [^RWSocket sock]
   (.close sock))
 
 (defn- resolve-symbols
