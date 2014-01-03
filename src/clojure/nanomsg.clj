@@ -6,15 +6,9 @@
            (nanomsg.bus BusSocket)
            (nanomsg Socket Constants)))
 
-(def ^:private supported-sockets {:pub PubSocket :sub SubSocket
-                                  :req ReqSocket :rep RepSocket
-                                  :bus BusSocket :pair PairSocket})
-(defn socket
-  "Create a new socket."
-  [^clojure.lang.Keyword socktype]
-  {:pre [(contains? supported-sockets socktype)]}
-  (let [cls (-> socktype supported-sockets)]
-    (.newInstance cls)))
+(def ^:static supported-sockets {:pub PubSocket :sub SubSocket
+                                 :req ReqSocket :rep RepSocket
+                                 :bus BusSocket :pair PairSocket})
 
 (defn bind
   "Bind socket."
