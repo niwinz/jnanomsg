@@ -11,6 +11,7 @@ Date: unreleased
 - Breaking change:  make clojure api more concise (add "!" to side-effecting function)
 - Fix java nonblocking api.
 - Add java self defined exceptions.
+- Add Pipeline protocol (with push/pull socket types).
 
 
 Version 0.1.0
