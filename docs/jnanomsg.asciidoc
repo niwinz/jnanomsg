@@ -210,21 +210,21 @@ Example of using pub/sub protocols in clojure:
 [source,clojure]
 ----
 (let [sock (nn/socket :pub)]
-  (nn/bind sock "ipc:///tmp/sock")
+  (nn/bind! sock "ipc:///tmp/sock")
   (dotimes [i 5]
-    (nn/send sock "test msg"))
-  (nn/close sock))
+    (nn/send! sock "test msg"))
+  (nn/close! sock))
 ----
 
 ._subscriber.clj_
 [source,clojure]
 ----
 (let [sock (nn/socket :sub)]
-  (nn/connect sock "ipc:///tmp/sock")
-  (nn/subscribe sock "test")
+  (nn/connect! sock "ipc:///tmp/sock")
+  (nn/subscribe! sock "test")
   (dotimes [i 5]
     (println (nn/recv sock)))
-  (nn/close sock))
+  (nn/close! sock))
 ----
 
 Java
@@ -292,9 +292,9 @@ Clojure
 [source,clojure]
 ----
 (let [sock (nn/socket :rep)]
-  (nn/bind sock "tcp://*:6789")
+  (nn/bind! sock "tcp://*:6789")
   (loop []
-    (nn/send sock (nn/recv sock))
+    (nn/send! sock (nn/recv sock))
     (recur)))
 ----
 
@@ -302,10 +302,11 @@ Clojure
 [source,clojure]
 ----
 (let [sock (nn/socket :req)]
-  (nn/bind sock "tcp://localhost:6789")
+  (nn/bind! sock "tcp://localhost:6789")
   (dotimes [i 5]
-    (nn/send sock (str "msg:" 1))
-    (println "Received:" (nn/recv sock))))
+    (nn/send! sock (str "msg:" 1))
+    (println "Received:" (nn/recv sock)))
+  (nn/close! sock))
 ----
 
 Java
