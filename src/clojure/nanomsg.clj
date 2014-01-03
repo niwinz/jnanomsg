@@ -33,8 +33,8 @@
    (let [cls      (-> socktype supported-sockets)
          instance (.newInstance cls)]
      (cond
-       (:bind opts) (bind instance (:bind opts))
-       (:connect opts) (connect instance (:connect opts)))
+       (:bind opts) (bind! instance (:bind opts))
+       (:connect opts) (connect! instance (:connect opts)))
      instance)))
 
 (defn subscribe!
