@@ -1,0 +1,21 @@
+Changelog
+=========
+
+
+Version 0.2.0
+-------------
+
+Date: unreleased
+
+- Ensure immutability
+- Breaking change:  make clojure api more concise (add "!" to side-effecting function)
+- Fix java nonblocking api.
+- Add java self defined exceptions.
+
+
+Version 0.1.0
+-------------
+
+Date: 2013-11-01
+
+- Initial version
