@@ -1,5 +1,5 @@
-(defproject jnanomsg "0.1.0"
-  :description "Nanomsg clojure/java wrapper/"
+(defproject jnanomsg "0.2.0"
+  :description "Nanomsg clojure/java wrapper."
   :url "https://github.com/niwibe/jnanomsg"
   :license {:name "Apache 2.0"
             :url "http://www.apache.org/licenses/LICENSE-2.0.txt"}
@@ -13,7 +13,7 @@
             [codox "0.6.6"]]
   :javadoc-opts {:output-dir "docs/api/java"
                  :package-names ["nanomsg" "nanomsg.jna" "nanomsg.pubsub" "nanomsg.exceptions"
-                                 "nanomsg.reqrep" "nanomsg.bus" "nanomsg.pair"]}
+                                 "nanomsg.reqrep" "nanomsg.bus" "nanomsg.pair" "nanomsg.pipeline"]}
   :codox {:output-dir "docs/api/clojure"
           :src-dir-uri "http://github.com/niwibe/jnanomsg/blob/master/"
           :src-linenum-anchor-prefix "L"}
