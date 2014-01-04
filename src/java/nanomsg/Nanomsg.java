@@ -4,10 +4,10 @@ import java.util.HashMap;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
 
-import nanomsg.jna.NanoMsg;
+import nanomsg.NativeLibrary;
 
 
-public final class Constants {
+public final class Nanomsg {
     public static final int NN_HAUSNUMERO = 156384712;
     public static final int ECONNREFUSED = NN_HAUSNUMERO + 7;
     public static final int EAFNOSUPPORT = NN_HAUSNUMERO + 10;
@@ -47,12 +47,12 @@ public final class Constants {
 
     /* Generic static functions. */
     public static final int getErrorNum() {
-        return NanoMsg.nn_errno();
+        return NativeLibrary.nn_errno();
     }
 
     public static final String getError() {
         final int currentError = Constants.getErrorNum();
-        return NanoMsg.nn_strerror(currentError);
+        return NativeLibrary.nn_strerror(currentError);
     }
 
     public static final HashMap<String, Integer> getSymbols() throws InterruptedException {
@@ -62,7 +62,7 @@ public final class Constants {
             int index = 0;
             while (true) {
                 IntByReference valueRef = new IntByReference();
-                Pointer ptr = NanoMsg.nn_symbol(index, valueRef);
+                Pointer ptr = NativeLibrary.nn_symbol(index, valueRef);
 
                 if (ptr.equals(Pointer.NULL)) {
                     break;
