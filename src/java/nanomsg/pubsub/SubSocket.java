@@ -6,21 +6,22 @@ import com.sun.jna.ptr.*;
 
 import java.io.UnsupportedEncodingException;
 
-import nanomsg.jna.NanoMsg;
+import nanomsg.NativeLibrary;
 import nanomsg.RWSocket;
-import nanomsg.Constants;
+import nanomsg.Nanomsg;
+import nanomsg.exceptions.IOException;
 
 
 public class SubSocket extends RWSocket {
     public SubSocket(int domain) {
-        super(domain, Constants.NN_SUB);
+        super(domain, Nanomsg.NN_SUB);
     }
 
     public SubSocket() {
-        this(Constants.AF_SP);
+        this(Nanomsg.AF_SP);
     }
 
-    public void subscribe(final String data) {
+    public void subscribe(final String data) throws IOException {
         final int socket = getSocket();
 
         try {
@@ -28,9 +29,9 @@ public class SubSocket extends RWSocket {
             final Memory mem = new Memory(patternBytes.length);
             mem.write(0, patternBytes, 0, patternBytes.length);
 
-            NanoMsg.nn_setsockopt(socket, Constants.NN_SUB, Constants.NN_SUB_SUBSCRIBE, mem, patternBytes.length);
+            NativeLibrary.nn_setsockopt(socket, Nanomsg.NN_SUB, Nanomsg.NN_SUB_SUBSCRIBE, mem, patternBytes.length);
         } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
+            throw new IOException(e);
         }
     }
 }

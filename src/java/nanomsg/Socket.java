@@ -1,7 +1,8 @@
 package nanomsg;
 
-import nanomsg.jna.NanoMsg;
 import com.sun.jna.Pointer;
+import nanomsg.NativeLibrary;
+import nanomsg.exceptions.IOException;
 
 public abstract class Socket {
     private final int domain;
@@ -14,14 +15,14 @@ public abstract class Socket {
     public Socket(int domain, int protocol) {
         this.domain = domain;
         this.protocol = protocol;
-        this.socket = NanoMsg.nn_socket(domain, protocol);
+        this.socket = NativeLibrary.nn_socket(domain, protocol);
         this.opened = true;
     }
 
     public void close() {
         if (this.opened && !this.closed) {
             this.closed = true;
-            NanoMsg.nn_close(this.socket);
+            NativeLibrary.nn_close(this.socket);
         }
     }
 
@@ -29,19 +30,19 @@ public abstract class Socket {
         return this.socket;
     }
 
-    public void bind(String dir) throws RuntimeException {
-        final int endpoint = NanoMsg.nn_bind(this.socket, dir);
+    public void bind(String dir) throws IOException {
+        final int endpoint = NativeLibrary.nn_bind(this.socket, dir);
 
         if (endpoint < 0) {
-            throw new RuntimeException("bind error");
+            throw new IOException(Nanomsg.getError());
         }
     }
 
-    public void connect(String dir) throws RuntimeException {
-        final int endpoint = NanoMsg.nn_connect(this.socket, dir);
+    public void connect(String dir) throws IOException {
+        final int endpoint = NativeLibrary.nn_connect(this.socket, dir);
 
         if (endpoint < 0) {
-            throw new RuntimeException("bind error");
+            throw new IOException(Nanomsg.getError());
         }
     }
 }

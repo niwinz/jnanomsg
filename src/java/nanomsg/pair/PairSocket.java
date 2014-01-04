@@ -1,15 +1,15 @@
 package nanomsg.pair;
 
 import nanomsg.RWSocket;
-import nanomsg.Constants;
+import nanomsg.Nanomsg;
 
 
 public class PairSocket extends RWSocket {
     public PairSocket(int domain) {
-        super(domain, Constants.NN_PAIR);
+        super(domain, Nanomsg.NN_PAIR);
     }
 
     public PairSocket() {
-        this(Constants.AF_SP);
+        this(Nanomsg.AF_SP);
     }
 }

@@ -1,14 +1,14 @@
 package nanomsg.pubsub;
 
 import nanomsg.RWSocket;
-import nanomsg.Constants;
+import nanomsg.Nanomsg;
 
 public class PubSocket extends RWSocket {
     public PubSocket(int domain) {
-        super(domain, Constants.NN_PUB);
+        super(domain, Nanomsg.NN_PUB);
     }
 
     public PubSocket() {
-        this(Constants.AF_SP);
+        this(Nanomsg.AF_SP);
     }
 }

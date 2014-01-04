@@ -1,15 +1,15 @@
 package nanomsg.bus;
 
 import nanomsg.RWSocket;
-import nanomsg.Constants;
+import nanomsg.Nanomsg;
 
 
 public class BusSocket extends RWSocket {
     public BusSocket(int domain) {
-        super(domain, Constants.NN_BUS);
+        super(domain, Nanomsg.NN_BUS);
     }
 
     public BusSocket() {
-        this(Constants.AF_SP);
+        this(Nanomsg.AF_SP);
     }
 }
