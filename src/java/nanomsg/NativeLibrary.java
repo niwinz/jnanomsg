@@ -1,9 +1,12 @@
-package nanomsg.jna;
+package nanomsg;
 
-import com.sun.jna.*;
-import com.sun.jna.ptr.*;
+import com.sun.jna.Native;
+import com.sun.jna.Pointer;
+import com.sun.jna.ptr.PointerByReference;
+import com.sun.jna.ptr.IntByReference;
 
-public class NanoMsg {
+
+public class NativeLibrary {
     public static native int nn_socket (int domain, int protocol);
     public static native int nn_close (int s);
     public static native int nn_bind (int s, String addr);
@@ -15,7 +18,7 @@ public class NanoMsg {
     public static native Pointer nn_symbol (int i, IntByReference value);
     public static native int nn_freemsg (Pointer msg);
     public static native int nn_errno ();
-
+    public static native int nn_device (int s1, int s2);
 
     static {
         Native.register("nanomsg");
