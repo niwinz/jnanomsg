@@ -7,10 +7,13 @@ Version 0.2.0
 
 Date: unreleased
 
-- Ensure immutability
-- Breaking change:  make clojure api more concise (add "!" to side-effecting function)
-- Fix java nonblocking api.
-- Add java self defined exceptions.
+- Breaking change: make clojure api more concise (add "!" to side-effecting function)
+- Breaking change: Rename nanomsg.Constants to nanomsg.Nanomsg.
+- Breaking change: Rename nanomsg.jna.NanoMsg to nanomsg.NativeLibrary
+- Breaking change: Fix java nonblocking api.
+- Breaking change: Some send methods now return int instead of prevous void.
+- Ensure immutability always marking variables as final.
+- Use specific defined exceptions instead of generic RuntimeException.
 - Add Pipeline protocol (with push/pull socket types).
 
 
