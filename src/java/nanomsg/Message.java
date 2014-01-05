@@ -1,13 +1,14 @@
 package nanomsg;
+import java.nio.charset.Charset;
 
 public class Message {
-    private bytes[] messageData;
+    private byte[] messageData;
 
     public Message(String data) {
         messageData = data.getBytes(Charset.forName("UTF-8"));
     }
 
-    public Message(bytes[] data) {
+    public Message(byte[] data) {
         messageData = data;
     }
 
@@ -23,7 +24,7 @@ public class Message {
         return new String(messageData, encoding);
     }
 
-    public bytes[] toBytes() {
+    public byte[] toBytes() {
         return messageData;
     }
 }
