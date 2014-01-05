@@ -1,6 +1,8 @@
 package nanomsg;
 
 import java.util.HashMap;
+import java.util.Map;
+
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
 
@@ -45,17 +47,18 @@ public final class Nanomsg {
     public static final int NN_PROTO_BUS = 7;
     public static final int NN_BUS = NN_PROTO_BUS * 16 + 0;
 
-    /* Generic static functions. */
-    public static final int getErrorNum() {
+    /* Low level native interface wrapper */
+
+    public static final int getErrorNumber() {
         return NativeLibrary.nn_errno();
     }
 
     public static final String getError() {
-        final int currentError = Constants.getErrorNum();
+        final int currentError = Nanomsg.getErrorNumber();
         return NativeLibrary.nn_strerror(currentError);
     }
 
-    public static final HashMap<String, Integer> getSymbols() throws InterruptedException {
+    public static final Map<String, Integer> getSymbols() throws InterruptedException {
         HashMap<String, Integer> result = new HashMap<String, Integer>();
 
         try {
