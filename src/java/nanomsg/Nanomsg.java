@@ -10,42 +10,44 @@ import nanomsg.NativeLibrary;
 
 
 public final class Nanomsg {
-    public static final int NN_HAUSNUMERO = 156384712;
-    public static final int ECONNREFUSED = NN_HAUSNUMERO + 7;
-    public static final int EAFNOSUPPORT = NN_HAUSNUMERO + 10;
-    public static final int ETERM = NN_HAUSNUMERO + 53;
-    public static final int EFSM = NN_HAUSNUMERO + 54;
-    public static final int EAGAIN = (NN_HAUSNUMERO + 12);
-    public static final int NN_DONTWAIT = 1;
-    public static final int NN_MSG = -1;
-    public static final int AF_SP = 1;
-    public static final int AF_SP_RAW = 2;
+    public class constants {
+        public static final int NN_HAUSNUMERO = 156384712;
+        public static final int ECONNREFUSED = NN_HAUSNUMERO + 7;
+        public static final int EAFNOSUPPORT = NN_HAUSNUMERO + 10;
+        public static final int ETERM = NN_HAUSNUMERO + 53;
+        public static final int EFSM = NN_HAUSNUMERO + 54;
+        public static final int EAGAIN = (NN_HAUSNUMERO + 12);
+        public static final int NN_DONTWAIT = 1;
+        public static final int NN_MSG = -1;
+        public static final int AF_SP = 1;
+        public static final int AF_SP_RAW = 2;
 
-    /* PubSub */
-    public static final int NN_PROTO_PUBSUB = 2;
-    public static final int NN_PUB = NN_PROTO_PUBSUB * 16 + 0;
-    public static final int NN_SUB = NN_PROTO_PUBSUB * 16 + 1;
-    public static final int NN_SUB_SUBSCRIBE = 1;
-    public static final int NN_SUB_UNSUBSCRIBE = 2;
+        /* PubSub */
+        public static final int NN_PROTO_PUBSUB = 2;
+        public static final int NN_PUB = NN_PROTO_PUBSUB * 16 + 0;
+        public static final int NN_SUB = NN_PROTO_PUBSUB * 16 + 1;
+        public static final int NN_SUB_SUBSCRIBE = 1;
+        public static final int NN_SUB_UNSUBSCRIBE = 2;
 
-    /* ReqRep */
-    public static final int NN_PROTO_REQREP = 3;
-    public static final int NN_REQ = NN_PROTO_REQREP * 16 + 0;
-    public static final int NN_REP = NN_PROTO_REQREP * 16 + 1;
-    public static final int NN_REQ_RESEND_IVL = 1;
+        /* ReqRep */
+        public static final int NN_PROTO_REQREP = 3;
+        public static final int NN_REQ = NN_PROTO_REQREP * 16 + 0;
+        public static final int NN_REP = NN_PROTO_REQREP * 16 + 1;
+        public static final int NN_REQ_RESEND_IVL = 1;
 
-    /* Pair */
-    public static final int NN_PROTO_PAIR = 1;
-    public static final int NN_PAIR = NN_PROTO_PAIR * 16 + 0;
+        /* Pair */
+        public static final int NN_PROTO_PAIR = 1;
+        public static final int NN_PAIR = NN_PROTO_PAIR * 16 + 0;
 
-    /* Pipeline */
-    public static final int NN_PROTO_PIPELINE = 5;
-    public static final int NN_PUSH = NN_PROTO_PIPELINE * 16 + 0;
-    public static final int NN_PULL = NN_PROTO_PIPELINE * 16 + 1;
+        /* Pipeline */
+        public static final int NN_PROTO_PIPELINE = 5;
+        public static final int NN_PUSH = NN_PROTO_PIPELINE * 16 + 0;
+        public static final int NN_PULL = NN_PROTO_PIPELINE * 16 + 1;
 
-    /* Bus */
-    public static final int NN_PROTO_BUS = 7;
-    public static final int NN_BUS = NN_PROTO_BUS * 16 + 0;
+        /* Bus */
+        public static final int NN_PROTO_BUS = 7;
+        public static final int NN_BUS = NN_PROTO_BUS * 16 + 0;
+    }
 
     /* Low level native interface wrapper */
 
