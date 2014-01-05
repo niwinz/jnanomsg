@@ -7,7 +7,7 @@ import com.sun.jna.ptr.PointerByReference;
 import nanomsg.NativeLibrary;
 import nanomsg.Nanomsg;
 import nanomsg.exceptions.IOException;
-import nanomsg.exceptions.EmptyResponseException;
+import nanomsg.exceptions.EAgainException;
 
 
 public abstract class RWSocket extends Socket {
@@ -18,10 +18,11 @@ public abstract class RWSocket extends Socket {
     /**
      * Send string to socket with option to set blocking flag.
      *
+     * @param data string value that represents a message.
      * @param blocking set blocking or non blocking flag.
-     * @return receved data as unicode string.
+     * @return number of sended bytes.
      */
-    public int sendString(String data, boolean blocking) throws IOException, EmptyResponseException {
+    public int sendString(String data, boolean blocking) throws IOException, EAgainException {
         final Charset encoding = Charset.forName("UTF-8");
         return this.sendBytes(data.getBytes(encoding), blocking);
     }
@@ -31,25 +32,27 @@ public abstract class RWSocket extends Socket {
      *
      * This operation is blocking by default.
      *
-     * @return receved data as unicode string.
+     * @param data string value that represents a message.
+     * @return number of sended bytes.
      */
-    public int sendString(String data) throws IOException, EmptyResponseException {
+    public int sendString(String data) throws IOException, EAgainException {
         return this.sendString(data, true);
     }
 
     /**
-     * Send byte array to socket with option to set blocking flag.
+     * Send bytes array to socket with option to set blocking flag.
      *
+     * @param data a bytes array that represents a message.
      * @param blocking set blocking or non blocking flag.
-     * @return receved data as unicode string.
+     * @return number of sended bytes.
      */
-    public synchronized int sendBytes(byte[] data, boolean blocking) throws IOException, EmptyResponseException {
+    public synchronized int sendBytes(byte[] data, boolean blocking) throws IOException, EAgainException {
         final int socket = getSocket();
         final int rc = NativeLibrary.nn_send(socket, data, data.length, blocking ? 0 : Nanomsg.NN_DONTWAIT);
         if (!blocking && rc < 0) {
             final int errno = Nanomsg.getErrorNum();
             if (errno == Nanomsg.EAGAIN) {
-                throw new EmptyResponseException("eagain");
+                throw new EAgainException("eagain");
             }
         }
 
@@ -61,57 +64,62 @@ public abstract class RWSocket extends Socket {
     }
 
     /**
-     * Send byte array to socket.
+     * Send bytes array to socket.
      *
      * This operation is blocking by default.
      *
-     * @return receved data as unicode string.
+     * @param data a bytes array that represents a message.
+     * @return number of sended bytes.
      */
-    public int sendBytes(byte[] data) throws IOException, EmptyResponseException {
+    public int sendBytes(byte[] data) throws IOException, EAgainException {
         return this.sendBytes(data, true);
     }
 
     /**
-     * Receive string from socket with option to set blocking flag.
+     * Receive message from socket as string with option for set blocking flag.
+     *
+     * This method uses utf-8 encoding for converts a bytes array
+     * to string.
      *
      * @param blocking set blocking or non blocking flag.
      * @return receved data as unicode string.
      */
-    public String recvString(boolean blocking) throws IOException, EmptyResponseException {
+    public String recvString(boolean blocking) throws IOException, EAgainException {
         final byte[] received = this.recvBytes(blocking);
         final Charset encoding = Charset.forName("UTF-8");
         return new String(received, encoding);
     }
 
     /**
-     * Receive string from socket.
+     * Receive message from socket as string.
      *
-     * This operation is blocking by default.
+     * This method uses utf-8 encoding for converts a bytes array
+     * to string.
      *
      * @return receved data as unicode string.
      */
-    public String recvString() throws IOException, EmptyResponseException {
+    public String recvString() throws IOException, EAgainException {
         return this.recvString(true);
     }
 
     /**
-     * Receive byte array from socket with option to set blocking flag.
+     * Receive message from socket as bytes array with option for set blocking flag.
      *
      * @param blocking set blocking or non blocking flag.
-     * @return receved data as unicode string.
+     * @return receved data as bytes array
      */
-    public synchronized byte[] recvBytes(boolean blocking) throws IOException, EmptyResponseException {
+    public synchronized byte[] recvBytes(boolean blocking) throws IOException, EAgainException {
         final PointerByReference ptrBuff = new PointerByReference();
 
         final int socket = getSocket();
-        final int received = NativeLibrary.nn_recv(socket, ptrBuff, Nanomsg.NN_MSG, blocking ? 0: Nanomsg.NN_DONTWAIT);
+        final int received = NativeLibrary.nn_recv(socket, ptrBuff, Nanomsg.constants.NN_MSG, blocking ? 0: Nanomsg.constants.NN_DONTWAIT);
 
         // Fast exit on nonblocking sockets and
         // EAGAIN is received.
         if (!blocking && received < 0) {
-            final int errno = Nanomsg.getErrorNum();
-            if (errno == Nanomsg.EAGAIN) {
-                throw new EmptyResponseException("eagain");
+            final int errno = Nanomsg.getErrorNumber();
+            if (errno == Nanomsg.constants.EAGAIN) {
+                throw new EAgainException("eagain");
             }
         }
 
@@ -124,13 +132,13 @@ public abstract class RWSocket extends Socket {
     }
 
     /**
-     * Receive byte array from socket.
+     * Receive message from socket as bytes array.
      *
      * This operation is blocking by default.
      *
-     * @return receved data as unicode string.
+     * @return receved data as bytes array
      */
-    public byte[] recvBytes() throws IOException, EmptyResponseException {
+    public byte[] recvBytes() throws IOException, EAgainException {
         return this.recvBytes(true);
     }
 }
