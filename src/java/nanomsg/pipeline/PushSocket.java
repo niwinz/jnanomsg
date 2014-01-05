@@ -6,10 +6,10 @@ import nanomsg.Nanomsg;
 
 public class PushSocket extends RWSocket {
     public PushSocket(int domain) {
-        super(domain, Nanomsg.NN_PUSH);
+        super(domain, Nanomsg.constants.NN_PUSH);
     }
 
     public PushSocket() {
-        this(Nanomsg.AF_SP);
+        this(Nanomsg.constants.AF_SP);
     }
 }

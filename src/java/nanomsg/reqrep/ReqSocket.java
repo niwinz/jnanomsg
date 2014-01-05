@@ -6,10 +6,10 @@ import nanomsg.Nanomsg;
 
 public class ReqSocket extends RWSocket {
     public ReqSocket(int domain) {
-        super(domain, Nanomsg.NN_REQ);
+        super(domain, Nanomsg.constants.NN_REQ);
     }
 
     public ReqSocket() {
-        this(Nanomsg.AF_SP);
+        this(Nanomsg.constants.AF_SP);
     }
 }

@@ -5,10 +5,10 @@ import nanomsg.Nanomsg;
 
 public class PubSocket extends RWSocket {
     public PubSocket(int domain) {
-        super(domain, Nanomsg.NN_PUB);
+        super(domain, Nanomsg.constants.NN_PUB);
     }
 
     public PubSocket() {
-        this(Nanomsg.AF_SP);
+        this(Nanomsg.constants.AF_SP);
     }
 }

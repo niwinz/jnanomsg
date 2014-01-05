@@ -49,10 +49,10 @@ public abstract class RWSocket extends Socket {
      */
     public synchronized int sendBytes(byte[] data, boolean blocking) throws IOException, EAgainException {
         final int socket = getSocket();
-        final int rc = NativeLibrary.nn_send(socket, data, data.length, blocking ? 0 : Nanomsg.NN_DONTWAIT);
+        final int rc = NativeLibrary.nn_send(socket, data, data.length, blocking ? 0 : Nanomsg.constants.NN_DONTWAIT);
         if (!blocking && rc < 0) {
-            final int errno = Nanomsg.getErrorNum();
-            if (errno == Nanomsg.EAGAIN) {
+            final int errno = Nanomsg.getErrorNumber();
+            if (errno == Nanomsg.constants.EAGAIN) {
                 throw new EAgainException("eagain");
             }
         }
