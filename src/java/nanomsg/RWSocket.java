@@ -6,6 +6,7 @@ import com.sun.jna.ptr.PointerByReference;
 
 import nanomsg.NativeLibrary;
 import nanomsg.Nanomsg;
+import nanomsg.Message;
 import nanomsg.exceptions.IOException;
 import nanomsg.exceptions.EAgainException;
 
@@ -140,5 +141,47 @@ public abstract class RWSocket extends Socket {
      */
     public byte[] recvBytes() throws IOException, EAgainException {
         return this.recvBytes(true);
+    }
+
+    /**
+     * High level function for send a message.
+     *
+     * This operation is blocking by default.
+     *
+     * @return number of sended bytes.
+     */
+    public int send(Message msg) throws IOException {
+        return sendBytes(msg.toBytes());
+    }
+
+    /**
+     * High level function for send a message with option for set blocking flag.
+     *
+     * @param blocking set blocking or non blocking flag.
+     * @return number of sended bytes.
+     */
+    public int send(Message msg, boolean blocking) throws IOException, EAgainException {
+        return sendBytes(msg.toBytes(), blocking);
+    }
+
+    /**
+     * High level function for receive message.
+     *
+     * This operation is blocking by default.
+     *
+     * @return Message instance.
+     */
+    public Message recv() throws IOException {
+        return new Message(recvBytes());
+    }
+
+    /**
+     * High level function for receive message with option for set blocking flag.
+     *
+     * @param blocking set blocking or non blocking flag.
+     * @return Message instance.
+     */
+    public Message recv(boolean blocking) throws IOException, EAgainException {
+        return new Message(recvBytes(blocking));
     }
 }
