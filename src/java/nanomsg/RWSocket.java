@@ -129,7 +129,10 @@ public abstract class RWSocket extends Socket {
         }
 
         final Pointer result = ptrBuff.getValue();
-        return result.getByteArray(0, received);
+        final byte[] bytesResult = result.getByteArray(0, received);
+
+        NativeLibrary.nn_freemsg(result);
+        return bytesResult;
     }
 
     /**
