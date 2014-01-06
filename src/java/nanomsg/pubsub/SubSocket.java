@@ -14,11 +14,11 @@ import nanomsg.exceptions.IOException;
 
 public class SubSocket extends RWSocket {
     public SubSocket(int domain) {
-        super(domain, Nanomsg.NN_SUB);
+        super(domain, Nanomsg.constants.NN_SUB);
     }
 
     public SubSocket() {
-        this(Nanomsg.AF_SP);
+        this(Nanomsg.constants.AF_SP);
     }
 
     public void subscribe(final String data) throws IOException {
@@ -29,7 +29,7 @@ public class SubSocket extends RWSocket {
             final Memory mem = new Memory(patternBytes.length);
             mem.write(0, patternBytes, 0, patternBytes.length);
 
-            NativeLibrary.nn_setsockopt(socket, Nanomsg.NN_SUB, Nanomsg.NN_SUB_SUBSCRIBE, mem, patternBytes.length);
+            NativeLibrary.nn_setsockopt(socket, Nanomsg.constants.NN_SUB, Nanomsg.constants.NN_SUB_SUBSCRIBE, mem, patternBytes.length);
         } catch (UnsupportedEncodingException e) {
             throw new IOException(e);
         }

@@ -4,6 +4,7 @@ import com.sun.jna.Pointer;
 import nanomsg.NativeLibrary;
 import nanomsg.exceptions.IOException;
 
+
 public abstract class Socket {
     private final int domain;
     private final int protocol;
