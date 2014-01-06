@@ -112,6 +112,13 @@
   [^RWSocket sock]
   (.close sock))
 
+(defn terminate!
+  "Send terminate signal to all open and/or blocked
+  sockets.
+  This is usefull for multithreaded apps."
+  []
+  (Nanomsg/terminate))
+
 (defn start-device
   "Given two sockets, start a device."
   [^Socket s1, ^Socket s2]

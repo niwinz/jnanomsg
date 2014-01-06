@@ -83,4 +83,8 @@ public final class Nanomsg {
 
         return result;
     }
+
+    public static final void terminate() {
+        NativeLibrary.nn_term();
+    }
 }
