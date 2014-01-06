@@ -44,5 +44,5 @@
       (thread reporter)
 
       (doseq [x (range 1000000000000)]
-        (nn/send! pubsock "test foobar")
+        (nn/send-string! pubsock "test foobar")
         (swap! sended inc)))))
