@@ -19,6 +19,7 @@ public class NativeLibrary {
     public static native int nn_freemsg (Pointer msg);
     public static native int nn_errno ();
     public static native int nn_device (int s1, int s2);
+    public static native void nn_term();
 
     static {
         Native.register("nanomsg");
