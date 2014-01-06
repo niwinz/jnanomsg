@@ -15,6 +15,7 @@ Date: unreleased
 - Ensure immutability always marking variables as final.
 - Use specific defined exceptions instead of generic RuntimeException.
 - Add Pipeline protocol (with push/pull socket types).
+- Add Device support.
 
 
 Version 0.1.0
