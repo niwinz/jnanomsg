@@ -17,7 +17,7 @@
            (nanomsg.pipeline PushSocket PullSocket)
            (nanomsg.pair PairSocket)
            (nanomsg.bus BusSocket)
-           (nanomsg RWSocket Nanomsg Message)))
+           (nanomsg RWSocket Socket Nanomsg Device)))
 
 (def ^:static ^:private supported-sockets
   {:pub PubSocket
@@ -111,6 +111,12 @@
   "Close socket."
   [^RWSocket sock]
   (.close sock))
+
+(defn start-device
+  "Given two sockets, start a device."
+  [^Socket s1, ^Socket s2]
+  (let [d (Device. s1 s2)]
+    (.run d)))
 
 (defn- resolve-symbols
   []
