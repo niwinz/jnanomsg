@@ -2,6 +2,7 @@ package nanomsg;
 
 import java.nio.charset.Charset;
 import com.sun.jna.Pointer;
+import com.sun.jna.Memory;
 import com.sun.jna.ptr.PointerByReference;
 
 import nanomsg.NativeLibrary;

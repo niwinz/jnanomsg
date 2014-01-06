@@ -22,7 +22,7 @@
       (sleep 500)
       (nn/connect! req-sock s-bind-ipc)
       (nn/send! req-sock "foo")
-      (is (= (nn/recv! req-sock) "foo"))))
+      (is (= (str (nn/recv! req-sock)) "foo"))))
 
   (testing "PubSub"
     (let [pub-sock (nn/socket :pub)]
@@ -42,8 +42,8 @@
         (nn/send! pub-sock "ss2 foo")
         (nn/send! pub-sock "ss1 bar")
 
-        (is (= @recvd1 "ss1 bar"))
-        (is (= @recvd2 "ss2 foo")))))
+        (is (= (str @recvd1) "ss1 bar"))
+        (is (= (str @recvd2) "ss2 foo")))))
 
   (testing "Pipeline"
     (let [sockname  (str s-bind-ipc "pipeline")
@@ -55,7 +55,7 @@
                         received))]
       (sleep 500)
       (nn/send! push-sock "message1")
-      (is (= @receiver "message1"))))
+      (is (= (str @receiver) "message1"))))
 
   (testing "Pair"
     (let [sock (nn/socket :pair)]
@@ -66,7 +66,7 @@
                          (nn/recv! socket)))]
         (sleep 500)
         (nn/send! sock "foo")
-        (is (= @recvd1 "foo")))))
+        (is (= (str @recvd1) "foo")))))
 
   (testing "Bus"
     (let [sock (nn/socket :bus)]
@@ -82,5 +82,5 @@
 
         (sleep 500)
         (nn/send! sock "foo")
-        (is (= @recvd1 "foo")
-        (is (= @recvd2 "foo")))))))
+        (is (= (str @recvd1) "foo")
+        (is (= (str @recvd2) "foo")))))))

@@ -1,11 +1,26 @@
 (ns nanomsg
-  (:refer-clojure :exclude [send])
+  "Nanomsg is a socket library that provides several
+  common communication patterns. It aims to make the
+  networking layer fast, scalable, and easy to use.
+
+  It is implemented in C, it works on a wide range of
+  operating systems with no further dependencies.
+
+  This is a clojure idiomatic wrapper for native C
+  libnanomsg library.
+
+  Nanomsg is a socket library and works with bytes. So,
+  main send/recv functions also works with bytes.
+
+  If you want send your more complex data types, create
+  a new pair of send/recv functions that serializes and
+  deserializers data before send and after receive."
   (:import (nanomsg.pubsub PubSocket SubSocket)
            (nanomsg.reqrep ReqSocket RepSocket)
+           (nanomsg.pipeline PushSocket PullSocket)
            (nanomsg.pair PairSocket)
            (nanomsg.bus BusSocket)
-           (nanomsg.pipeline PushSocket PullSocket)
-           (nanomsg RWSocket Constants)))
+           (nanomsg RWSocket Nanomsg Message)))
 
 (def ^:static ^:private supported-sockets
   {:pub PubSocket
@@ -34,8 +49,8 @@
 (defn socket
   "Geiven a socket type, create a new instance
   of corresponding socket."
-  ([^RWSocket socktype] (socket socktype {}))
-  ([^RWSocket socktype opts]
+  ([^clojure.lang.Keyword socktype] (socket socktype {}))
+  ([^clojure.lang.Keyword socktype opts]
    {:pre [(supported-sockets socktype)]}
    (let [cls      (-> socktype supported-sockets)
          instance (.newInstance cls)]
@@ -52,25 +67,48 @@
   (.subscribe sock pattern))
 
 (defn send!
-  "Send string data"
-  [^RWSocket sock, ^String data & {:keys [blocking] :or {blocking true}}]
-  {:pre [(string? data)]}
-  (.sendString sock data blocking))
+  "Given a socket and message as bytes array,
+  send it throught the socket.
+
+  NOTE: This function is a low level interface and
+  theorically does not has overhead over
+  raw socket usage."
+  [^RWSocket sock, ^bytes msg & {:keys [blocking] :or {blocking true}}]
+  (.sendBytes sock msg blocking))
 
 (defn recv!
-  "Recv data as string"
-  [^RWSocket sock & {:keys [blocking] :or {blocking true}}]
-  (.recvString sock blocking))
+  "Given a socket, receive a message as byte array.
 
-(defn send-bytes!
-  "Send bytes data"
-  [^RWSocket sock, data & {:keys [blocking] :or {blocking true}}]
-  (.sendBytes sock data blocking))
-
-(defn recv-bytes!
-  "Recv data as bytes"
+  This function, uses a low level access for
+  receiving a message, that removes a overhead
+  of creating a message object."
   [^RWSocket sock & {:keys [blocking] :or {blocking true}}]
   (.recvBytes sock blocking))
+
+(defn send-string!
+  "Given a socket and message as string, send
+  it throught the socket.
+
+  This function uses a low level method for sending
+  messages that removes a overhead of creating
+  nanomsg.Message objects.
+
+  utf-8 encoding is unique overhead that
+  has this function over using a raw socket."
+  [^RWSocket sock, ^String msg & {:keys [blocking] :or {blocking true}}]
+  (.sendString sock msg blocking))
+
+(defn recv-string!
+  "Given a socket, receive a message as string.
+
+  This function, uses a low level access for
+  receiving a message, that removes a overhead
+  of creating a message object.
+
+  utf-8 decoding is a unique overhead
+  that has this function over using a raw socket."
+  [^RWSocket sock & {:keys [blocking] :or {blocking true}}]
+  (.recvString sock blocking))
 
 (defn close!
   "Close socket."
@@ -79,7 +117,7 @@
 
 (defn- resolve-symbols
   []
-  (into {} (for [[k v] (Constants/getSymbols)]
+  (into {} (for [[k v] (Nanomsg/getSymbols)]
              [(keyword (.toLowerCase k)) v])))
 
 (def ^{:doc "Get all symbols"}
