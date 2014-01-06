@@ -22,7 +22,7 @@ public class SubSocket extends RWSocket {
     }
 
     public void subscribe(final String data) throws IOException {
-        final int socket = getSocket();
+        final int socket = getNativeSocket();
 
         try {
             final byte[] patternBytes = data.getBytes("utf-8");

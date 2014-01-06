@@ -27,7 +27,7 @@ public abstract class Socket {
         }
     }
 
-    public int getSocket() {
+    public int getNativeSocket() {
         return this.socket;
     }
 

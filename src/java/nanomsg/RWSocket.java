@@ -49,7 +49,7 @@ public abstract class RWSocket extends Socket {
      * @return number of sended bytes.
      */
     public synchronized int sendBytes(byte[] data, boolean blocking) throws IOException, EAgainException {
-        final int socket = getSocket();
+        final int socket = getNativeSocket();
         final int rc = NativeLibrary.nn_send(socket, data, data.length, blocking ? 0 : Nanomsg.constants.NN_DONTWAIT);
         if (!blocking && rc < 0) {
             final int errno = Nanomsg.getErrorNumber();
@@ -113,7 +113,7 @@ public abstract class RWSocket extends Socket {
     public synchronized byte[] recvBytes(boolean blocking) throws IOException, EAgainException {
         final PointerByReference ptrBuff = new PointerByReference();
 
-        final int socket = getSocket();
+        final int socket = getNativeSocket();
         final int received = NativeLibrary.nn_recv(socket, ptrBuff, Nanomsg.constants.NN_MSG, blocking ? 0: Nanomsg.constants.NN_DONTWAIT);
 
         // Fast exit on nonblocking sockets and
