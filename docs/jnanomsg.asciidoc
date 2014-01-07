@@ -15,6 +15,11 @@ It aims to make the networking layer fast, scalable, and easy to use.
 
 Api documentation for link:api/clojure/index.html[Clojure] and link:api/java/index.html[Java].
 
+Project Maturity
+----------------
+
+_jnanomsg_ is a young project and can experiment some api changes.
+
 Install
 -------
 
