@@ -1,154 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="generator" content="AsciiDoc 8.6.9">
+<title>jnanomsg documentation</title>
+<style type="text/css">
+.highlight .hll { background-color: #ffffcc }
+.highlight  { background: #f8f8f8; }
+.highlight .c { color: #408080; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #BC7A00 } /* Comment.Preproc */
+.highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #808080 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0040D0 } /* Generic.Traceback */
+.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m { color: #666666 } /* Literal.Number */
+.highlight .s { color: #BA2121 } /* Literal.String */
+.highlight .na { color: #7D9029 } /* Name.Attribute */
+.highlight .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.highlight .no { color: #880000 } /* Name.Constant */
+.highlight .nd { color: #AA22FF } /* Name.Decorator */
+.highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #0000FF } /* Name.Function */
+.highlight .nl { color: #A0A000 } /* Name.Label */
+.highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #19177C } /* Name.Variable */
+.highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mf { color: #666666 } /* Literal.Number.Float */
+.highlight .mh { color: #666666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666666 } /* Literal.Number.Oct */
+.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #BB6688 } /* Literal.String.Regex */
+.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+</style>
+<script type="text/javascript">
+/*<![CDATA[*/
+var asciidoc = {  // Namespace.
+
+/////////////////////////////////////////////////////////////////////
+// Table Of Contents generator
+/////////////////////////////////////////////////////////////////////
+
+/* Author: Mihai Bazon, September 2002
+ * http://students.infoiasi.ro/~mishoo
+ *
+ * Table Of Content generator
+ * Version: 0.4
+ *
+ * Feel free to use this script under the terms of the GNU General Public
+ * License, as long as you do not remove or alter this notice.
+ */
+
+ /* modified by Troy D. Hanson, September 2006. License: GPL */
+ /* modified by Stuart Rackham, 2006, 2009. License: GPL */
+
+// toclevels = 1..4.
+toc: function (toclevels) {
+
+  function getText(el) {
+    var text = "";
+    for (var i = el.firstChild; i != null; i = i.nextSibling) {
+      if (i.nodeType == 3 /* Node.TEXT_NODE */) // IE doesn't speak constants.
+        text += i.data;
+      else if (i.firstChild != null)
+        text += getText(i);
+    }
+    return text;
+  }
+
+  function TocEntry(el, text, toclevel) {
+    this.element = el;
+    this.text = text;
+    this.toclevel = toclevel;
+  }
+
+  function tocEntries(el, toclevels) {
+    var result = new Array;
+    var re = new RegExp('[hH]([1-'+(toclevels+1)+'])');
+    // Function that scans the DOM tree for header elements (the DOM2
+    // nodeIterator API would be a better technique but not supported by all
+    // browsers).
+    var iterate = function (el) {
+      for (var i = el.firstChild; i != null; i = i.nextSibling) {
+        if (i.nodeType == 1 /* Node.ELEMENT_NODE */) {
+          var mo = re.exec(i.tagName);
+          if (mo && (i.getAttribute("class") || i.getAttribute("className")) != "float") {
+            result[result.length] = new TocEntry(i, getText(i), mo[1]-1);
+          }
+          iterate(i);
+        }
+      }
+    }
+    iterate(el);
+    return result;
+  }
+
+  var toc = document.getElementById("toc");
+  if (!toc) {
+    return;
+  }
+
+  // Delete existing TOC entries in case we're reloading the TOC.
+  var tocEntriesToRemove = [];
+  var i;
+  for (i = 0; i < toc.childNodes.length; i++) {
+    var entry = toc.childNodes[i];
+    if (entry.nodeName.toLowerCase() == 'div'
+     && entry.getAttribute("class")
+     && entry.getAttribute("class").match(/^toclevel/))
+      tocEntriesToRemove.push(entry);
+  }
+  for (i = 0; i < tocEntriesToRemove.length; i++) {
+    toc.removeChild(tocEntriesToRemove[i]);
+  }
+
+  // Rebuild TOC entries.
+  var entries = tocEntries(document.getElementById("content"), toclevels);
+  for (var i = 0; i < entries.length; ++i) {
+    var entry = entries[i];
+    if (entry.element.id == "")
+      entry.element.id = "_toc_" + i;
+    var a = document.createElement("a");
+    a.href = "#" + entry.element.id;
+    a.appendChild(document.createTextNode(entry.text));
+    var div = document.createElement("div");
+    div.appendChild(a);
+    div.className = "toclevel" + entry.toclevel;
+    toc.appendChild(div);
+  }
+  if (entries.length == 0)
+    toc.parentNode.removeChild(toc);
+},
 
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>jnanomsg &mdash; jnanomsg 0.1 documentation</title>
-    
-    <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '',
-        VERSION:     '0.1',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
-      };
-    </script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="jnanomsg 0.1 documentation" href="#" />
-    <link rel="next" title="Installation" href="install.html" />
-   
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+/////////////////////////////////////////////////////////////////////
+// Footnotes generator
+/////////////////////////////////////////////////////////////////////
 
-  </head>
-  <body>
-    <div class="related">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="install.html" title="Installation"
-             accesskey="N">next</a> |</li>
-        <li><a href="#">jnanomsg 0.1 documentation</a> &raquo;</li> 
-      </ul>
-    </div>  
+/* Based on footnote generation code from:
+ * http://www.brandspankingnew.net/archive/2005/07/format_footnote.html
+ */
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body">
-            
-  <div class="section" id="jnanomsg">
-<h1>jnanomsg<a class="headerlink" href="#jnanomsg" title="Permalink to this headline">¶</a></h1>
-<p><a class="reference external" href="http://nanomsg.org/">nanomsg</a> is a socket library that provides several common communication patterns. It aims to make the networking layer fast,
-scalable, and easy to use. Implemented in C, it works on a wide range of operating systems with no further dependencies.</p>
-<p><strong>jnanomsg</strong> is a clojure and java bindings to nanomsg native library (using JNA). It exposes api for both languages, but is
-mainly focused on clojure.</p>
-<div class="section" id="feature-support">
-<h2>Feature Support<a class="headerlink" href="#feature-support" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="transports">
-<h3>Transports<a class="headerlink" href="#transports" title="Permalink to this headline">¶</a></h3>
-<p>jnanomsg supports all transports supported by their backend (nanomsg): ipc, inproc, tcp</p>
+footnotes: function () {
+  // Delete existing footnote entries in case we're reloading the footnodes.
+  var i;
+  var noteholder = document.getElementById("footnotes");
+  if (!noteholder) {
+    return;
+  }
+  var entriesToRemove = [];
+  for (i = 0; i < noteholder.childNodes.length; i++) {
+    var entry = noteholder.childNodes[i];
+    if (entry.nodeName.toLowerCase() == 'div' && entry.getAttribute("class") == "footnote")
+      entriesToRemove.push(entry);
+  }
+  for (i = 0; i < entriesToRemove.length; i++) {
+    noteholder.removeChild(entriesToRemove[i]);
+  }
+
+  // Rebuild footnote entries.
+  var cont = document.getElementById("content");
+  var spans = cont.getElementsByTagName("span");
+  var refs = {};
+  var n = 0;
+  for (i=0; i<spans.length; i++) {
+    if (spans[i].className == "footnote") {
+      n++;
+      var note = spans[i].getAttribute("data-note");
+      if (!note) {
+        // Use [\s\S] in place of . so multi-line matches work.
+        // Because JavaScript has no s (dotall) regex flag.
+        note = spans[i].innerHTML.match(/\s*\[([\s\S]*)]\s*/)[1];
+        spans[i].innerHTML =
+          "[<a id='_footnoteref_" + n + "' href='#_footnote_" + n +
+          "' title='View footnote' class='footnote'>" + n + "</a>]";
+        spans[i].setAttribute("data-note", note);
+      }
+      noteholder.innerHTML +=
+        "<div class='footnote' id='_footnote_" + n + "'>" +
+        "<a href='#_footnoteref_" + n + "' title='Return to text'>" +
+        n + "</a>. " + note + "</div>";
+      var id =spans[i].getAttribute("id");
+      if (id != null) refs["#"+id] = n;
+    }
+  }
+  if (n == 0)
+    noteholder.parentNode.removeChild(noteholder);
+  else {
+    // Process footnoterefs.
+    for (i=0; i<spans.length; i++) {
+      if (spans[i].className == "footnoteref") {
+        var href = spans[i].getElementsByTagName("a")[0].getAttribute("href");
+        href = href.match(/#.*/)[0];  // Because IE return full URL.
+        n = refs[href];
+        spans[i].innerHTML =
+          "[<a href='#_footnote_" + n +
+          "' title='View footnote' class='footnote'>" + n + "</a>]";
+      }
+    }
+  }
+},
+
+install: function(toclevels) {
+  var timerId;
+
+  function reinstall() {
+    asciidoc.footnotes();
+    if (toclevels) {
+      asciidoc.toc(toclevels);
+    }
+  }
+
+  function reinstallAndRemoveTimer() {
+    clearInterval(timerId);
+    reinstall();
+  }
+
+  timerId = setInterval(reinstall, 500);
+  if (document.addEventListener)
+    document.addEventListener("DOMContentLoaded", reinstallAndRemoveTimer, false);
+  else
+    window.onload = reinstallAndRemoveTimer;
+}
+
+}
+asciidoc.install(2);
+/*]]>*/
+</script>
+</head>
+<body class="article" style="max-width:800px">
+<div id="header">
+<h1>jnanomsg documentation</h1>
+<span id="author">Andrey Antukh,</span><br>
+<span id="email" class="monospaced">&lt;<a href="mailto:niwi@niwi.be">niwi@niwi.be</a>&gt;</span><br>
+<span id="revnumber">version 0.2.0,</span>
+<span id="revdate">2014-01-08</span>
+<div id="toc">
+  <div id="toctitle">Table of Contents</div>
+  <noscript><p><b>JavaScript must be enabled in your browser to display the table of contents.</b></p></noscript>
 </div>
-<div class="section" id="protocols">
-<h3>Protocols<a class="headerlink" href="#protocols" title="Permalink to this headline">¶</a></h3>
-<p>jnanomsg intends to support all available protocols from nanomsg but at the moment only supports a few ones:</p>
-<ul class="simple">
-<li><cite>:pub</cite> - this socket type is used to distribute messages to multiple destinations. Receive operation is not defined.</li>
-<li><cite>:sub</cite> - this socket typee is used to receives messages from the publisher. Send operation is not defined on this socket.</li>
-<li><cite>:req</cite> - this socket type is used to implement the client application that sends requests and receives replies.</li>
-<li><cite>:rep</cite> - this socket type is used to implement the stateless worker that receives requests and sends replies.</li>
-<li><cite>:bus</cite> - this socket type is used to send messages to all nodes in the topology.</li>
-<li><cite>:pair</cite> - this socket type is uded to implement communication with exactly one peer.</li>
-</ul>
-<p><strong>Note</strong>: you can see more description of each protocol of main page of this documentation or going
-directly to nanomsg page.</p>
+</div>
+<div id="content">
+<div class="sect1">
+<h2 id="_introduction">1. Introduction</h2>
+<div class="sectionbody">
+<div class="paragraph"><p><a href="http://nanomsg.org">nanomsg</a> is a socket library that provides common communication patterns.
+It aims to make the networking layer fast, scalable, and easy to use.</p></div>
+<div class="paragraph"><p>Api documentation for <a href="api/clojure/index.html">Clojure</a> and <a href="api/java/index.html">Java</a>.</p></div>
 </div>
 </div>
-<div class="section" id="quickstart">
-<h2>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-clojure"><div class="highlight"><pre><span class="p">(</span><span class="nf">require</span> <span class="p">[</span><span class="nv">nanomsg</span> <span class="ss">:as</span> <span class="nv">nn</span><span class="p">])</span>
-
-<span class="c1">;; Publisher</span>
-<span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">sock</span> <span class="p">(</span><span class="nf">nn/socket</span> <span class="ss">:pub</span><span class="p">)]</span>
-  <span class="p">(</span><span class="nf">nn/bind</span> <span class="nv">sock</span> <span class="s">&quot;ipc:///tmp/sock&quot;</span><span class="p">)</span>
-  <span class="p">(</span><span class="nf">nn/send</span> <span class="nv">sock</span> <span class="p">(</span><span class="nb">str </span><span class="s">&quot;msg: hello &quot;</span> <span class="nv">i</span><span class="p">))</span>
-  <span class="p">(</span><span class="nf">nn/close</span> <span class="nv">sock</span><span class="p">))</span>
-
-<span class="c1">;; Subscriber</span>
-<span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">sock</span> <span class="p">(</span><span class="nf">nn/socket</span> <span class="ss">:sub</span><span class="p">)]</span>
-  <span class="p">(</span><span class="nf">nn/connect</span> <span class="nv">sock</span> <span class="s">&quot;ipc:///tmp/sock&quot;</span><span class="p">)</span>
-  <span class="p">(</span><span class="nf">nn/subscribe</span> <span class="nv">sock</span> <span class="s">&quot;test&quot;</span><span class="p">)</span>
-  <span class="p">(</span><span class="nb">println </span><span class="p">(</span><span class="nf">nn/recv</span> <span class="nv">sock</span><span class="p">))</span>
-  <span class="p">(</span><span class="nf">nn/close</span> <span class="nv">sock</span><span class="p">))</span>
-</pre></div>
+<div class="sect1">
+<h2 id="_install">2. Install</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>This section covers a installation of <em>jnanomsg</em>.</p></div>
+<div class="sect2">
+<h3 id="_leiningen">2.1. Leiningen</h3>
+<div class="paragraph"><p>The simplest way to use <em>jnanomsg</em> on clojure project, is including it on dependency
+vector of your <strong><em>project.clj</em></strong> file:</p></div>
+<div class="listingblock">
+<div class="title"><em>on project.clj</em></div>
+<div class="content"></div></div>
+</div>
+<div class="sect2">
+<h3 id="_maven">2.2. Maven</h3>
+<div class="paragraph"><p>Also, you can use it on your java projects with maven. As first step add a clojars repository:</p></div>
+<div class="listingblock">
+<div class="content"></div></div>
+<div class="paragraph"><p>Following of jnanomsg package dependecy:</p></div>
+<div class="listingblock">
+<div class="content"></div></div>
 </div>
 </div>
-<div class="section" id="contents">
-<h2>Contents<a class="headerlink" href="#contents" title="Permalink to this headline">¶</a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="install.html#leiningen">Leiningen</a></li>
-<li class="toctree-l2"><a class="reference internal" href="install.html#maven">Maven</a></li>
-<li class="toctree-l2"><a class="reference internal" href="install.html#graddle">Graddle</a></li>
-<li class="toctree-l2"><a class="reference internal" href="install.html#ge-the-thecode">Ge the thecode</a></li>
-</ul>
+</div>
+<div class="sect1">
+<h2 id="_supported_features">3. Supported features</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_transports">3.1. Transports</h3>
+<div class="paragraph"><p>jnanomsg supports all transports supported by their backend (nanomsg): ipc, inproc, tcp</p></div>
+</div>
+<div class="sect2">
+<h3 id="_protocols">3.2. Protocols</h3>
+<div class="paragraph"><p>jnanomsg intends support all protocols supported by a native nanomsg library, but currently
+it only has support for this few protocols:</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+pub/sub protocol
+</p>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="gettings-started-clojure.html">Getting started using clojure</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="gettings-started-clojure.html#import-namespace">Import namespace</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gettings-started-clojure.html#using-pub-sub-sockets">Using Pub/Sub sockets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gettings-started-clojure.html#using-req-rep-sockets">Using Req/Rep sockets</a></li>
-</ul>
+<li>
+<p>
+req/rep protocol
+</p>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="gettings-started-java.html">Getting started with Java</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="gettings-started-java.html#using-pub-sub-sockets">Using Pub/Sub sockets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gettings-started-java.html#using-req-rep-sockets">Using Req/Rep sockets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gettings-started-java.html#api-documentation">Api documentation</a></li>
-</ul>
+<li>
+<p>
+push/pull (pipeline) protocol
+</p>
 </li>
-</ul>
+<li>
+<p>
+bus protocol
+</p>
+</li>
+<li>
+<p>
+pair protocol
+</p>
+</li>
+</ul></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">This documentation not intends explain how works each protocol. It intends only explain
+a public api of idiomatic library for java and clojure.</td>
+</tr></table>
 </div>
 </div>
-<div class="section" id="license">
-<h2>License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h2>
-<p>Copyright 2013 Andrey Antukh &lt;<a class="reference external" href="mailto:niwi&#37;&#52;&#48;niwi&#46;be">niwi<span>&#64;</span>niwi<span>&#46;</span>be</a>&gt;</p>
-<p>Licensed under the Apache License, Version 2.0 (the &#8220;License&#8221;)
+</div>
+</div>
+<div class="sect1">
+<h2 id="_user_guide">4. User guide</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_introduction_2">4.1. Introduction</h3>
+<div class="paragraph"><p>All public clojure api for work with nanomsg library is exposed under <span class="monospaced">nanomsg</span> namespace,
+and it consist on only few functions: <span class="monospaced">connect!</span>, <span class="monospaced">bind!</span>, <span class="monospaced">subscribe!</span>, <span class="monospaced">socket</span>, <span class="monospaced">send!</span>,
+<span class="monospaced">recv!</span>, <span class="monospaced">send-bytes!</span>, <span class="monospaced">recv-bytes!</span>, <span class="monospaced">close!</span> and <span class="monospaced">symbols</span> that are fairly self-descriptive.</p></div>
+<div class="paragraph"><p>Example importing <span class="monospaced">nanomsg</span> namespace on clojure file:</p></div>
+<div class="listingblock">
+<div class="title"><em>yours/samplens.clj</em></div>
+<div class="content"></div></div>
+<div class="paragraph"><p>However, on java api, each protocol has it own package that contains a corresponding socket classes.</p></div>
+<div class="sect3">
+<h4 id="_connect_bind">4.1.1. Connect/Bind</h4>
+<div class="sect4">
+<h5 id="_clojure">Clojure</h5>
+<div class="paragraph"><p>With clojure, you have two ways a do this: creating a socket and connection or do the
+two operations in one, using <span class="monospaced">socket!</span> function optional parameters.</p></div>
+<div class="paragraph"><p>Example of connect/bind operation using two steps:</p></div>
+<div class="listingblock">
+<div class="title"><em>client.clj</em></div>
+<div class="content"></div></div>
+<div class="listingblock">
+<div class="title"><em>server.clj</em></div>
+<div class="content"></div></div>
+<div class="paragraph"><p>Example of connect/bind operation using a single step:</p></div>
+<div class="listingblock">
+<div class="title"><em>client.clj</em></div>
+<div class="content"></div></div>
+<div class="listingblock">
+<div class="title"><em>server.clj</em></div>
+<div class="content"></div></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">On clojure, a socket types are represented by keywords. With this approach,
+you can create any socket type with one unique function: <span class="monospaced">socket</span>. As you can see
+on previous examples, I have used <span class="monospaced">:req</span> and <span class="monospaced">:rep</span> keywords for create respectively
+<em>request</em> and <em>reply</em> socket types that are part of
+<a href="http://nanomsg.org/v0.2/nn_reqrep.7.html">Req/Rep protocol</a></td>
+</tr></table>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_java">Java</h5>
+<div class="paragraph"><p>With java, each socket class has it own connect/bind method.</p></div>
+<div class="paragraph"><p>Here one example of how connect to a remote socket:</p></div>
+<div class="listingblock">
+<div class="title"><em>Client.java</em></div>
+<div class="content"></div></div>
+<div class="paragraph"><p>And, here an example how to bind and listen on local socket:</p></div>
+<div class="listingblock">
+<div class="title"><em>Server.java</em></div>
+<div class="content"></div></div>
+<div class="paragraph"><p>INFO: You can see in more detail a java api on <a href="api/java/index.html">javadoc</a>.</p></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">With both languages, you can execute bind multiple times for listen
+in multiple socket locations.</td>
+</tr></table>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_pub_sub_sockets">4.2. Pub/Sub Sockets</h3>
+<div class="paragraph"><p>This protocol has two socket types:</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+<em>publisher</em> - This socket is used to distribute messages to multiple destinations. Receive operation is not defined.
+</p>
+</li>
+<li>
+<p>
+<em>subscriber</em> - Receives messages from the publisher. Only messages that the socket is subscribed to are received. When the socket is created there are no subscriptions and thus no messages will be received. Send operation is not defined on this socket.
+</p>
+</li>
+</ul></div>
+<div class="sect3">
+<h4 id="_clojure_2">4.2.1. Clojure</h4>
+<div class="paragraph"><p>Example of using pub/sub protocols in clojure:</p></div>
+<div class="listingblock">
+<div class="title"><em>publisher.clj</em></div>
+<div class="content"></div></div>
+<div class="listingblock">
+<div class="title"><em>subscriber.clj</em></div>
+<div class="content"></div></div>
+</div>
+<div class="sect3">
+<h4 id="_java_2">4.2.2. Java</h4>
+<div class="paragraph"><p>Example of using pub/sub protocols in clojure:</p></div>
+<div class="listingblock">
+<div class="title"><em>Publisher.java</em></div>
+<div class="content"></div></div>
+<div class="listingblock">
+<div class="title"><em>Subscriber.java</em></div>
+<div class="content"></div></div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_req_rep_sockets">4.3. Req/Rep Sockets</h3>
+<div class="paragraph"><p>This protocol is used to distribute the workload among multiple stateless workers, and it&#8217;s represented
+by two socket types:</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+<em>req</em> - Used to implement the client application that sends requests and receives replies.
+</p>
+</li>
+<li>
+<p>
+<em>rep</em> - Used to implement the stateless worker that receives requests and sends replies.
+</p>
+</li>
+</ul></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">Both sockets implements read and write methods.</td>
+</tr></table>
+</div>
+<div class="sect3">
+<h4 id="_clojure_3">4.3.1. Clojure</h4>
+<div class="paragraph"><p>"Hello World" echo server using clojure:</p></div>
+<div class="listingblock">
+<div class="title"><em>rep.clj (server)</em></div>
+<div class="content"></div></div>
+<div class="listingblock">
+<div class="title"><em>req.clj (client)</em></div>
+<div class="content"></div></div>
+</div>
+<div class="sect3">
+<h4 id="_java_3">4.3.2. Java</h4>
+<div class="paragraph"><p>Same examples as on clojure section, but using java:</p></div>
+<div class="listingblock">
+<div class="title"><em>EchoServer.java</em></div>
+<div class="content"></div></div>
+<div class="listingblock">
+<div class="title"><em>EchoClient.java</em></div>
+<div class="content"></div></div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_push_pull_sockets">4.4. Push/Pull Sockets</h3>
+<div class="paragraph"><p>Scalability protocol for passing tasks through a series of processing steps and it&#8217;s represented
+by two socket types:</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+<em>push</em> - This socket is used to send messages to a cluster of load-balanced nodes. Receive operation is not implemented on this socket type.
+</p>
+</li>
+<li>
+<p>
+<em>pull</em> - This socket is used to receive a message from a cluster of nodes. Send operation is not implemented on this socket type.
+</p>
+</li>
+</ul></div>
+<div class="sect3">
+<h4 id="_clojure_4">4.4.1. Clojure</h4>
+<div class="paragraph"><p>"Hello World" task generator:</p></div>
+<div class="listingblock">
+<div class="title"><em>push.clj (server)</em></div>
+<div class="content"></div></div>
+<div class="listingblock">
+<div class="title"><em>pull.clj (client)</em></div>
+<div class="content"></div></div>
+</div>
+<div class="sect3">
+<h4 id="_java_4">4.4.2. Java</h4>
+<div class="paragraph"><p>Same examples as on clojure section, but using java:</p></div>
+<div class="listingblock">
+<div class="title"><em>Dispatcher.java</em></div>
+<div class="content"></div></div>
+<div class="listingblock">
+<div class="title"><em>Greeter.java</em></div>
+<div class="content"></div></div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_license">5. License</h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="content monospaced">
+<pre>Copyright 2013 Andrey Antukh &lt;niwi@niwi.be&gt;
+
+Licensed under the Apache License, Version 2.0 (the "License")
 you may not use this file except in compliance with the License.
-You may obtain a copy of the License at</p>
-<blockquote>
-<div><a class="reference external" href="http://www.apache.org/licenses/LICENSE-2.0">http://www.apache.org/licenses/LICENSE-2.0</a></div></blockquote>
-<p>Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an &#8220;AS IS&#8221; BASIS,
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
-limitations under the License.</p>
+limitations under the License.</pre>
+</div></div>
 </div>
 </div>
-
-
-          </div>
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="footer">
-      &copy; Copyright 2013, Andrey Antukh.
-    </div>
-    <a href="https://github.com/niwibe/jnanomsg" class="github">
-        <img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
-    </a>
-  </body>
+</div>
+<div id="footnotes"><hr></div>
+<div id="footer">
+<div id="footer-text">
+Version 0.2.0<br>
+Last updated 2014-01-07 22:49:21 CET
+</div>
+</div>
+</body>
 </html>
