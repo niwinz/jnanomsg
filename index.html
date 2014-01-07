@@ -5,68 +5,809 @@
 <meta name="generator" content="AsciiDoc 8.6.9">
 <title>jnanomsg documentation</title>
 <style type="text/css">
-.highlight .hll { background-color: #ffffcc }
-.highlight  { background: #f8f8f8; }
-.highlight .c { color: #408080; font-style: italic } /* Comment */
-.highlight .err { border: 1px solid #FF0000 } /* Error */
-.highlight .k { color: #008000; font-weight: bold } /* Keyword */
-.highlight .o { color: #666666 } /* Operator */
-.highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
-.highlight .cp { color: #BC7A00 } /* Comment.Preproc */
-.highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
-.highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
-.highlight .gd { color: #A00000 } /* Generic.Deleted */
-.highlight .ge { font-style: italic } /* Generic.Emph */
-.highlight .gr { color: #FF0000 } /* Generic.Error */
-.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
-.highlight .gi { color: #00A000 } /* Generic.Inserted */
-.highlight .go { color: #808080 } /* Generic.Output */
-.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
-.highlight .gs { font-weight: bold } /* Generic.Strong */
-.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
-.highlight .gt { color: #0040D0 } /* Generic.Traceback */
-.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
-.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
-.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
-.highlight .kp { color: #008000 } /* Keyword.Pseudo */
-.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
-.highlight .kt { color: #B00040 } /* Keyword.Type */
-.highlight .m { color: #666666 } /* Literal.Number */
-.highlight .s { color: #BA2121 } /* Literal.String */
-.highlight .na { color: #7D9029 } /* Name.Attribute */
-.highlight .nb { color: #008000 } /* Name.Builtin */
-.highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
-.highlight .no { color: #880000 } /* Name.Constant */
-.highlight .nd { color: #AA22FF } /* Name.Decorator */
-.highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
-.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
-.highlight .nf { color: #0000FF } /* Name.Function */
-.highlight .nl { color: #A0A000 } /* Name.Label */
-.highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
-.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
-.highlight .nv { color: #19177C } /* Name.Variable */
-.highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
-.highlight .w { color: #bbbbbb } /* Text.Whitespace */
-.highlight .mf { color: #666666 } /* Literal.Number.Float */
-.highlight .mh { color: #666666 } /* Literal.Number.Hex */
-.highlight .mi { color: #666666 } /* Literal.Number.Integer */
-.highlight .mo { color: #666666 } /* Literal.Number.Oct */
-.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
-.highlight .sc { color: #BA2121 } /* Literal.String.Char */
-.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
-.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
-.highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
-.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
-.highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
-.highlight .sx { color: #008000 } /* Literal.String.Other */
-.highlight .sr { color: #BB6688 } /* Literal.String.Regex */
-.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
-.highlight .ss { color: #19177C } /* Literal.String.Symbol */
-.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
-.highlight .vc { color: #19177C } /* Name.Variable.Class */
-.highlight .vg { color: #19177C } /* Name.Variable.Global */
-.highlight .vi { color: #19177C } /* Name.Variable.Instance */
-.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */
+/* Shared CSS for AsciiDoc xhtml11 and html5 backends */
+
+/* Default font. */
+body {
+  font-family: Georgia,serif;
+}
+
+/* Title font. */
+h1, h2, h3, h4, h5, h6,
+div.title, caption.title,
+thead, p.table.header,
+#toctitle,
+#author, #revnumber, #revdate, #revremark,
+#footer {
+  font-family: Arial,Helvetica,sans-serif;
+}
+
+body {
+  margin: 1em 5% 1em 5%;
+}
+
+a {
+  color: blue;
+  text-decoration: underline;
+}
+a:visited {
+  color: fuchsia;
+}
+
+em {
+  font-style: italic;
+  color: navy;
+}
+
+strong {
+  font-weight: bold;
+  color: #083194;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #527bbd;
+  margin-top: 1.2em;
+  margin-bottom: 0.5em;
+  line-height: 1.3;
+}
+
+h1, h2, h3 {
+  border-bottom: 2px solid silver;
+}
+h2 {
+  padding-top: 0.5em;
+}
+h3 {
+  float: left;
+}
+h3 + * {
+  clear: left;
+}
+h5 {
+  font-size: 1.0em;
+}
+
+div.sectionbody {
+  margin-left: 0;
+}
+
+hr {
+  border: 1px solid silver;
+}
+
+p {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+ul, ol, li > p {
+  margin-top: 0;
+}
+ul > li     { color: #aaa; }
+ul > li > * { color: black; }
+
+pre {
+  padding: 0;
+  margin: 0;
+  font-size: 14px;
+}
+
+#author {
+  color: #527bbd;
+  font-weight: bold;
+  font-size: 1.1em;
+}
+#email {
+}
+#revnumber, #revdate, #revremark {
+}
+
+#footer {
+  font-size: small;
+  border-top: 2px solid silver;
+  padding-top: 0.5em;
+  margin-top: 4.0em;
+}
+#footer-text {
+  float: left;
+  padding-bottom: 0.5em;
+}
+#footer-badges {
+  float: right;
+  padding-bottom: 0.5em;
+}
+
+#preamble {
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+}
+div.imageblock, div.exampleblock, div.verseblock,
+div.quoteblock, div.literalblock, div.listingblock, div.sidebarblock,
+div.admonitionblock {
+  margin-top: 1.0em;
+  margin-bottom: 1.5em;
+}
+div.admonitionblock {
+  margin-top: 2.0em;
+  margin-bottom: 2.0em;
+  margin-right: 10%;
+  color: #606060;
+}
+
+div.content { /* Block element content. */
+  padding: 0;
+}
+
+/* Block element titles. */
+div.title, caption.title {
+  color: #527bbd;
+  font-weight: bold;
+  text-align: left;
+  margin-top: 1.0em;
+  margin-bottom: 0.5em;
+}
+div.title + * {
+  margin-top: 0;
+}
+
+td div.title:first-child {
+  margin-top: 0.0em;
+}
+div.content div.title:first-child {
+  margin-top: 0.0em;
+}
+div.content + div.title {
+  margin-top: 0.0em;
+}
+
+div.sidebarblock > div.content {
+  background: #ffffee;
+  border: 1px solid #dddddd;
+  border-left: 4px solid #f0f0f0;
+  padding: 0.5em;
+}
+
+div.listingblock > div.content {
+  border: 1px solid #dddddd;
+  border-left: 5px solid #f0f0f0;
+  background: #f8f8f8;
+  padding: 0.5em;
+}
+
+div.quoteblock, div.verseblock {
+  padding-left: 1.0em;
+  margin-left: 1.0em;
+  margin-right: 10%;
+  border-left: 5px solid #f0f0f0;
+  color: #777777;
+}
+
+div.quoteblock > div.attribution {
+  padding-top: 0.5em;
+  text-align: right;
+}
+
+div.verseblock > pre.content {
+  font-family: inherit;
+  font-size: inherit;
+}
+div.verseblock > div.attribution {
+  padding-top: 0.75em;
+  text-align: left;
+}
+/* DEPRECATED: Pre version 8.2.7 verse style literal block. */
+div.verseblock + div.attribution {
+  text-align: left;
+}
+
+div.admonitionblock .icon {
+  vertical-align: top;
+  font-size: 1.1em;
+  font-weight: bold;
+  text-decoration: underline;
+  color: #527bbd;
+  padding-right: 0.5em;
+}
+div.admonitionblock td.content {
+  padding-left: 0.5em;
+  border-left: 3px solid #dddddd;
+}
+
+div.exampleblock > div.content {
+  border-left: 3px solid #dddddd;
+  padding-left: 0.5em;
+}
+
+div.imageblock div.content { padding-left: 0; }
+span.image img { border-style: none; }
+a.image:visited { color: white; }
+
+dl {
+  margin-top: 0.8em;
+  margin-bottom: 0.8em;
+}
+dt {
+  margin-top: 0.5em;
+  margin-bottom: 0;
+  font-style: normal;
+  color: navy;
+}
+dd > *:first-child {
+  margin-top: 0.1em;
+}
+
+ul, ol {
+    list-style-position: outside;
+}
+ol.arabic {
+  list-style-type: decimal;
+}
+ol.loweralpha {
+  list-style-type: lower-alpha;
+}
+ol.upperalpha {
+  list-style-type: upper-alpha;
+}
+ol.lowerroman {
+  list-style-type: lower-roman;
+}
+ol.upperroman {
+  list-style-type: upper-roman;
+}
+
+div.compact ul, div.compact ol,
+div.compact p, div.compact p,
+div.compact div, div.compact div {
+  margin-top: 0.1em;
+  margin-bottom: 0.1em;
+}
+
+tfoot {
+  font-weight: bold;
+}
+td > div.verse {
+  white-space: pre;
+}
+
+div.hdlist {
+  margin-top: 0.8em;
+  margin-bottom: 0.8em;
+}
+div.hdlist tr {
+  padding-bottom: 15px;
+}
+dt.hdlist1.strong, td.hdlist1.strong {
+  font-weight: bold;
+}
+td.hdlist1 {
+  vertical-align: top;
+  font-style: normal;
+  padding-right: 0.8em;
+  color: navy;
+}
+td.hdlist2 {
+  vertical-align: top;
+}
+div.hdlist.compact tr {
+  margin: 0;
+  padding-bottom: 0;
+}
+
+.comment {
+  background: yellow;
+}
+
+.footnote, .footnoteref {
+  font-size: 0.8em;
+}
+
+span.footnote, span.footnoteref {
+  vertical-align: super;
+}
+
+#footnotes {
+  margin: 20px 0 20px 0;
+  padding: 7px 0 0 0;
+}
+
+#footnotes div.footnote {
+  margin: 0 0 5px 0;
+}
+
+#footnotes hr {
+  border: none;
+  border-top: 1px solid silver;
+  height: 1px;
+  text-align: left;
+  margin-left: 0;
+  width: 20%;
+  min-width: 100px;
+}
+
+div.colist td {
+  padding-right: 0.5em;
+  padding-bottom: 0.3em;
+  vertical-align: top;
+}
+div.colist td img {
+  margin-top: 0.3em;
+}
+
+@media print {
+  #footer-badges { display: none; }
+}
+
+#toc {
+  margin-bottom: 2.5em;
+}
+
+#toctitle {
+  color: #527bbd;
+  font-size: 1.1em;
+  font-weight: bold;
+  margin-top: 1.0em;
+  margin-bottom: 0.1em;
+}
+
+div.toclevel1, div.toclevel2, div.toclevel3, div.toclevel4 {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+div.toclevel2 {
+  margin-left: 2em;
+  font-size: 0.9em;
+}
+div.toclevel3 {
+  margin-left: 4em;
+  font-size: 0.9em;
+}
+div.toclevel4 {
+  margin-left: 6em;
+  font-size: 0.9em;
+}
+
+span.aqua { color: aqua; }
+span.black { color: black; }
+span.blue { color: blue; }
+span.fuchsia { color: fuchsia; }
+span.gray { color: gray; }
+span.green { color: green; }
+span.lime { color: lime; }
+span.maroon { color: maroon; }
+span.navy { color: navy; }
+span.olive { color: olive; }
+span.purple { color: purple; }
+span.red { color: red; }
+span.silver { color: silver; }
+span.teal { color: teal; }
+span.white { color: white; }
+span.yellow { color: yellow; }
+
+span.aqua-background { background: aqua; }
+span.black-background { background: black; }
+span.blue-background { background: blue; }
+span.fuchsia-background { background: fuchsia; }
+span.gray-background { background: gray; }
+span.green-background { background: green; }
+span.lime-background { background: lime; }
+span.maroon-background { background: maroon; }
+span.navy-background { background: navy; }
+span.olive-background { background: olive; }
+span.purple-background { background: purple; }
+span.red-background { background: red; }
+span.silver-background { background: silver; }
+span.teal-background { background: teal; }
+span.white-background { background: white; }
+span.yellow-background { background: yellow; }
+
+span.big { font-size: 2em; }
+span.small { font-size: 0.6em; }
+
+span.underline { text-decoration: underline; }
+span.overline { text-decoration: overline; }
+span.line-through { text-decoration: line-through; }
+
+
+/*
+ * xhtml11 specific
+ *
+ * */
+
+tt {
+  font-family: monospace;
+  font-size: inherit;
+  color: navy;
+}
+
+div.tableblock {
+  margin-top: 1.0em;
+  margin-bottom: 1.5em;
+}
+div.tableblock > table {
+  border: 3px solid #527bbd;
+}
+thead, p.table.header {
+  font-weight: bold;
+  color: #527bbd;
+}
+p.table {
+  margin-top: 0;
+}
+/* Because the table frame attribute is overriden by CSS in most browsers. */
+div.tableblock > table[frame="void"] {
+  border-style: none;
+}
+div.tableblock > table[frame="hsides"] {
+  border-left-style: none;
+  border-right-style: none;
+}
+div.tableblock > table[frame="vsides"] {
+  border-top-style: none;
+  border-bottom-style: none;
+}
+
+
+/*
+ * html5 specific
+ *
+ * */
+
+.monospaced {
+  font-family: monospace;
+  font-size: inherit;
+  color: navy;
+}
+
+table.tableblock {
+  margin-top: 1.0em;
+  margin-bottom: 1.5em;
+}
+thead, p.tableblock.header {
+  font-weight: bold;
+  color: #527bbd;
+}
+p.tableblock {
+  margin-top: 0;
+}
+table.tableblock {
+  border-width: 3px;
+  border-spacing: 0px;
+  border-style: solid;
+  border-color: #527bbd;
+  border-collapse: collapse;
+}
+th.tableblock, td.tableblock {
+  border-width: 1px;
+  padding: 4px;
+  border-style: solid;
+  border-color: #527bbd;
+}
+
+table.tableblock.frame-topbot {
+  border-left-style: hidden;
+  border-right-style: hidden;
+}
+table.tableblock.frame-sides {
+  border-top-style: hidden;
+  border-bottom-style: hidden;
+}
+table.tableblock.frame-none {
+  border-style: hidden;
+}
+
+th.tableblock.halign-left, td.tableblock.halign-left {
+  text-align: left;
+}
+th.tableblock.halign-center, td.tableblock.halign-center {
+  text-align: center;
+}
+th.tableblock.halign-right, td.tableblock.halign-right {
+  text-align: right;
+}
+
+th.tableblock.valign-top, td.tableblock.valign-top {
+  vertical-align: top;
+}
+th.tableblock.valign-middle, td.tableblock.valign-middle {
+  vertical-align: middle;
+}
+th.tableblock.valign-bottom, td.tableblock.valign-bottom {
+  vertical-align: bottom;
+}
+
+
+/*
+ * manpage specific
+ *
+ * */
+
+body.manpage h1 {
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+  border-top: 2px solid silver;
+  border-bottom: 2px solid silver;
+}
+body.manpage h2 {
+  border-style: none;
+}
+body.manpage div.sectionbody {
+  margin-left: 3em;
+}
+
+@media print {
+  body.manpage div#toc { display: none; }
+}
+
+
+/*
+ * Theme specific overrides of the preceding (asciidoc.css) CSS.
+ *
+ */
+body {
+  font-family: Garamond, Georgia, serif;
+  font-size: 17px;
+  color: #3E4349;
+  line-height: 1.3em;
+}
+h1, h2, h3, h4, h5, h6,
+div.title, caption.title,
+thead, p.table.header,
+#toctitle,
+#author, #revnumber, #revdate, #revremark,
+#footer {
+  font-family: Garmond, Georgia, serif;
+  font-weight: normal;
+  border-bottom-width: 0;
+  color: #3E4349;
+}
+div.title, caption.title { color: #596673; font-weight: bold; }
+h1 { font-size: 240%; }
+h2 { font-size: 180%; }
+h3 { font-size: 150%; }
+h4 { font-size: 130%; }
+h5 { font-size: 115%; }
+h6 { font-size: 100%; }
+#header h1 { margin-top: 0; }
+#toc {
+  color: #444444;
+  line-height: 1.5;
+  padding-top: 1.5em;
+}
+#toctitle {
+  font-size: 20px;
+}
+#toc a {
+    border-bottom: 1px dotted #999999;
+    color: #444444 !important;
+    text-decoration: none !important;
+}
+#toc a:hover {
+    border-bottom: 1px solid #6D4100;
+    color: #6D4100 !important;
+    text-decoration: none !important;
+}
+div.toclevel1 { margin-top: 0.2em; font-size: 16px; }
+div.toclevel2 { margin-top: 0.15em; font-size: 14px; }
+em, dt, td.hdlist1 { color: black; }
+strong { color: #3E4349; }
+a { color: #004B6B; text-decoration: none; border-bottom: 1px dotted #004B6B; }
+a:visited { color: #615FA0; border-bottom: 1px dotted #615FA0; }
+a:hover { color: #6D4100; border-bottom: 1px solid #6D4100; }
+div.tableblock > table, table.tableblock { border: 3px solid #E8E8E8; }
+th.tableblock, td.tableblock { border: 1px solid #E8E8E8; }
+ul > li > * { color: #3E4349; }
+pre, tt, .monospaced { font-family: Consolas,Menlo,'Deja Vu Sans Mono','Bitstream Vera Sans Mono',monospace; }
+tt, .monospaced { font-size: 0.9em; color: black;
+}
+div.exampleblock > div.content, div.sidebarblock > div.content, div.listingblock > div.content { border-width: 0 0 0 3px; border-color: #E8E8E8; }
+div.verseblock { border-left-width: 0; margin-left: 3em; }
+div.quoteblock { border-left-width: 3px; margin-left: 0; margin-right: 0;}
+div.admonitionblock td.content { border-left: 3px solid #E8E8E8; }
+.hll {
+background-color:#eee;
+}
+.c {
+color:#408090;
+font-style:italic;
+}
+.err {
+border:1px solid #FF0000;
+}
+.k {
+color:#007020;
+font-weight:bold;
+}
+.o {
+color:#666666;
+}
+.cm {
+color:#408090;
+font-style:italic;
+}
+.cp {
+color:#007020;
+}
+.c1 {
+color:#408090;
+font-style:italic;
+}
+.cs {
+background-color:#FFF0F0;
+color:#408090;
+}
+.gd {
+color:#A00000;
+}
+.ge {
+font-style:italic;
+}
+.gr {
+color:#FF0000;
+}
+.gh {
+color:#000080;
+font-weight:bold;
+}
+.gi {
+color:#00A000;
+}
+.go {
+color:#303030;
+}
+.gp {
+color:#C65D09;
+font-weight:bold;
+}
+.gs {
+font-weight:bold;
+}
+.gu {
+color:#800080;
+font-weight:bold;
+}
+.gt {
+color:#0040D0;
+}
+.kc {
+color:#007020;
+font-weight:bold;
+}
+.kd {
+color:#007020;
+font-weight:bold;
+}
+.kn {
+color:#007020;
+font-weight:bold;
+}
+.kp {
+color:#007020;
+}
+.kr {
+color:#007020;
+font-weight:bold;
+}
+.kt {
+color:#902000;
+}
+.m {
+color:#208050;
+}
+.s {
+color:#4070A0;
+}
+.na {
+color:#4070A0;
+}
+.nb {
+color:#007020;
+}
+.nc {
+color:#0E84B5;
+font-weight:bold;
+}
+.no {
+color:#60ADD5;
+}
+.nd {
+color:#555555;
+font-weight:bold;
+}
+.ni {
+color:#D55537;
+font-weight:bold;
+}
+.ne {
+color:#007020;
+}
+.nf {
+color:#06287E;
+}
+.nl {
+color:#002070;
+font-weight:bold;
+}
+.nn {
+color:#0E84B5;
+font-weight:bold;
+}
+.nt {
+color:#062873;
+font-weight:bold;
+}
+.nv {
+color:#BB60D5;
+}
+.ow {
+color:#007020;
+font-weight:bold;
+}
+.w {
+color:#BBBBBB;
+}
+.mf {
+color:#208050;
+}
+.mh {
+color:#208050;
+}
+.mi {
+color:#208050;
+}
+.mo {
+color:#208050;
+}
+.sb {
+color:#4070A0;
+}
+.sc {
+color:#4070A0;
+}
+.sd {
+color:#4070A0;
+font-style:italic;
+}
+.s2 {
+color:#4070A0;
+}
+.se {
+color:#4070A0;
+font-weight:bold;
+}
+.sh {
+color:#4070A0;
+}
+.si {
+color:#70A0D0;
+font-style:italic;
+}
+.sx {
+color:#C65D09;
+}
+.sr {
+color:#235388;
+}
+.s1 {
+color:#4070A0;
+}
+.ss {
+color:#517918;
+}
+.bp {
+color:#007020;
+}
+.vc {
+color:#BB60D5;
+}
+.vg {
+color:#BB60D5;
+}
+.vi {
+color:#BB60D5;
+}
+.il {
+color:#208050;
+}
 
 
 </style>
@@ -296,16 +1037,26 @@ It aims to make the networking layer fast, scalable, and easy to use.</p></div>
 vector of your <strong><em>project.clj</em></strong> file:</p></div>
 <div class="listingblock">
 <div class="title"><em>on project.clj</em></div>
-<div class="content"></div></div>
+<div class="content"><div class="highlight"><pre><span class="p">[</span><span class="nv">jnanomsg</span> <span class="s">&quot;0.2.0&quot;</span><span class="p">]</span>
+</pre></div></div></div>
 </div>
 <div class="sect2">
 <h3 id="_maven">2.2. Maven</h3>
 <div class="paragraph"><p>Also, you can use it on your java projects with maven. As first step add a clojars repository:</p></div>
 <div class="listingblock">
-<div class="content"></div></div>
+<div class="content"><div class="highlight"><pre><span class="nt">&lt;repository&gt;</span>
+    <span class="nt">&lt;id&gt;</span>clojars.org<span class="nt">&lt;/id&gt;</span>
+    <span class="nt">&lt;url&gt;</span>http://clojars.org/repo<span class="nt">&lt;/url&gt;</span>
+<span class="nt">&lt;/repository&gt;</span>
+</pre></div></div></div>
 <div class="paragraph"><p>Following of jnanomsg package dependecy:</p></div>
 <div class="listingblock">
-<div class="content"></div></div>
+<div class="content"><div class="highlight"><pre><span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>jnanomsg<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>jnanomsg<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;version&gt;</span>0.2.0<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</pre></div></div></div>
 </div>
 </div>
 </div>
@@ -370,7 +1121,9 @@ and it consist on only few functions: <span class="monospaced">connect!</span>, 
 <div class="paragraph"><p>Example importing <span class="monospaced">nanomsg</span> namespace on clojure file:</p></div>
 <div class="listingblock">
 <div class="title"><em>yours/samplens.clj</em></div>
-<div class="content"></div></div>
+<div class="content"><div class="highlight"><pre><span class="p">(</span><span class="kd">ns </span><span class="nv">yours.samplens</span>
+  <span class="p">(</span><span class="ss">:require</span> <span class="p">[</span><span class="nv">nanomsg</span> <span class="ss">:as</span> <span class="nv">nn</span><span class="p">]))</span>
+</pre></div></div></div>
 <div class="paragraph"><p>However, on java api, each protocol has it own package that contains a corresponding socket classes.</p></div>
 <div class="sect3">
 <h4 id="_connect_bind">4.1.1. Connect/Bind</h4>
@@ -381,17 +1134,23 @@ two operations in one, using <span class="monospaced">socket!</span> function op
 <div class="paragraph"><p>Example of connect/bind operation using two steps:</p></div>
 <div class="listingblock">
 <div class="title"><em>client.clj</em></div>
-<div class="content"></div></div>
+<div class="content"><div class="highlight"><pre><span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">s</span> <span class="p">(</span><span class="nf">nn/socket</span> <span class="ss">:req</span><span class="p">)]</span>
+  <span class="p">(</span><span class="nf">nn/connect!</span> <span class="nv">s</span> <span class="s">&quot;tcp:///tmp/sock&quot;</span><span class="p">))</span>
+</pre></div></div></div>
 <div class="listingblock">
 <div class="title"><em>server.clj</em></div>
-<div class="content"></div></div>
+<div class="content"><div class="highlight"><pre><span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">s</span> <span class="p">(</span><span class="nf">nn/socket</span> <span class="ss">:rep</span><span class="p">)]</span>
+  <span class="p">(</span><span class="nf">nn/bind!</span> <span class="nv">s</span> <span class="s">&quot;tcp:///tmp/sock&quot;</span><span class="p">))</span>
+</pre></div></div></div>
 <div class="paragraph"><p>Example of connect/bind operation using a single step:</p></div>
 <div class="listingblock">
 <div class="title"><em>client.clj</em></div>
-<div class="content"></div></div>
+<div class="content"><div class="highlight"><pre><span class="p">(</span><span class="nf">nn/socket</span> <span class="ss">:req</span> <span class="p">{</span><span class="ss">:connect</span> <span class="s">&quot;tcp:///tmp/sock&quot;</span><span class="p">})</span>
+</pre></div></div></div>
 <div class="listingblock">
 <div class="title"><em>server.clj</em></div>
-<div class="content"></div></div>
+<div class="content"><div class="highlight"><pre><span class="p">(</span><span class="nf">nn/socket</span> <span class="ss">:rep</span> <span class="p">{</span><span class="ss">:bind</span> <span class="s">&quot;tcp:///tmp/sock&quot;</span><span class="p">})</span>
+</pre></div></div></div>
 <div class="admonitionblock">
 <table><tr>
 <td class="icon">
@@ -411,11 +1170,27 @@ on previous examples, I have used <span class="monospaced">:req</span> and <span
 <div class="paragraph"><p>Here one example of how connect to a remote socket:</p></div>
 <div class="listingblock">
 <div class="title"><em>Client.java</em></div>
-<div class="content"></div></div>
+<div class="content"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">nanomsg.reqrep.ReqSocket</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Client</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">final</span> <span class="n">ReqSocket</span> <span class="n">s</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ReqSocket</span><span class="o">();</span>
+        <span class="n">s</span><span class="o">.</span><span class="na">connect</span><span class="o">(</span><span class="s">&quot;tcp:///tmp/sock&quot;</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></div></div></div>
 <div class="paragraph"><p>And, here an example how to bind and listen on local socket:</p></div>
 <div class="listingblock">
 <div class="title"><em>Server.java</em></div>
-<div class="content"></div></div>
+<div class="content"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">nanomsg.reqrep.RepSocket</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Server</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">final</span> <span class="n">RepSocket</span> <span class="n">s</span> <span class="o">=</span> <span class="k">new</span> <span class="n">RepSocket</span><span class="o">();</span>
+        <span class="n">s</span><span class="o">.</span><span class="na">bind</span><span class="o">(</span><span class="s">&quot;tcp:///tmp/sock&quot;</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></div></div></div>
 <div class="paragraph"><p>INFO: You can see in more detail a java api on <a href="api/java/index.html">javadoc</a>.</p></div>
 <div class="admonitionblock">
 <table><tr>
@@ -449,20 +1224,60 @@ in multiple socket locations.</td>
 <div class="paragraph"><p>Example of using pub/sub protocols in clojure:</p></div>
 <div class="listingblock">
 <div class="title"><em>publisher.clj</em></div>
-<div class="content"></div></div>
+<div class="content"><div class="highlight"><pre><span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">sock</span> <span class="p">(</span><span class="nf">nn/socket</span> <span class="ss">:pub</span><span class="p">)]</span>
+  <span class="p">(</span><span class="nf">nn/bind!</span> <span class="nv">sock</span> <span class="s">&quot;ipc:///tmp/sock&quot;</span><span class="p">)</span>
+  <span class="p">(</span><span class="nb">dotimes </span><span class="p">[</span><span class="nv">i</span> <span class="mi">5</span><span class="p">]</span>
+    <span class="p">(</span><span class="nf">nn/send!</span> <span class="nv">sock</span> <span class="s">&quot;test msg&quot;</span><span class="p">))</span>
+  <span class="p">(</span><span class="nf">nn/close!</span> <span class="nv">sock</span><span class="p">))</span>
+</pre></div></div></div>
 <div class="listingblock">
 <div class="title"><em>subscriber.clj</em></div>
-<div class="content"></div></div>
+<div class="content"><div class="highlight"><pre><span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">sock</span> <span class="p">(</span><span class="nf">nn/socket</span> <span class="ss">:sub</span><span class="p">)]</span>
+  <span class="p">(</span><span class="nf">nn/connect!</span> <span class="nv">sock</span> <span class="s">&quot;ipc:///tmp/sock&quot;</span><span class="p">)</span>
+  <span class="p">(</span><span class="nf">nn/subscribe!</span> <span class="nv">sock</span> <span class="s">&quot;test&quot;</span><span class="p">)</span>
+  <span class="p">(</span><span class="nb">dotimes </span><span class="p">[</span><span class="nv">i</span> <span class="mi">5</span><span class="p">]</span>
+    <span class="p">(</span><span class="nb">println </span><span class="p">(</span><span class="nf">nn/recv</span> <span class="nv">sock</span><span class="p">)))</span>
+  <span class="p">(</span><span class="nf">nn/close!</span> <span class="nv">sock</span><span class="p">))</span>
+</pre></div></div></div>
 </div>
 <div class="sect3">
 <h4 id="_java_2">4.2.2. Java</h4>
 <div class="paragraph"><p>Example of using pub/sub protocols in clojure:</p></div>
 <div class="listingblock">
 <div class="title"><em>Publisher.java</em></div>
-<div class="content"></div></div>
+<div class="content"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">nanomsg.pubsub.PubSocket</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Publisher</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">PubSocket</span> <span class="n">sock</span> <span class="o">=</span> <span class="k">new</span> <span class="n">PubSocket</span><span class="o">();</span>
+        <span class="n">sock</span><span class="o">.</span><span class="na">bind</span><span class="o">(</span><span class="s">&quot;ipc:///tmp/sock&quot;</span><span class="o">);</span>
+
+        <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="mi">5</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+            <span class="n">sock</span><span class="o">.</span><span class="na">sendString</span><span class="o">(</span><span class="s">&quot;test msg&quot;</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="n">sock</span><span class="o">.</span><span class="na">close</span><span class="o">()</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></div></div></div>
 <div class="listingblock">
 <div class="title"><em>Subscriber.java</em></div>
-<div class="content"></div></div>
+<div class="content"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">nanomsg.pubsub.SubSocket</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Subscriber</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">SubSocket</span> <span class="n">sock</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SubSocket</span><span class="o">();</span>
+        <span class="n">sock</span><span class="o">.</span><span class="na">connect</span><span class="o">(</span><span class="s">&quot;ipc:///tmp/sock&quot;</span><span class="o">);</span>
+        <span class="n">sock</span><span class="o">.</span><span class="na">subscribe</span><span class="o">(</span><span class="s">&quot;test&quot;</span><span class="o">);</span>
+
+        <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="mi">5</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">sock</span><span class="o">.</span><span class="na">recvString</span><span class="o">());</span>
+        <span class="o">}</span>
+
+        <span class="n">sock</span><span class="o">.</span><span class="na">close</span><span class="o">()</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></div></div></div>
 </div>
 </div>
 <div class="sect2">
@@ -494,20 +1309,61 @@ by two socket types:</p></div>
 <div class="paragraph"><p>"Hello World" echo server using clojure:</p></div>
 <div class="listingblock">
 <div class="title"><em>rep.clj (server)</em></div>
-<div class="content"></div></div>
+<div class="content"><div class="highlight"><pre><span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">sock</span> <span class="p">(</span><span class="nf">nn/socket</span> <span class="ss">:rep</span><span class="p">)]</span>
+  <span class="p">(</span><span class="nf">nn/bind!</span> <span class="nv">sock</span> <span class="s">&quot;tcp://*:6789&quot;</span><span class="p">)</span>
+  <span class="p">(</span><span class="k">loop </span><span class="p">[]</span>
+    <span class="p">(</span><span class="nf">nn/send!</span> <span class="nv">sock</span> <span class="p">(</span><span class="nf">nn/recv</span> <span class="nv">sock</span><span class="p">))</span>
+    <span class="p">(</span><span class="nf">recur</span><span class="p">)))</span>
+</pre></div></div></div>
 <div class="listingblock">
 <div class="title"><em>req.clj (client)</em></div>
-<div class="content"></div></div>
+<div class="content"><div class="highlight"><pre><span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">sock</span> <span class="p">(</span><span class="nf">nn/socket</span> <span class="ss">:req</span><span class="p">)]</span>
+  <span class="p">(</span><span class="nf">nn/bind!</span> <span class="nv">sock</span> <span class="s">&quot;tcp://localhost:6789&quot;</span><span class="p">)</span>
+  <span class="p">(</span><span class="nb">dotimes </span><span class="p">[</span><span class="nv">i</span> <span class="mi">5</span><span class="p">]</span>
+    <span class="p">(</span><span class="nf">nn/send!</span> <span class="nv">sock</span> <span class="p">(</span><span class="nb">str </span><span class="s">&quot;msg:&quot;</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="p">(</span><span class="nb">println </span><span class="s">&quot;Received:&quot;</span> <span class="p">(</span><span class="nf">nn/recv</span> <span class="nv">sock</span><span class="p">)))</span>
+  <span class="p">(</span><span class="nf">nn/close!</span> <span class="nv">sock</span><span class="p">))</span>
+</pre></div></div></div>
 </div>
 <div class="sect3">
 <h4 id="_java_3">4.3.2. Java</h4>
 <div class="paragraph"><p>Same examples as on clojure section, but using java:</p></div>
 <div class="listingblock">
 <div class="title"><em>EchoServer.java</em></div>
-<div class="content"></div></div>
+<div class="content"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">nanomsg.reqrep.RepSocket</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">EchoServer</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">RepSocket</span> <span class="n">sock</span> <span class="o">=</span> <span class="k">new</span> <span class="n">RepSocket</span><span class="o">();</span>
+        <span class="n">sock</span><span class="o">.</span><span class="na">bind</span><span class="o">(</span><span class="s">&quot;tcp://*:6789&quot;</span><span class="o">);</span>
+
+        <span class="k">while</span> <span class="o">(</span><span class="kc">true</span><span class="o">)</span> <span class="o">{</span>
+            <span class="kt">byte</span><span class="o">[]</span> <span class="n">receivedData</span> <span class="o">=</span> <span class="n">sock</span><span class="o">.</span><span class="na">recvBytes</span><span class="o">();</span>
+            <span class="n">sock</span><span class="o">.</span><span class="na">sendBytes</span><span class="o">(</span><span class="n">receivedData</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="n">sock</span><span class="o">.</span><span class="na">close</span><span class="o">()</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></div></div></div>
 <div class="listingblock">
 <div class="title"><em>EchoClient.java</em></div>
-<div class="content"></div></div>
+<div class="content"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">nanomsg.reqrep.ReqSocket</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">EchoClient</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">ReqSocket</span> <span class="n">sock</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ReqSocket</span><span class="o">();</span>
+        <span class="n">sock</span><span class="o">.</span><span class="na">connect</span><span class="o">(</span><span class="s">&quot;tcp://localhost:6789&quot;</span><span class="o">);</span>
+
+        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="mi">5</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+            <span class="n">sock</span><span class="o">.</span><span class="na">sendString</span><span class="o">(</span><span class="s">&quot;Hello!&quot;</span> <span class="o">+</span> <span class="mi">1</span><span class="o">);</span>
+            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Received:&quot;</span> <span class="o">+</span> <span class="n">sock</span><span class="o">.</span><span class="na">recvString</span><span class="o">());</span>
+        <span class="o">}</span>
+
+        <span class="n">sock</span><span class="o">.</span><span class="na">close</span><span class="o">()</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></div></div></div>
 </div>
 </div>
 <div class="sect2">
@@ -531,20 +1387,62 @@ by two socket types:</p></div>
 <div class="paragraph"><p>"Hello World" task generator:</p></div>
 <div class="listingblock">
 <div class="title"><em>push.clj (server)</em></div>
-<div class="content"></div></div>
+<div class="content"><div class="highlight"><pre><span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">sock</span> <span class="p">(</span><span class="nf">nn/socket</span> <span class="ss">:push</span> <span class="p">{</span><span class="ss">:bind</span> <span class="s">&quot;tcp://*:6789&quot;</span><span class="p">})]</span>
+  <span class="p">(</span><span class="nb">doseq </span><span class="p">[</span><span class="nb">name </span><span class="p">[</span><span class="s">&quot;Foo&quot;</span> <span class="s">&quot;Bar&quot;</span> <span class="s">&quot;Baz&quot;</span><span class="p">]]</span>
+    <span class="p">(</span><span class="nf">nn/send!</span> <span class="nv">sock</span> <span class="nv">name</span><span class="p">))</span>
+  <span class="p">(</span><span class="nf">nn/close!</span> <span class="nv">sock</span><span class="p">))</span>
+</pre></div></div></div>
 <div class="listingblock">
 <div class="title"><em>pull.clj (client)</em></div>
-<div class="content"></div></div>
+<div class="content"><div class="highlight"><pre><span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">sock</span> <span class="p">(</span><span class="nf">nn/socket</span> <span class="ss">:pull</span> <span class="p">{</span><span class="ss">:connect</span> <span class="s">&quot;tcp://localhost:6789&quot;</span><span class="p">})]</span>
+  <span class="p">(</span><span class="nb">dotimes </span><span class="p">[</span><span class="nv">i</span> <span class="mi">3</span><span class="p">]</span>
+    <span class="p">(</span><span class="nb">println </span><span class="s">&quot;Hello &quot;</span> <span class="p">(</span><span class="nf">nn/recv!</span> <span class="nv">sock</span><span class="p">))))</span>
+</pre></div></div></div>
 </div>
 <div class="sect3">
 <h4 id="_java_4">4.4.2. Java</h4>
 <div class="paragraph"><p>Same examples as on clojure section, but using java:</p></div>
 <div class="listingblock">
 <div class="title"><em>Dispatcher.java</em></div>
-<div class="content"></div></div>
+<div class="content"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">nanomsg.pipeline.PushSocket</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.ArrayList</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Dispatcher</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">PushSocket</span> <span class="n">sock</span> <span class="o">=</span> <span class="k">new</span> <span class="n">PushSocket</span><span class="o">();</span>
+        <span class="n">sock</span><span class="o">.</span><span class="na">bind</span><span class="o">(</span><span class="s">&quot;tcp://*:6789&quot;</span><span class="o">);</span>
+
+        <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">people</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;();</span>
+        <span class="n">people</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&quot;Foo&quot;</span><span class="o">);</span>
+        <span class="n">people</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&quot;Bar&quot;</span><span class="o">);</span>
+        <span class="n">people</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&quot;Baz&quot;</span><span class="o">);</span>
+
+        <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">people</span><span class="o">.</span><span class="na">size</span><span class="o">();</span> <span class="o">++</span><span class="n">i</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">sock</span><span class="o">.</span><span class="na">sendString</span><span class="o">(</span><span class="n">people</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">i</span><span class="o">));</span>
+        <span class="o">}</span>
+
+        <span class="n">sock</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></div></div></div>
 <div class="listingblock">
 <div class="title"><em>Greeter.java</em></div>
-<div class="content"></div></div>
+<div class="content"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">nanomsg.pipeline.PullSocket</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Greeter</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">PullSocket</span> <span class="n">sock</span> <span class="o">=</span> <span class="k">new</span> <span class="n">PullSocket</span><span class="o">();</span>
+        <span class="n">sock</span><span class="o">.</span><span class="na">connect</span><span class="o">(</span><span class="s">&quot;tcp://localhost:6789&quot;</span><span class="o">);</span>
+
+        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="mi">3</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Hello &quot;</span> <span class="o">+</span> <span class="n">sock</span><span class="o">.</span><span class="na">recvString</span><span class="o">());</span>
+        <span class="o">}</span>
+
+        <span class="n">sock</span><span class="o">.</span><span class="na">close</span><span class="o">()</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></div></div></div>
 </div>
 </div>
 </div>
@@ -575,7 +1473,7 @@ limitations under the License.</pre>
 <div id="footer">
 <div id="footer-text">
 Version 0.2.0<br>
-Last updated 2014-01-07 22:49:21 CET
+Last updated 2014-01-07 22:51:38 CET
 </div>
 </div>
 </body>

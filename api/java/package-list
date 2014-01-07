@@ -1,0 +1,7 @@
+nanomsg
+nanomsg.bus
+nanomsg.exceptions
+nanomsg.pair
+nanomsg.pipeline
+nanomsg.pubsub
+nanomsg.reqrep
