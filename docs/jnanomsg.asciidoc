@@ -95,7 +95,7 @@ Introduction
 
 All public clojure api for work with nanomsg library is exposed under `nanomsg` namespace, 
 and it consist on only few functions: `connect!`, `bind!`, `subscribe!`, `socket`, `send!`, 
-`recv!`, `send-bytes!`, `recv-bytes!`, `close!` and `symbols` that are fairly self-descriptive.
+`recv!`, `send-bytes!`, `recv-bytes!`, `close!`, `terminate!` and `symbols` that are fairly self-descriptive.
 
 Example importing `nanomsg` namespace on clojure file:
 
