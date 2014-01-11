@@ -7,12 +7,12 @@ import com.sun.jna.ptr.*;
 import java.io.UnsupportedEncodingException;
 
 import nanomsg.NativeLibrary;
-import nanomsg.RWSocket;
+import nanomsg.Socket;
 import nanomsg.Nanomsg;
 import nanomsg.exceptions.IOException;
 
 
-public class SubSocket extends RWSocket {
+public class SubSocket extends Socket {
     public SubSocket(int domain) {
         super(domain, Nanomsg.constants.NN_SUB);
     }

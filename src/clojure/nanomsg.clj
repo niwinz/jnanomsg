@@ -17,7 +17,7 @@
            (nanomsg.pipeline PushSocket PullSocket)
            (nanomsg.pair PairSocket)
            (nanomsg.bus BusSocket)
-           (nanomsg RWSocket Socket Nanomsg Device)))
+           (nanomsg Socket Nanomsg Device)))
 
 (def ^:static ^:private supported-sockets
   {:pub PubSocket
@@ -32,14 +32,14 @@
 (defn bind!
   "Given a socket and connection string,
   add a local endpoint to the socket."
-  [^RWSocket sock, ^String dir]
+  [^Socket sock, ^String dir]
   (.bind sock dir)
   sock)
 
 (defn connect!
   "Given a socket and connection string,
   connect to remote socket."
-  [^RWSocket sock, ^String dir]
+  [^Socket sock, ^String dir]
   (.connect sock dir)
   sock)
 
@@ -70,7 +70,7 @@
   NOTE: This function is a low level interface and
   theorically does not has overhead over
   raw socket usage."
-  [^RWSocket sock, ^bytes msg & {:keys [blocking] :or {blocking true}}]
+  [^Socket sock, ^bytes msg & {:keys [blocking] :or {blocking true}}]
   (.sendBytes sock msg blocking))
 
 (defn recv-bytes!
@@ -79,7 +79,7 @@
   This function, uses a low level access for
   receiving a message, that removes a overhead
   of creating a message object."
-  [^RWSocket sock & {:keys [blocking] :or {blocking true}}]
+  [^Socket sock & {:keys [blocking] :or {blocking true}}]
   (.recvBytes sock blocking))
 
 (defn send!
@@ -92,7 +92,7 @@
 
   utf-8 encoding is unique overhead that
   has this function over using a raw socket."
-  [^RWSocket sock, ^String msg & {:keys [blocking] :or {blocking true}}]
+  [^Socket sock, ^String msg & {:keys [blocking] :or {blocking true}}]
   (.sendString sock msg blocking))
 
 (defn recv!
@@ -104,12 +104,12 @@
 
   utf-8 decoding is a unique overhead
   that has this function over using a raw socket."
-  [^RWSocket sock & {:keys [blocking] :or {blocking true}}]
+  [^Socket sock & {:keys [blocking] :or {blocking true}}]
   (.recvString sock blocking))
 
 (defn close!
   "Close socket."
-  [^RWSocket sock]
+  [^Socket sock]
   (.close sock))
 
 (defn terminate!

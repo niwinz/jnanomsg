@@ -1,10 +1,10 @@
 package nanomsg.reqrep;
 
-import nanomsg.RWSocket;
+import nanomsg.Socket;
 import nanomsg.Nanomsg;
 
 
-public class ReqSocket extends RWSocket {
+public class ReqSocket extends Socket {
     public ReqSocket(int domain) {
         super(domain, Nanomsg.constants.NN_REQ);
     }
