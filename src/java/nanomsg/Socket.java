@@ -1,6 +1,7 @@
 package nanomsg;
 
 import java.nio.charset.Charset;
+
 import com.sun.jna.Pointer;
 import com.sun.jna.Memory;
 import com.sun.jna.ptr.PointerByReference;
@@ -8,11 +9,12 @@ import com.sun.jna.ptr.PointerByReference;
 import nanomsg.NativeLibrary;
 import nanomsg.Nanomsg;
 import nanomsg.Message;
+import nanomsg.ISocket;
 import nanomsg.exceptions.IOException;
 import nanomsg.exceptions.EAgainException;
 
 
-public abstract class Socket {
+public abstract class Socket implements ISocket {
     private final int domain;
     private final int protocol;
     private final int socket;
@@ -20,7 +22,7 @@ public abstract class Socket {
     private boolean closed = false;
     private boolean opened = false;
 
-    public Socket(int domain, int protocol) {
+    public Socket(final int domain, final int protocol) {
         this.domain = domain;
         this.protocol = protocol;
         this.socket = NativeLibrary.nn_socket(domain, protocol);
@@ -38,7 +40,7 @@ public abstract class Socket {
         return this.socket;
     }
 
-    public void bind(String dir) throws IOException {
+    public void bind(final String dir) throws IOException {
         final int endpoint = NativeLibrary.nn_bind(this.socket, dir);
 
         if (endpoint < 0) {
@@ -46,14 +48,13 @@ public abstract class Socket {
         }
     }
 
-    public void connect(String dir) throws IOException {
+    public void connect(final String dir) throws IOException {
         final int endpoint = NativeLibrary.nn_connect(this.socket, dir);
 
         if (endpoint < 0) {
             throw new IOException(Nanomsg.getError());
         }
     }
-
 
     /**
      * Send string to socket with option to set blocking flag.
@@ -62,7 +63,7 @@ public abstract class Socket {
      * @param blocking set blocking or non blocking flag.
      * @return number of sended bytes.
      */
-    public int sendString(String data, boolean blocking) throws IOException, EAgainException {
+    public int sendString(final String data, final boolean blocking) throws IOException, EAgainException {
         final Charset encoding = Charset.forName("UTF-8");
         return this.sendBytes(data.getBytes(encoding), blocking);
     }
@@ -75,7 +76,7 @@ public abstract class Socket {
      * @param data string value that represents a message.
      * @return number of sended bytes.
      */
-    public int sendString(String data) throws IOException, EAgainException {
+    public int sendString(final String data) throws IOException, EAgainException {
         return this.sendString(data, true);
     }
 
@@ -86,7 +87,7 @@ public abstract class Socket {
      * @param blocking set blocking or non blocking flag.
      * @return number of sended bytes.
      */
-    public synchronized int sendBytes(byte[] data, boolean blocking) throws IOException, EAgainException {
+    public synchronized int sendBytes(final byte[] data, final boolean blocking) throws IOException, EAgainException {
         final int socket = getNativeSocket();
         final int rc = NativeLibrary.nn_send(socket, data, data.length, blocking ? 0 : Nanomsg.constants.NN_DONTWAIT);
         if (!blocking && rc < 0) {
@@ -111,7 +112,7 @@ public abstract class Socket {
      * @param data a bytes array that represents a message.
      * @return number of sended bytes.
      */
-    public int sendBytes(byte[] data) throws IOException, EAgainException {
+    public int sendBytes(final byte[] data) throws IOException, EAgainException {
         return this.sendBytes(data, true);
     }
 
@@ -124,7 +125,7 @@ public abstract class Socket {
      * @param blocking set blocking or non blocking flag.
      * @return receved data as unicode string.
      */
-    public String recvString(boolean blocking) throws IOException, EAgainException {
+    public String recvString(final boolean blocking) throws IOException, EAgainException {
         final byte[] received = this.recvBytes(blocking);
         final Charset encoding = Charset.forName("UTF-8");
         return new String(received, encoding);
@@ -192,7 +193,7 @@ public abstract class Socket {
      *
      * @return number of sended bytes.
      */
-    public int send(Message msg) throws IOException {
+    public int send(final Message msg) throws IOException {
         return sendBytes(msg.toBytes());
     }
 
@@ -202,7 +203,7 @@ public abstract class Socket {
      * @param blocking set blocking or non blocking flag.
      * @return number of sended bytes.
      */
-    public int send(Message msg, boolean blocking) throws IOException, EAgainException {
+    public int send(final Message msg, boolean blocking) throws IOException, EAgainException {
         return sendBytes(msg.toBytes(), blocking);
     }
 
@@ -223,7 +224,7 @@ public abstract class Socket {
      * @param blocking set blocking or non blocking flag.
      * @return Message instance.
      */
-    public Message recv(boolean blocking) throws IOException, EAgainException {
+    public Message recv(final boolean blocking) throws IOException, EAgainException {
         return new Message(recvBytes(blocking));
     }
 }
