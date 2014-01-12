@@ -21,6 +21,7 @@ public class SubSocket extends Socket {
         this(Nanomsg.constants.AF_SP);
     }
 
+    @Override
     public void subscribe(final String data) throws IOException {
         final int socket = getNativeSocket();
 

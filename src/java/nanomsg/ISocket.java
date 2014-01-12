@@ -16,4 +16,5 @@ public interface ISocket {
     public int sendBytes(byte[] data, boolean blocking) throws IOException, EAgainException;
     public String recvString(boolean blocking) throws IOException, EAgainException;
     public byte[] recvBytes(boolean blocking) throws IOException, EAgainException;
+    public void subscribe(final String data) throws IOException;
 }

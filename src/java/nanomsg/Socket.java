@@ -90,6 +90,7 @@ public abstract class Socket implements ISocket {
     public synchronized int sendBytes(final byte[] data, final boolean blocking) throws IOException, EAgainException {
         final int socket = getNativeSocket();
         final int rc = NativeLibrary.nn_send(socket, data, data.length, blocking ? 0 : Nanomsg.constants.NN_DONTWAIT);
+
         if (!blocking && rc < 0) {
             final int errno = Nanomsg.getErrorNumber();
             if (errno == Nanomsg.constants.EAGAIN) {
@@ -226,5 +227,9 @@ public abstract class Socket implements ISocket {
      */
     public Message recv(final boolean blocking) throws IOException, EAgainException {
         return new Message(recvBytes(blocking));
+    }
+
+    public void subscribe(final String data) throws IOException {
+        throw new UnsupportedOperationException("This socket can not support subscribe method.");
     }
 }
