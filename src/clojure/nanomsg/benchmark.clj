@@ -1,10 +1,12 @@
 (ns nanomsg.benchmark
-  (:require [nanomsg :as nn])
+  (:require [nanomsg :as nn]
+            [clojure.core.async :as async])
   (:gen-class))
 
 (defn- thread
   [func]
   (let [th (Thread. func)]
+    (.setDaemon th false)
     (.start th)))
 
 (defn- sleep
@@ -12,8 +14,7 @@
   (Thread/sleep t))
 
 
-(defn -main
-  []
+(defn bench-fn1 []
   (let [sended    (atom 0)
         received  (atom 0)
         pubsock   (nn/socket :pub)]
@@ -46,3 +47,39 @@
       (doseq [x (range 1000000000000)]
         (nn/send! pubsock "test foobar")
         (swap! sended inc)))))
+
+
+(defn bench-async []
+  (let [sended    (atom 0)
+        received  (atom 0)
+        s1        (nn/socket :pub {:bind "ipc:///tmp/bench.async" :async true})
+        s2        (nn/socket :sub {:connect "ipc:///tmp/bench.async" :async true})]
+    (nn/subscribe! s2 "Hello")
+    (thread (fn []
+              (loop [initial-sended    @sended
+                     initial-received  @received]
+                (sleep 1000)
+                (println (format "Sended: %s/s Received %s/s"
+                                 (- @sended initial-sended)
+                                 (- @received initial-received)))
+                (recur @sended @received))))
+    (async/go
+      (loop []
+        (async/<! (nn/send! s1 "Hello World"))
+        (swap! sended inc)
+        (recur)))
+    (async/go
+      (loop []
+        (async/<! (nn/send! s1 "Hello World"))
+        (swap! sended inc)
+        (recur)))
+    (async/go
+      (loop []
+        (let [recd (async/<! (nn/recv! s2))]
+          (swap! received inc)
+          (recur))))))
+
+
+(defn -main
+  []
+  (bench-async))
