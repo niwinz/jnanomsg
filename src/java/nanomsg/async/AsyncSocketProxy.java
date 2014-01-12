@@ -1,13 +1,12 @@
 package nanomsg.async;
 
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.ForkJoinWorkerThread;
-
 import nanomsg.ISocket;
 import nanomsg.exceptions.IOException;
 import nanomsg.exceptions.EAgainException;
-
 import nanomsg.async.IAsyncCallback;
+import nanomsg.async.IAsyncRunnable;
+import nanomsg.async.PollService;
+
 
 /**
  * Experimental socket proxy that enables async way to
@@ -18,12 +17,6 @@ import nanomsg.async.IAsyncCallback;
  */
 public class AsyncSocketProxy {
     private final ISocket socket;
-    public static final ForkJoinPool executor;
-
-    static {
-        final int parallelism = Runtime.getRuntime().availableProcessors() * 2;
-        executor = new ForkJoinPool(parallelism, ForkJoinPool.defaultForkJoinWorkerThreadFactory, null, true);
-    }
 
     /**
      * Given any socket that implements ISocket interface
@@ -44,13 +37,57 @@ public class AsyncSocketProxy {
      * @param callback IAsyncCallback interface object.
      */
     public void sendString(final String data, final IAsyncCallback<Boolean> callback) {
-        final ISocket socket = this.socket;
-        final ForkJoinPool executor = AsyncSocketProxy.executor;
-
-        executor.execute(new Runnable() {
-            public void run() {
+        PollService.service.registerOnce(new IAsyncRunnable() {
+            public void run() throws EAgainException {
                 try {
-                    socket.sendString(data, true);
+                    socket.sendString(data, false);
+                    callback.success(true);
+                } catch (EAgainException e) {
+                    System.out.println("!");
+                    throw e;
+                } catch (IOException e) {
+                    System.out.println("!");
+                    callback.fail(e);
+                }
+            }
+        });
+    }
+
+    /**
+     * Given a callback, it try receive data from socket using
+     * the common defined executor and execute callback whet
+     * any data received.
+     *
+     * @param callback IAsyncCallback interface object.
+     */
+    public void recvString(final IAsyncCallback<String> callback) {
+        PollService.service.registerOnce(new IAsyncRunnable() {
+            public void run() throws EAgainException {
+                try {
+                    final String received = socket.recvString(false);
+                    callback.success(received);
+                } catch (EAgainException e) {
+                    throw e;
+                } catch (IOException e) {
+                    callback.fail(e);
+                }
+            }
+        });
+    }
+
+    /**
+     * Given a string and callback, sends data using a proxied
+     * socket using a common executor and execute a callback when it
+     * are finished.
+     *
+     * @param data string to send.
+     * @param callback IAsyncCallback interface object.
+     */
+    public void sendBytes(final byte[] data, final IAsyncCallback<Boolean> callback) {
+        PollService.service.registerOnce(new IAsyncRunnable() {
+            public void run() throws EAgainException {
+                try {
+                    socket.sendBytes(data, true);
                     callback.success(true);
                 } catch (IOException e) {
                     callback.fail(e);
@@ -66,14 +103,11 @@ public class AsyncSocketProxy {
      *
      * @param callback IAsyncCallback interface object.
      */
-    public void recvString(final IAsyncCallback<String> callback) {
-        final ISocket socket = this.socket;
-        final ForkJoinPool executor = AsyncSocketProxy.executor;
-
-        executor.execute(new Runnable() {
-            public void run() {
+    public void recvBytes(final IAsyncCallback<byte[]> callback) {
+        PollService.service.registerOnce(new IAsyncRunnable() {
+            public void run() throws EAgainException {
                 try {
-                    final String received = socket.recvString(true);
+                    final byte[] received = socket.recvBytes(true);
                     callback.success(received);
                 } catch (IOException e) {
                     callback.fail(e);
