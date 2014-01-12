@@ -10,44 +10,6 @@ import nanomsg.NativeLibrary;
 
 
 public final class Nanomsg {
-    public class constants {
-        public static final int NN_HAUSNUMERO = 156384712;
-        public static final int ECONNREFUSED = NN_HAUSNUMERO + 7;
-        public static final int EAFNOSUPPORT = NN_HAUSNUMERO + 10;
-        public static final int ETERM = NN_HAUSNUMERO + 53;
-        public static final int EFSM = NN_HAUSNUMERO + 54;
-        public static final int EAGAIN = (NN_HAUSNUMERO + 12);
-        public static final int NN_DONTWAIT = 1;
-        public static final int NN_MSG = -1;
-        public static final int AF_SP = 1;
-        public static final int AF_SP_RAW = 2;
-
-        /* PubSub */
-        public static final int NN_PROTO_PUBSUB = 2;
-        public static final int NN_PUB = NN_PROTO_PUBSUB * 16 + 0;
-        public static final int NN_SUB = NN_PROTO_PUBSUB * 16 + 1;
-        public static final int NN_SUB_SUBSCRIBE = 1;
-        public static final int NN_SUB_UNSUBSCRIBE = 2;
-
-        /* ReqRep */
-        public static final int NN_PROTO_REQREP = 3;
-        public static final int NN_REQ = NN_PROTO_REQREP * 16 + 0;
-        public static final int NN_REP = NN_PROTO_REQREP * 16 + 1;
-        public static final int NN_REQ_RESEND_IVL = 1;
-
-        /* Pair */
-        public static final int NN_PROTO_PAIR = 1;
-        public static final int NN_PAIR = NN_PROTO_PAIR * 16 + 0;
-
-        /* Pipeline */
-        public static final int NN_PROTO_PIPELINE = 5;
-        public static final int NN_PUSH = NN_PROTO_PIPELINE * 16 + 0;
-        public static final int NN_PULL = NN_PROTO_PIPELINE * 16 + 1;
-
-        /* Bus */
-        public static final int NN_PROTO_BUS = 7;
-        public static final int NN_BUS = NN_PROTO_BUS * 16 + 0;
-    }
 
     /* Low level native interface wrapper */
 
@@ -60,7 +22,11 @@ public final class Nanomsg {
         return NativeLibrary.nn_strerror(currentError);
     }
 
-    public static final Map<String, Integer> getSymbols() throws InterruptedException {
+    public static final void terminate() {
+        NativeLibrary.nn_term();
+    }
+
+    private static final Map<String, Integer> getSymbols() {
         HashMap<String, Integer> result = new HashMap<String, Integer>();
 
         try {
@@ -84,7 +50,39 @@ public final class Nanomsg {
         return result;
     }
 
-    public static final void terminate() {
-        NativeLibrary.nn_term();
+    public static final Map<String, Integer> symbols = Nanomsg.getSymbols();
+
+    public static class constants {
+        public static final int ECONNREFUSED = Nanomsg.symbols.get("ECONNREFUSED");
+        public static final int EAFNOSUPPORT = Nanomsg.symbols.get("EAFNOSUPPORT");
+        public static final int ETERM = Nanomsg.symbols.get("ETERM");
+        public static final int EFSM = Nanomsg.symbols.get("EFSM");
+        public static final int EAGAIN = Nanomsg.symbols.get("EAGAIN");
+        public static final int NN_DONTWAIT = Nanomsg.symbols.get("NN_DONTWAIT");
+        public static final int AF_SP = Nanomsg.symbols.get("AF_SP");
+        public static final int AF_SP_RAW = Nanomsg.symbols.get("AF_SP_RAW");
+
+        public static final int NN_MSG = -1;
+
+        /* PubSub */
+        public static final int NN_PUB = Nanomsg.symbols.get("NN_PUB");
+        public static final int NN_SUB = Nanomsg.symbols.get("NN_SUB");
+        public static final int NN_SUB_SUBSCRIBE = Nanomsg.symbols.get("NN_SUB_SUBSCRIBE");
+        public static final int NN_SUB_UNSUBSCRIBE = Nanomsg.symbols.get("NN_SUB_UNSUBSCRIBE");
+
+        /* ReqRep */
+        public static final int NN_REQ = Nanomsg.symbols.get("NN_REQ");
+        public static final int NN_REP = Nanomsg.symbols.get("NN_REP");
+        public static final int NN_REQ_RESEND_IVL = Nanomsg.symbols.get("NN_REQ_RESEND_IVL");
+
+        /* Pair */
+        public static final int NN_PAIR = Nanomsg.symbols.get("NN_PAIR");
+
+        /* Pipeline */
+        public static final int NN_PUSH = Nanomsg.symbols.get("NN_PUSH");
+        public static final int NN_PULL = Nanomsg.symbols.get("NN_PULL");
+
+        /* Bus */
+        public static final int NN_BUS = Nanomsg.symbols.get("NN_BUS");
     }
 }

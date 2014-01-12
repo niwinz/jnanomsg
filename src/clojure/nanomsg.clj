@@ -145,7 +145,7 @@
     (.run d)))
 
 (defn- resolve-symbols []
-  (into {} (for [[k v] (Nanomsg/getSymbols)]
+  (into {} (for [[k v] (Nanomsg/symbols)]
              [(keyword (.toLowerCase k)) v])))
 
 (def ^{:doc "Get all symbols"}
