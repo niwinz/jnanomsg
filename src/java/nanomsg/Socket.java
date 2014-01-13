@@ -4,7 +4,9 @@ import java.nio.charset.Charset;
 
 import com.sun.jna.Pointer;
 import com.sun.jna.Memory;
+import com.sun.jna.Native;
 import com.sun.jna.ptr.PointerByReference;
+import com.sun.jna.ptr.IntByReference;
 
 import nanomsg.NativeLibrary;
 import nanomsg.Nanomsg;
@@ -231,5 +233,30 @@ public abstract class Socket implements ISocket {
 
     public void subscribe(final String data) throws IOException {
         throw new UnsupportedOperationException("This socket can not support subscribe method.");
+    }
+
+    /* int linger; */
+    /* size_t sz = sizeof (linger); */
+    /* nn_getsockopt (s, NN_SOL_SOCKET, NN_LINGER, &linger, &sz); */
+
+    private int getFd(final int flag) throws IOException {
+        final IntByReference fd = new IntByReference();
+        final IntByReference size_t = new IntByReference(Native.SIZE_T_SIZE);
+
+        final int rc = NativeLibrary.nn_getsockopt(this.socket, Nanomsg.constants.NN_SOL_SOCKET, flag, fd.getPointer(), size_t.getPointer());
+
+        if (rc < 0) {
+            throw new IOException(Nanomsg.getError());
+        }
+
+        return fd.getValue();
+    }
+
+    public int getReadFd() throws IOException {
+        return getFd(Nanomsg.constants.NN_RCVFD);
+    }
+
+    public int getWriteFd() throws IOException {
+        return getFd(Nanomsg.constants.NN_SNDFD);
     }
 }
