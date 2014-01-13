@@ -35,6 +35,9 @@ public final class Nanomsg {
                 IntByReference valueRef = new IntByReference();
                 Pointer ptr = NativeLibrary.nn_symbol(index, valueRef);
 
+                // TODO: this not works properly and should be fixed.
+                // On this todo is fixed, NullPointerException should
+                // not be necesary.
                 if (ptr.equals(Pointer.NULL)) {
                     break;
                 }
