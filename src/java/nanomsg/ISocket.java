@@ -12,9 +12,9 @@ public interface ISocket {
     public void bind(final String dir) throws IOException;
     public void connect(final String dir) throws IOException;
 
-    public int sendString(String data, boolean blocking) throws IOException, EAgainException;
-    public int sendBytes(byte[] data, boolean blocking) throws IOException, EAgainException;
-    public String recvString(boolean blocking) throws IOException, EAgainException;
-    public byte[] recvBytes(boolean blocking) throws IOException, EAgainException;
+    public int sendString(final String data, final boolean blocking) throws IOException, EAgainException;
+    public int sendBytes(final byte[] data, final boolean blocking) throws IOException, EAgainException;
+    public String recvString(final boolean blocking) throws IOException, EAgainException;
+    public byte[] recvBytes(final boolean blocking) throws IOException, EAgainException;
     public void subscribe(final String data) throws IOException;
 }
