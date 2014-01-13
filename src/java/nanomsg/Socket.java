@@ -239,7 +239,7 @@ public abstract class Socket implements ISocket {
     /* size_t sz = sizeof (linger); */
     /* nn_getsockopt (s, NN_SOL_SOCKET, NN_LINGER, &linger, &sz); */
 
-    private int getFd(final int flag) throws IOException {
+    public int getFd(final int flag) throws IOException {
         final IntByReference fd = new IntByReference();
         final IntByReference size_t = new IntByReference(Native.SIZE_T_SIZE);
 
@@ -252,11 +252,11 @@ public abstract class Socket implements ISocket {
         return fd.getValue();
     }
 
-    public int getReadFd() throws IOException {
-        return getFd(Nanomsg.constants.NN_RCVFD);
-    }
+    /* public int getReadFd() throws IOException { */
+    /*     return getFd(Nanomsg.constants.NN_RCVFD); */
+    /* } */
 
-    public int getWriteFd() throws IOException {
-        return getFd(Nanomsg.constants.NN_SNDFD);
-    }
+    /* public int getWriteFd() throws IOException { */
+    /*     return getFd(Nanomsg.constants.NN_SNDFD); */
+    /* } */
 }
