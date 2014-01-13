@@ -3,6 +3,8 @@ package nanomsg.async.impl.epoll;
 import com.sun.jna.Union;
 import com.sun.jna.Pointer;
 import com.sun.jna.Memory;
+import com.sun.jna.Structure;
+import com.sun.jna.Native;
 
 import java.util.Arrays;
 import java.util.List;
