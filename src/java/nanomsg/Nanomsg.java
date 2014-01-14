@@ -29,25 +29,17 @@ public final class Nanomsg {
     private static final Map<String, Integer> getSymbols() {
         HashMap<String, Integer> result = new HashMap<String, Integer>();
 
-        try {
-            int index = 0;
-            while (true) {
-                IntByReference valueRef = new IntByReference();
-                Pointer ptr = NativeLibrary.nn_symbol(index, valueRef);
+        int index = 0;
+        while (true) {
+            IntByReference valueRef = new IntByReference();
+            Pointer ptr = NativeLibrary.nn_symbol(index, valueRef);
 
-                // TODO: this not works properly and should be fixed.
-                // On this todo is fixed, NullPointerException should
-                // not be necesary.
-                if (ptr.equals(Pointer.NULL)) {
-                    break;
-                }
-
-                result.put(ptr.getString(0), valueRef.getValue());
-                index += 1;
+            if (ptr == null) {
+                break;
             }
 
-        } catch (NullPointerException e) {
-            /* Do nothing because it raided when stops. */
+            result.put(ptr.getString(0), valueRef.getValue());
+            index += 1;
         }
 
         return result;
