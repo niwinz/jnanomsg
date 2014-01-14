@@ -226,10 +226,6 @@ public abstract class Socket implements ISocket {
         throw new UnsupportedOperationException("This socket can not support subscribe method.");
     }
 
-    /* int linger; */
-    /* size_t sz = sizeof (linger); */
-    /* nn_getsockopt (s, NN_SOL_SOCKET, NN_LINGER, &linger, &sz); */
-
     public int getFd(final int flag) throws IOException {
         final IntByReference fd = new IntByReference();
         final IntByReference size_t = new IntByReference(Native.SIZE_T_SIZE);
