@@ -443,6 +443,76 @@ public class Greeter {
 }
 ----
 
+Async support
+~~~~~~~~~~~~~
+
+Since version 0.3, _jnanomsg_ comes with basic and experimental support for 
+asynchronous sockets for both languages.
+
+Java
+^^^^
+
+Java bindings have same approach as some `java.nio` channels apis. Socket operations
+takes a instance of any class that implements `nanomsg.async.IAsyncCallback`.
+
+`IAsyncCallback` consists on two methods: `success(T data)` and `fail(Throwable t)`.
+
+This is a simple example of using it:
+
+[source,java]
+----
+import nanomsg.pipeline.PullSocket;
+import nanomsg.async.AsyncSocket;
+import nanomsg.async.IAsyncCallback;
+
+public class Greeter {
+    public static void main(String[] args) {
+        final PullSocket sock = new PullSocket();
+        final AsyncSocket asyncSock = new AsyncSocket(sock);
+
+        sock.connect("tcp://localhost:6789");
+
+        asyncSock.recvString(new IAsyncCallback<String> {
+            public void success(final String data) {
+                System.out.println("Hello " + data);
+            }
+
+            public void fail(Throwable t) {
+                System.out.println("Error: " + t.toString());
+            }
+        });
+    }
+}
+----
+
+
+Clojure
+-------
+
+Clojure takes very different approach than java. For it, it uses `core.async` as dependency 
+(you always can use java/clojure api for implement the same behavior with other libraries,
+such as link:http://daasd.com[Pulsar]).
+
+[source,clojure]
+----
+(ns some.yourns
+  (:require [clojure.core.async :as async]
+            [nanomsg :as nn])
+  (:gen-class))
+
+(defn -main
+  [& args]
+  (let [s (nn/socket :pull {:connect "ipc:///tmp/sock" :async true})]
+    (go
+      (dotimes [i 3]
+        (println "Hello: " (async/<! (nn/recv! s)))
+        (recur)))))
+----
+
+
+NOTE: async implementation is experimental and not efficient, because it uses a thread
+pool for execute all blocking call instead of use epoll (or any other poll implementaitions).
+
 
 License
 -------
