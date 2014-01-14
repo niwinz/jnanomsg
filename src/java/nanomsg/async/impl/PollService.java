@@ -1,4 +1,4 @@
-package nanomsg.async;
+package nanomsg.async.impl;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentHashMap;
