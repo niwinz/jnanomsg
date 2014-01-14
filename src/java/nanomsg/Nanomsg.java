@@ -57,10 +57,13 @@ public final class Nanomsg {
         public static final int AF_SP = Nanomsg.symbols.get("AF_SP");
         public static final int AF_SP_RAW = Nanomsg.symbols.get("AF_SP_RAW");
 
-        public static final int NN_SOL_SOCKET = 0;
+        public static final int NN_SOL_SOCKET = Nanomsg.symbols.get("NN_SOL_SOCKET");
+        public static final int NN_SNDFD = Nanomsg.symbols.get("NN_SNDFD");
+        public static final int NN_RCVFD = Nanomsg.symbols.get("NN_RCVFD");
+        public static final int NN_SNDTIMEO = Nanomsg.symbols.get("NN_SNDTIMEO");
+        public static final int NN_RCVTIMEO = Nanomsg.symbols.get("NN_RCVTIMEO");
+
         public static final int NN_MSG = -1;
-        public static final int NN_SNDFD = 10;
-        public static final int NN_RCVFD = 11;
 
         /* PubSub */
         public static final int NN_PUB = Nanomsg.symbols.get("NN_PUB");
