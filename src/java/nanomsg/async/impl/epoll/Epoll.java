@@ -1,3 +1,24 @@
+// Copyright (C) 2013 the original author or authors.
+//
+// See the LICENSE.txt file distributed with this work for additional
+// information regarding copyright ownership.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+// This code is taken from https://github.com/jcommon/process that are
+// licensed under Apache 2.0 License
+
+
 package nanomsg.async.impl.epoll;
 
 import com.sun.jna.Union;
@@ -156,35 +177,3 @@ public class Epoll {
     //extern int epoll_wait (int __epfd, struct EpollEvent *__events, int __maxevents, int __timeout);
     public static native int epoll_wait(int epfd, Pointer events, int maxevents, int timeout);
 }
-
-//extern int epoll_pwait (int __epfd, struct EpollEvent *__events, int __maxevents, int __timeout, const __sigset_t *__ss);
-/* public static native int epoll_pwait(int epfd, Pointer events, int maxevents, int timeout, Pointer ss); */
-
- /* epoll_wait() is requesting an array of EpollEvent structs. So I create an array like this (please ignore the PinnableMemory class for now -- it just keeps a strong reference to an instance of Memory): */
-
-/* public static Pointer createPointerToStructureArray(Class<? extends Structure> cls, int size) { */
-/*     final int size_of_struct = Native.getNativeSize(cls); */
-/*     final PinnableMemory m = PinnableMemory.pin(size * Pointer.SIZE); */
-/*     for(int i = 0; i < size; ++i) { */
-/*         m.setPointer(i * Pointer.SIZE, PinnableMemory.pin(size_of_struct)); */
-/*     } */
-/*     return m; */
-/* } */
-
-/* public static Pointer itemInStructureArrayAtIndex(Pointer array, int index) { */
-/*     return array.getPointer(index * Pointer.SIZE); */
-/* } */
-
-/* public static void disposeStructureArray(Pointer ptr) { */
-/*     final PinnableMemory orig = PinnableMemory.unpin(ptr); */
-/*     final int size = (int)(orig.size() / (long)Pointer.SIZE); */
-
-/*     PinnableMemory entry; */
-/*     for(int i = 0; i < size; ++i) { */
-/*         if ((entry = PinnableMemory.unpin(orig.getPointer(i * Pointer.SIZE))) != null) { */
-/*             entry.dispose(); */
-/*         } */
-/*     } */
-
-/*     orig.dispose(); */
-/* } */
