@@ -42,18 +42,22 @@ public abstract class Socket implements ISocket {
     }
 
     public void bind(final String dir) throws IOException {
-        final int endpoint = NativeLibrary.nn_bind(this.socket, dir);
+        final int rc = NativeLibrary.nn_bind(this.socket, dir);
 
-        if (endpoint < 0) {
-            throw new IOException(Nanomsg.getError());
+        if (rc < 0) {
+            final int errno = Nanomsg.getErrorNumber();
+            final String msg = Nanomsg.getError();
+            throw new IOException(msg, errno);
         }
     }
 
     public void connect(final String dir) throws IOException {
-        final int endpoint = NativeLibrary.nn_connect(this.socket, dir);
+        final int rc = NativeLibrary.nn_connect(this.socket, dir);
 
-        if (endpoint < 0) {
-            throw new IOException(Nanomsg.getError());
+        if (rc < 0) {
+            final int errno = Nanomsg.getErrorNumber();
+            final String msg = Nanomsg.getError();
+            throw new IOException(msg, errno);
         }
     }
 
@@ -64,7 +68,7 @@ public abstract class Socket implements ISocket {
      * @param blocking set blocking or non blocking flag.
      * @return number of sended bytes.
      */
-    public int sendString(final String data, final boolean blocking) throws IOException, EAgainException {
+    public int sendString(final String data, final boolean blocking) throws IOException {
         final Charset encoding = Charset.forName("UTF-8");
         return this.sendBytes(data.getBytes(encoding), blocking);
     }
@@ -77,7 +81,7 @@ public abstract class Socket implements ISocket {
      * @param data string value that represents a message.
      * @return number of sended bytes.
      */
-    public int sendString(final String data) throws IOException, EAgainException {
+    public int sendString(final String data) throws IOException {
         return this.sendString(data, true);
     }
 
@@ -88,19 +92,14 @@ public abstract class Socket implements ISocket {
      * @param blocking set blocking or non blocking flag.
      * @return number of sended bytes.
      */
-    public synchronized int sendBytes(final byte[] data, final boolean blocking) throws IOException, EAgainException {
+    public synchronized int sendBytes(final byte[] data, final boolean blocking) throws IOException {
         final int socket = getNativeSocket();
         final int rc = NativeLibrary.nn_send(socket, data, data.length, blocking ? 0 : Nanomsg.constants.NN_DONTWAIT);
 
-        if (!blocking && rc < 0) {
-            final int errno = Nanomsg.getErrorNumber();
-            if (errno == Nanomsg.constants.EAGAIN) {
-                throw new EAgainException("eagain");
-            }
-        }
-
         if (rc < 0) {
-            throw new IOException(Nanomsg.getError());
+            final int errno = Nanomsg.getErrorNumber();
+            final String msg = Nanomsg.getError();
+            throw new IOException(msg, errno);
         }
 
         return rc;
@@ -114,7 +113,7 @@ public abstract class Socket implements ISocket {
      * @param data a bytes array that represents a message.
      * @return number of sended bytes.
      */
-    public int sendBytes(final byte[] data) throws IOException, EAgainException {
+    public int sendBytes(final byte[] data) throws IOException {
         return this.sendBytes(data, true);
     }
 
@@ -127,7 +126,7 @@ public abstract class Socket implements ISocket {
      * @param blocking set blocking or non blocking flag.
      * @return receved data as unicode string.
      */
-    public String recvString(final boolean blocking) throws IOException, EAgainException {
+    public String recvString(final boolean blocking) throws IOException {
         final byte[] received = this.recvBytes(blocking);
         final Charset encoding = Charset.forName("UTF-8");
         return new String(received, encoding);
@@ -141,7 +140,7 @@ public abstract class Socket implements ISocket {
      *
      * @return receved data as unicode string.
      */
-    public String recvString() throws IOException, EAgainException {
+    public String recvString() throws IOException {
         return this.recvString(true);
     }
 
@@ -151,23 +150,16 @@ public abstract class Socket implements ISocket {
      * @param blocking set blocking or non blocking flag.
      * @return receved data as bytes array
      */
-    public synchronized byte[] recvBytes(boolean blocking) throws IOException, EAgainException {
+    public synchronized byte[] recvBytes(boolean blocking) throws IOException {
         final PointerByReference ptrBuff = new PointerByReference();
 
         final int socket = getNativeSocket();
         final int received = NativeLibrary.nn_recv(socket, ptrBuff, Nanomsg.constants.NN_MSG, blocking ? 0: Nanomsg.constants.NN_DONTWAIT);
 
-        // Fast exit on nonblocking sockets and
-        // EAGAIN is received.
-        if (!blocking && received < 0) {
-            final int errno = Nanomsg.getErrorNumber();
-            if (errno == Nanomsg.constants.EAGAIN) {
-                throw new EAgainException("eagain");
-            }
-        }
-
         if (received < 0) {
-            throw new IOException(Nanomsg.getError());
+            final int errno = Nanomsg.getErrorNumber();
+            final String msg = Nanomsg.getError();
+            throw new IOException(msg, errno);
         }
 
         final Pointer result = ptrBuff.getValue();
@@ -184,7 +176,7 @@ public abstract class Socket implements ISocket {
      *
      * @return receved data as bytes array
      */
-    public byte[] recvBytes() throws IOException, EAgainException {
+    public byte[] recvBytes() throws IOException {
         return this.recvBytes(true);
     }
 
@@ -205,7 +197,7 @@ public abstract class Socket implements ISocket {
      * @param blocking set blocking or non blocking flag.
      * @return number of sended bytes.
      */
-    public int send(final Message msg, boolean blocking) throws IOException, EAgainException {
+    public int send(final Message msg, boolean blocking) throws IOException {
         return sendBytes(msg.toBytes(), blocking);
     }
 
@@ -226,7 +218,7 @@ public abstract class Socket implements ISocket {
      * @param blocking set blocking or non blocking flag.
      * @return Message instance.
      */
-    public Message recv(final boolean blocking) throws IOException, EAgainException {
+    public Message recv(final boolean blocking) throws IOException {
         return new Message(recvBytes(blocking));
     }
 
@@ -246,6 +238,12 @@ public abstract class Socket implements ISocket {
 
         if (rc < 0) {
             throw new IOException(Nanomsg.getError());
+        }
+
+        if (rc < 0) {
+            final int errno = Nanomsg.getErrorNumber();
+            final String msg = Nanomsg.getError();
+            throw new IOException(msg, errno);
         }
 
         return fd.getValue();
