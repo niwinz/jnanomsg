@@ -1,7 +1,6 @@
 package nanomsg;
 
 import nanomsg.exceptions.IOException;
-import nanomsg.exceptions.EAgainException;
 
 /**
  * Common interface that should implement all sockets.
