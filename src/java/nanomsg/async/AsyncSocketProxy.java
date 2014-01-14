@@ -1,6 +1,7 @@
 package nanomsg.async;
 
 import nanomsg.ISocket;
+import nanomsg.Nanomsg;
 import nanomsg.exceptions.IOException;
 import nanomsg.exceptions.EAgainException;
 import nanomsg.async.IAsyncCallback;
@@ -37,14 +38,11 @@ public class AsyncSocketProxy {
      * @param callback IAsyncCallback interface object.
      */
     public void sendString(final String data, final IAsyncCallback<Boolean> callback) {
-        PollService.service.registerOnce(new IAsyncRunnable() {
-            public void run() throws EAgainException {
+        PollService.service.registerOnce(this.socket, Nanomsg.constants.NN_SNDFD, new IAsyncRunnable() {
+            public void run()  {
                 try {
                     socket.sendString(data, false);
                     callback.success(true);
-                } catch (EAgainException e) {
-                    System.out.println("!");
-                    throw e;
                 } catch (IOException e) {
                     System.out.println("!");
                     callback.fail(e);
@@ -61,13 +59,11 @@ public class AsyncSocketProxy {
      * @param callback IAsyncCallback interface object.
      */
     public void recvString(final IAsyncCallback<String> callback) {
-        PollService.service.registerOnce(new IAsyncRunnable() {
-            public void run() throws EAgainException {
+        PollService.service.registerOnce(this.socket, Nanomsg.constants.NN_RCVFD, new IAsyncRunnable() {
+            public void run() {
                 try {
                     final String received = socket.recvString(false);
                     callback.success(received);
-                } catch (EAgainException e) {
-                    throw e;
                 } catch (IOException e) {
                     callback.fail(e);
                 }
@@ -84,8 +80,8 @@ public class AsyncSocketProxy {
      * @param callback IAsyncCallback interface object.
      */
     public void sendBytes(final byte[] data, final IAsyncCallback<Boolean> callback) {
-        PollService.service.registerOnce(new IAsyncRunnable() {
-            public void run() throws EAgainException {
+        PollService.service.registerOnce(this.socket, Nanomsg.constants.NN_SNDFD, new IAsyncRunnable() {
+            public void run() {
                 try {
                     socket.sendBytes(data, true);
                     callback.success(true);
@@ -104,8 +100,8 @@ public class AsyncSocketProxy {
      * @param callback IAsyncCallback interface object.
      */
     public void recvBytes(final IAsyncCallback<byte[]> callback) {
-        PollService.service.registerOnce(new IAsyncRunnable() {
-            public void run() throws EAgainException {
+        PollService.service.registerOnce(this.socket, Nanomsg.constants.NN_RCVFD, new IAsyncRunnable() {
+            public void run() {
                 try {
                     final byte[] received = socket.recvBytes(true);
                     callback.success(received);
