@@ -18,7 +18,7 @@
            (nanomsg.pair PairSocket)
            (nanomsg.bus BusSocket)
            (nanomsg ISocket Socket Nanomsg Device)
-           (nanomsg.async IAsyncCallback AsyncSocketProxy))
+           (nanomsg.async IAsyncCallback AsyncSocket))
   (:require [clojure.core.async :refer [chan put!]]))
 
 (def ^:static ^:private supported-sockets
@@ -76,7 +76,6 @@
 
 (defrecord AsyncConnection [s px]
   INNSocket
-
   (bind! [_ endpoint]
     (.bind s endpoint))
   (connect! [_ endpoint]
@@ -124,7 +123,7 @@
    (let [cls        (-> socktype supported-sockets)
          instance   (.newInstance cls)
          conn       (if (:async opts)
-                      (->AsyncConnection instance (AsyncSocketProxy. instance))
+                      (->AsyncConnection instance (AsyncSocket. instance))
                       (->Connection instance))]
      (cond
        (:bind opts) (bind! conn (:bind opts))
