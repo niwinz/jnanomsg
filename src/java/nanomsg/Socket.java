@@ -245,11 +245,35 @@ public abstract class Socket implements ISocket {
         return fd.getValue();
     }
 
-    /* public int getReadFd() throws IOException { */
-    /*     return getFd(Nanomsg.constants.NN_RCVFD); */
-    /* } */
+    public void setSendTimeout(final int milis) {
+        final int socket = getNativeSocket();
 
-    /* public int getWriteFd() throws IOException { */
-    /*     return getFd(Nanomsg.constants.NN_SNDFD); */
-    /* } */
+        /* IntByReference timeout = new IntByReference(milis); */
+        /* Pointer ptr = timeout.getPointer(); */
+        Memory ptr = new Memory(Native.LONG_SIZE/2);
+        ptr.setInt(0, milis);
+
+        final int rc = NativeLibrary.nn_setsockopt(socket, Nanomsg.constants.NN_SOL_SOCKET, Nanomsg.constants.NN_SNDTIMEO, ptr, Native.LONG_SIZE/2);
+
+        /* if (rc < 0) { */
+        /*     final int errno = Nanomsg.getErrorNumber(); */
+        /*     final String msg = Nanomsg.getError(); */
+        /*     throw new IOException(msg, errno); */
+        /* } */
+    }
+
+    public void setRecvTimeout(int milis) {
+        final int socket = getNativeSocket();
+
+        Memory ptr = new Memory(Native.LONG_SIZE/2);
+        ptr.setInt(0, milis);
+
+        final int rc = NativeLibrary.nn_setsockopt(socket, Nanomsg.constants.NN_SOL_SOCKET, Nanomsg.constants.NN_RCVTIMEO, ptr, Native.LONG_SIZE/2);
+
+        /* if (rc < 0) { */
+        /*     final int errno = Nanomsg.getErrorNumber(); */
+        /*     final String msg = Nanomsg.getError(); */
+        /*     throw new IOException(msg, errno); */
+        /* } */
+    }
 }
