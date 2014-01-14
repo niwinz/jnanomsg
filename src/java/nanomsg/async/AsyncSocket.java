@@ -16,34 +16,31 @@ import nanomsg.async.SimpleAsyncScheduler;
 /**
  * Experimental socket proxy that enables async way to
  * send or receive data from socket.
- *
- * At the mooment it only implements send/receive
- * string througt socket.
  */
-public class AsyncSocketProxy {
+public class AsyncSocket {
     private final ISocket socket;
     private final IAsyncScheduler scheduler;
 
     /**
      * Given any socket that implements ISocket interface
-     * create new AsyncSocketProxy proxy for it.
+     * create new AsyncSocket proxy for it.
      *
      * NOTE: this reuses a common scheduler.
      *
      * @param socket any socket that implements ISocket interface
      */
-    public AsyncSocketProxy(final ISocket socket) {
+    public AsyncSocket(final ISocket socket) {
         this(socket, SimpleAsyncScheduler.instance);
     }
 
     /**
      * Given any socket that implements ISocket interface
-     * and scheduler instance, create new AsyncSocketProxy proxy
+     * and scheduler instance, create new AsyncSocket proxy
      * for it.
      *
      * @param socket any socket that implements ISocket interface
      */
-    public AsyncSocketProxy(final ISocket socket, IAsyncScheduler scheduler) {
+    public AsyncSocket(final ISocket socket, IAsyncScheduler scheduler) {
         this.socket = socket;
         this.scheduler = scheduler;
 
