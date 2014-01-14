@@ -13,7 +13,6 @@ import nanomsg.Nanomsg;
 import nanomsg.Message;
 import nanomsg.ISocket;
 import nanomsg.exceptions.IOException;
-import nanomsg.exceptions.EAgainException;
 
 
 public abstract class Socket implements ISocket {
