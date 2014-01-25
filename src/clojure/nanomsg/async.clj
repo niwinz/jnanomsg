@@ -39,7 +39,7 @@
   (take! [_ fn1-handler]
     (take!-impl sock fn1-handler)))
 
-(deftype NanomsgReadWriteChanel [sock]
+(deftype NanomsgReadWriteChannel [sock]
   protocols/ReadPort
   (take! [_ fn1-handler]
     (take!-impl sock fn1-handler))
@@ -74,8 +74,8 @@
               :pull (NanomsgReadChannel. px)
               :pub  (NanomsgWriteChannel. px)
               :sub  (NanomsgReadChannel. px)
-              :req  (NanomsgReadWriteChanel. px)
-              :rep  (NanomsgReadWriteChanel. px))]
+              :req  (NanomsgReadWriteChannel. px)
+              :rep  (NanomsgReadWriteChannel. px))]
     (cond
       bind (nn/bind! s bind)
       connect (nn/connect! s connect))
