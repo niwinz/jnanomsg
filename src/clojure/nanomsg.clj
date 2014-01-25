@@ -111,8 +111,7 @@
   (send-bytes! [_ data blocking]
     (throw (UnsupportedOperationException. "Unsuporded arity for async connection.")))
   (recv-bytes! [_ blocking]
-    (throw (UnsupportedOperationException. "Unsuporded arity for async connection.")))
-  )
+    (throw (UnsupportedOperationException. "Unsuporded arity for async connection."))))
 
 (defn socket
   "Geiven a socket type, create a new instance

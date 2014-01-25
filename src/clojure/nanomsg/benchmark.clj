@@ -1,5 +1,6 @@
 (ns nanomsg.benchmark
   (:require [nanomsg :as nn]
+            [nanomsg.async :as nna]
             [clojure.core.async :as async])
   (:gen-class))
 
