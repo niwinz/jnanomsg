@@ -1,5 +1,7 @@
 (ns nanomsg-tests
   (:require [nanomsg :as nn]
+            [nanomsg.async :as nna]
+            [clojure.core.async :refer [<! >! go put! take!]]
             [clojure.test :refer :all]))
 
 (def s-bind-tcp "tcp://127.0.0.1:5555")
@@ -9,6 +11,22 @@
 (defn sleep
   [t]
   (Thread/sleep t))
+
+(deftest core-async-tests
+  (testing "Channel send and receive strings."
+    (let [p  (promise)
+          c1 (nna/chan :socktype :push :bind (str s-bind-ipc ".async1"))
+          c2 (nna/chan :socktype :pull :connect (str s-bind-ipc ".async1"))]
+      (put! c1 "foo")
+      (take! c2 (fn [v] (deliver p v)))
+      (is (= @p "foo"))))
+  (testing "Channel send and receive clojure maps"
+    (let [p  (promise)
+          c1 (nna/chan :socktype :push :bind (str s-bind-ipc ".async2"))
+          c2 (nna/chan :socktype :pull :connect (str s-bind-ipc ".async2"))]
+      (put! c1 {:foo 1})
+      (take! c2 (fn [v] (deliver p v)))
+      (is (= @p {:foo 1})))))
 
 (deftest main-tests
   (testing "ReqRep"
