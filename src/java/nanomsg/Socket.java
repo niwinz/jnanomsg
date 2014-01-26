@@ -30,10 +30,16 @@ public abstract class Socket implements ISocket {
         this.opened = true;
     }
 
-    public void close() {
+    public void close() throws IOException {
         if (this.opened && !this.closed) {
             this.closed = true;
-            NativeLibrary.nn_close(this.socket);
+            final int rc = NativeLibrary.nn_close(this.socket);
+
+            if (rc < 0) {
+                final int errno = Nanomsg.getErrorNumber();
+                final String msg = Nanomsg.getError();
+                throw new IOException(msg, errno);
+            }
         }
     }
 

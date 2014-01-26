@@ -6,7 +6,7 @@ import nanomsg.exceptions.IOException;
  * Common interface that should implement all sockets.
  */
 public interface ISocket {
-    public void close();
+    public void close() throws IOException;
     public int getNativeSocket();
     public void bind(final String dir) throws IOException;
     public void connect(final String dir) throws IOException;
