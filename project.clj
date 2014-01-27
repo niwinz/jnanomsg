@@ -12,10 +12,10 @@
   :java-source-paths ["src/java"]
   :plugins [[lein-javadoc "0.1.1"]
             [codox "0.6.6"]]
-  :javadoc-opts {:output-dir "docs/api/java"
+  :javadoc-opts {:output-dir "doc/api/java"
                  :package-names ["nanomsg" "nanomsg.jna" "nanomsg.pubsub" "nanomsg.exceptions"
                                  "nanomsg.reqrep" "nanomsg.bus" "nanomsg.pair" "nanomsg.pipeline"]}
-  :codox {:output-dir "docs/api/clojure"
+  :codox {:output-dir "doc/api/clojure"
           :src-dir-uri "http://github.com/niwibe/jnanomsg/blob/master/"
           :src-linenum-anchor-prefix "L"}
   :main nanomsg.benchmark

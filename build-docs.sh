@@ -1,12 +1,14 @@
 #!/bin/sh
-(cd docs; make)
+(cd doc; make)
 lein doc
 lein javadoc
-cp -vr docs/index.html /tmp/index.html;
-cp -vr docs/api /tmp/api
+cp -vr doc/index.html /tmp/index.html;
+cp -vr doc/static /tmp/static
+cp -vr doc/api /tmp/api
 git checkout gh-pages;
 rm -rf *
 mv -fv /tmp/index.html .
+mv -fv /tmp/static .
 mv -fv /tmp/api .
 
 git add --all index.html
