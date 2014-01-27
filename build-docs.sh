@@ -13,4 +13,5 @@ mv -fv /tmp/api .
 
 git add --all index.html
 git add --all api
+git add --all static
 git commit -a -m "Update doc"
