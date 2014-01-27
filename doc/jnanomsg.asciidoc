@@ -513,12 +513,61 @@ such as link:http://daasd.com[Pulsar]).
 NOTE: async implementation is experimental and not efficient, because it uses a thread
 pool for execute all blocking call instead of use epoll (or any other poll implementaitions).
 
+core.async support
+++++++++++++++++++
+
+WARNING: this feature is an experiment and it should be used with precaution.
+
+jnanomsg, also comes with simple **core.async** support (defacto clojure library for async programming),
+and exposes a partial implementation of core.async channels over jnanomsg sockets.
+
+This allows distributed communication between distinct processes like a clustering
+features of akka (actors for scala) or pulsar actors.
+
+
+There one simple example of use **push/pull** (pipeline) scalability protocol with core.async channels:
+
+._server.clj_
+[source,clojure]
+----
+(ns serverns.core
+  (:require [nanomsg.async :as nna]
+            [clojure.core.async :refer [put!]]))
+
+(defn -main
+  [& args]
+  (let [c (nna/chan :push :bind "ipc:///tmp/sock")]
+    (put! c "message")))
+----
+
+
+._client.clj_
+----
+(ns clientns.core
+  (:require [nanomsg.async :as nna]
+            [clojure.core.async :refer [put!]]))
+
+(defn -main
+  [& args]
+  (let [c (nna/chan :pull :connect "ipc:///tmp/sock")]
+    (take! c (fn [msg] (println msg)))))
+----
+
+[NOTE]
+At this momment only **pipeline** scalability protocol is implemented for use with channels, that
+has the limitation of a unidirectional channels. In near future other scalability protocols should
+to be implemented for use them as core.async channels.
+
+[NOTE]
+jnanomsg sockets have small default timeout value for send/recv operations
+and your code should handle well if a socket returns a exception or channel
+returns a nil (nil with jnanomsg channels not marks channel as closed).
 
 License
 -------
 
 ----
-Copyright 2013 Andrey Antukh <niwi@niwi.be>
+Copyright 2013-2014 Andrey Antukh <niwi@niwi.be>
 
 Licensed under the Apache License, Version 2.0 (the "License")
 you may not use this file except in compliance with the License.
