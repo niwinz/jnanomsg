@@ -1,4 +1,5 @@
 nanomsg
+nanomsg.async
 nanomsg.bus
 nanomsg.exceptions
 nanomsg.pair
