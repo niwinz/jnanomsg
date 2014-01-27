@@ -524,6 +524,65 @@ such as <a href="http://daasd.com">Pulsar</a>).</p></div>
 pool for execute all blocking call instead of use epoll (or any other poll implementaitions).</td>
 </tr></table>
 </div>
+<div class="sect4">
+<h5 id="_core_async_support">core.async support</h5>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Warning</div>
+</td>
+<td class="content">this feature is an experiment and it should be used with precaution.</td>
+</tr></table>
+</div>
+<div class="paragraph"><p>jnanomsg, also comes with simple <strong>core.async</strong> support (defacto clojure library for async programming),
+and exposes a partial implementation of core.async channels over jnanomsg sockets.</p></div>
+<div class="paragraph"><p>This allows distributed communication between distinct processes like a clustering
+features of akka (actors for scala) or pulsar actors.</p></div>
+<div class="paragraph"><p>There one simple example of use <strong>push/pull</strong> (pipeline) scalability protocol with core.async channels:</p></div>
+<div class="listingblock">
+<div class="title"><em>server.clj</em></div>
+<div class="content"><div class="highlight"><pre><span class="p">(</span><span class="kd">ns </span><span class="nv">serverns.core</span>
+  <span class="p">(</span><span class="ss">:require</span> <span class="p">[</span><span class="nv">nanomsg.async</span> <span class="ss">:as</span> <span class="nv">nna</span><span class="p">]</span>
+            <span class="p">[</span><span class="nv">clojure.core.async</span> <span class="ss">:refer</span> <span class="p">[</span><span class="nv">put!</span><span class="p">]]))</span>
+
+<span class="p">(</span><span class="kd">defn </span><span class="nv">-main</span>
+  <span class="p">[</span><span class="o">&amp;</span> <span class="nv">args</span><span class="p">]</span>
+  <span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">c</span> <span class="p">(</span><span class="nf">nna/chan</span> <span class="ss">:push</span> <span class="ss">:bind</span> <span class="s">&quot;ipc:///tmp/sock&quot;</span><span class="p">)]</span>
+    <span class="p">(</span><span class="nf">put!</span> <span class="nv">c</span> <span class="s">&quot;message&quot;</span><span class="p">)))</span>
+</pre></div></div></div>
+<div class="listingblock">
+<div class="title"><em>client.clj</em></div>
+<div class="content monospaced">
+<pre>(ns clientns.core
+  (:require [nanomsg.async :as nna]
+            [clojure.core.async :refer [put!]]))
+
+(defn -main
+  [&amp; args]
+  (let [c (nna/chan :pull :connect "ipc:///tmp/sock")]
+    (take! c (fn [msg] (println msg)))))</pre>
+</div></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">At this momment only <strong>pipeline</strong> scalability protocol is implemented for use with channels, that
+has the limitation of a unidirectional channels. In near future other scalability protocols should
+to be implemented for use them as core.async channels.</td>
+</tr></table>
+</div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">jnanomsg sockets have small default timeout value for send/recv operations
+and your code should handle well if a socket returns a exception or channel
+returns a nil (nil with jnanomsg channels not marks channel as closed).</td>
+</tr></table>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -533,7 +592,7 @@ pool for execute all blocking call instead of use epoll (or any other poll imple
 <div class="sectionbody">
 <div class="listingblock">
 <div class="content monospaced">
-<pre>Copyright 2013 Andrey Antukh &lt;niwi@niwi.be&gt;
+<pre>Copyright 2013-2014 Andrey Antukh &lt;niwi@niwi.be&gt;
 
 Licensed under the Apache License, Version 2.0 (the "License")
 you may not use this file except in compliance with the License.
@@ -554,7 +613,7 @@ limitations under the License.</pre>
 <div id="footer">
 <div id="footer-text">
 Version 0.2.0<br>
-Last updated 2014-01-27 20:52:58 CET
+Last updated 2014-01-27 21:54:05 CET
 </div>
 </div>
 </body>
