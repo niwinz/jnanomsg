@@ -34,6 +34,16 @@
     (.recvBytes async-sock callback)
     nil))
 
+(defn- close!-impl
+  [sock closed]
+  (swap! closed (fn [closed]
+                  (if-not closed
+                    (do
+                      (nn/close! sock)
+                      (not closed))
+                    closed))))
+
+
 (deftype NanomsgWriteChannel [sock closed]
   protocols/WritePort
   (put! [_ value fn1-handler]
@@ -43,12 +53,7 @@
 
   protocols/Channel
   (close! [_]
-    (swap! closed (fn [closed]
-                    (if-not closed
-                      (do
-                        (nn/close! sock)
-                        (not closed))
-                      closed)))))
+    (close!-impl sock closed)))
 
 (deftype NanomsgReadChannel [sock closed]
   protocols/ReadPort
@@ -57,12 +62,7 @@
 
   protocols/Channel
   (close! [_]
-    (swap! closed (fn [closed]
-                    (if-not closed
-                      (do
-                        (nn/close! sock)
-                        (not closed))
-                      closed)))))
+    (close!-impl sock closed)))
 
 (defn chan
   "Channel constructor. Returns a core.async compatible
