@@ -53,7 +53,7 @@ It aims to make the networking layer fast, scalable, and easy to use.</p></div>
 vector of your <strong><em>project.clj</em></strong> file:</p></div>
 <div class="listingblock">
 <div class="title"><em>on project.clj</em></div>
-<div class="content"><div class="highlight"><pre><span class="p">[</span><span class="nv">jnanomsg</span> <span class="s">&quot;0.3.0&quot;</span><span class="p">]</span>
+<div class="content"><div class="highlight"><pre><span class="p">[</span><span class="nv">jnanomsg</span> <span class="s">&quot;0.3.1&quot;</span><span class="p">]</span>
 </pre></div></div></div>
 </div>
 <div class="sect2">
@@ -70,7 +70,7 @@ vector of your <strong><em>project.clj</em></strong> file:</p></div>
 <div class="content"><div class="highlight"><pre><span class="nt">&lt;dependency&gt;</span>
     <span class="nt">&lt;groupId&gt;</span>jnanomsg<span class="nt">&lt;/groupId&gt;</span>
     <span class="nt">&lt;artifactId&gt;</span>jnanomsg<span class="nt">&lt;/artifactId&gt;</span>
-    <span class="nt">&lt;version&gt;</span>0.3.0<span class="nt">&lt;/version&gt;</span>
+    <span class="nt">&lt;version&gt;</span>0.3.1<span class="nt">&lt;/version&gt;</span>
 <span class="nt">&lt;/dependency&gt;</span>
 </pre></div></div></div>
 </div>
@@ -534,8 +534,9 @@ pool for execute all blocking call instead of use epoll (or any other poll imple
 <td class="content">this feature is an experiment and it should be used with precaution.</td>
 </tr></table>
 </div>
-<div class="paragraph"><p>jnanomsg exposes limited implementation of core.async channels over jnanomsg sockets,
-that allow create transparent distributed communication.</p></div>
+<div class="paragraph"><p>jnanomsg exposes limited and not fully compliant implementation of core.async channels over
+jnanomsg sockets, that allow create transparent distributed communication for code that works
+over core.async channels.</p></div>
 <div class="paragraph"><p>There one simple example of <strong>core.async</strong> channel over <strong>push/pull</strong> (pipeline)
 scalability protocol:</p></div>
 <div class="listingblock">
@@ -553,7 +554,7 @@ scalability protocol:</p></div>
 <div class="title"><em>client.clj</em></div>
 <div class="content"><div class="highlight"><pre><span class="p">(</span><span class="kd">ns </span><span class="nv">clientns.core</span>
   <span class="p">(</span><span class="ss">:require</span> <span class="p">[</span><span class="nv">nanomsg.async</span> <span class="ss">:as</span> <span class="nv">nna</span><span class="p">]</span>
-            <span class="p">[</span><span class="nv">clojure.core.async</span> <span class="ss">:refer</span> <span class="p">[</span><span class="nv">put!</span><span class="p">]]))</span>
+            <span class="p">[</span><span class="nv">clojure.core.async</span> <span class="ss">:refer</span> <span class="p">[</span><span class="nv">take!</span><span class="p">]]))</span>
 
 <span class="p">(</span><span class="kd">defn </span><span class="nv">-main</span>
   <span class="p">[</span><span class="o">&amp;</span> <span class="nv">args</span><span class="p">]</span>
@@ -573,7 +574,7 @@ to be implemented for use them as core.async channels.</td>
 <div class="admonitionblock">
 <table><tr>
 <td class="icon">
-<div class="title">Note</div>
+<div class="title">Warning</div>
 </td>
 <td class="content">jnanomsg sockets have small default timeout value for send/recv operations
 and your code should handle well if a socket returns a exception or channel
@@ -611,7 +612,7 @@ limitations under the License.</pre>
 <div id="footer">
 <div id="footer-text">
 Version 0.3.0<br>
-Last updated 2014-02-09 01:36:42 CET
+Last updated 2014-02-09 11:27:34 CET
 </div>
 </div>
 </body>
