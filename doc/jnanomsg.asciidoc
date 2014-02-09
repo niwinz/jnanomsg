@@ -18,7 +18,7 @@ Api documentation for link:api/clojure/index.html[Clojure] and link:api/java/ind
 Project Maturity
 ----------------
 
-_jnanomsg_ is a young project and can experiment some api changes.
+_jnanomsg_ is a young project and is in experimental phase.
 
 Install
 -------
