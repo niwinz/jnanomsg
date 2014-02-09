@@ -10,7 +10,7 @@ Andrey Antukh, <niwi@niwi.be>
 Introduction
 ------------
 
-link:http://nanomsg.org[nanomsg] is a socket library that provides common communication patterns. 
+link:http://nanomsg.org[nanomsg] is a socket library that provides common communication patterns.
 It aims to make the networking layer fast, scalable, and easy to use.
 
 Api documentation for link:api/clojure/index.html[Clojure] and link:api/java/index.html[Java].
@@ -93,8 +93,8 @@ User guide
 Introduction
 ~~~~~~~~~~~~
 
-All public clojure api for work with nanomsg library is exposed under `nanomsg` namespace, 
-and it consist on only few functions: `connect!`, `bind!`, `subscribe!`, `socket`, `send!`, 
+All public clojure api for work with nanomsg library is exposed under `nanomsg` namespace,
+and it consist on only few functions: `connect!`, `bind!`, `subscribe!`, `socket`, `send!`,
 `recv!`, `send-bytes!`, `recv-bytes!`, `close!`, `terminate!` and `symbols` that are fairly self-descriptive.
 
 Example importing `nanomsg` namespace on clojure file:
@@ -151,7 +151,7 @@ Example of connect/bind operation using a single step:
 NOTE: On clojure, a socket types are represented by keywords. With this approach,
 you can create any socket type with one unique function: `socket`. As you can see
 on previous examples, I have used `:req` and `:rep` keywords for create respectively
-_request_ and _reply_ socket types that are part of 
+_request_ and _reply_ socket types that are part of
 link:http://nanomsg.org/v0.2/nn_reqrep.7.html[Req/Rep protocol]
 
 
@@ -193,7 +193,7 @@ public class Server {
 
 INFO: You can see in more detail a java api on link:api/java/index.html[javadoc].
 
-NOTE: With both languages, you can execute bind multiple times for listen 
+NOTE: With both languages, you can execute bind multiple times for listen
 in multiple socket locations.
 
 
@@ -446,7 +446,7 @@ public class Greeter {
 Async support
 ~~~~~~~~~~~~~
 
-Since version 0.3, _jnanomsg_ comes with basic and experimental support for 
+Since version 0.3, _jnanomsg_ comes with basic and experimental support for
 asynchronous sockets for both languages.
 
 Java
@@ -489,7 +489,7 @@ public class Greeter {
 Clojure
 ^^^^^^^
 
-Clojure takes very different approach than java. For it, it uses `core.async` as dependency 
+Clojure takes very different approach than java. For it, it uses `core.async` as dependency
 (you always can use java/clojure api for implement the same behavior with other libraries,
 such as link:https://github.com/puniverse/pulsar[Pulsar]).
 
@@ -518,11 +518,11 @@ core.async channels support
 
 WARNING: this feature is an experiment and it should be used with precaution.
 
-jnanomsg exposes limited implementation of core.async channels over jnanomsg sockets,
-that allow create transparent distributed communication. 
+jnanomsg exposes limited and not fully compliant implementation of core.async channels over
+jnanomsg sockets, that allow create transparent distributed communication for code that works
+over core.async channels.
 
-
-There one simple example of **core.async** channel over **push/pull** (pipeline) 
+There one simple example of **core.async** channel over **push/pull** (pipeline)
 scalability protocol:
 
 ._server.clj_
@@ -544,7 +544,7 @@ scalability protocol:
 ----
 (ns clientns.core
   (:require [nanomsg.async :as nna]
-            [clojure.core.async :refer [put!]]))
+            [clojure.core.async :refer [take!]]))
 
 (defn -main
   [& args]
@@ -557,7 +557,7 @@ At this momment only **pipeline** scalability protocol is implemented for use wi
 has the limitation of a unidirectional channels. In near future other scalability protocols should
 to be implemented for use them as core.async channels.
 
-[NOTE]
+[WARNING]
 jnanomsg sockets have small default timeout value for send/recv operations
 and your code should handle well if a socket returns a exception or channel
 returns a nil (nil with jnanomsg channels not marks channel as closed).

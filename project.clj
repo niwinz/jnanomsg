@@ -1,4 +1,4 @@
-(defproject jnanomsg "0.3.0"
+(defproject jnanomsg "0.3.1"
   :description "Nanomsg clojure/java wrapper."
   :url "https://github.com/niwibe/jnanomsg"
   :license {:name "Apache 2.0"
