@@ -525,7 +525,7 @@ pool for execute all blocking call instead of use epoll (or any other poll imple
 </tr></table>
 </div>
 <div class="sect4">
-<h5 id="_core_async_support">core.async support</h5>
+<h5 id="_core_async_channels_support">core.async channels support</h5>
 <div class="admonitionblock">
 <table><tr>
 <td class="icon">
@@ -534,11 +534,10 @@ pool for execute all blocking call instead of use epoll (or any other poll imple
 <td class="content">this feature is an experiment and it should be used with precaution.</td>
 </tr></table>
 </div>
-<div class="paragraph"><p>jnanomsg, also comes with simple <strong>core.async</strong> support (defacto clojure library for async programming),
-and exposes a partial implementation of core.async channels over jnanomsg sockets.</p></div>
-<div class="paragraph"><p>This allows distributed communication between distinct processes like a clustering
-features of akka (actors for scala) or pulsar actors.</p></div>
-<div class="paragraph"><p>There one simple example of use <strong>push/pull</strong> (pipeline) scalability protocol with core.async channels:</p></div>
+<div class="paragraph"><p>jnanomsg exposes limited implementation of core.async channels over jnanomsg sockets,
+that allow create transparent distributed communication.</p></div>
+<div class="paragraph"><p>There one simple example of <strong>core.async</strong> channel over <strong>push/pull</strong> (pipeline)
+scalability protocol:</p></div>
 <div class="listingblock">
 <div class="title"><em>server.clj</em></div>
 <div class="content"><div class="highlight"><pre><span class="p">(</span><span class="kd">ns </span><span class="nv">serverns.core</span>
@@ -612,7 +611,7 @@ limitations under the License.</pre>
 <div id="footer">
 <div id="footer-text">
 Version 0.3.0<br>
-Last updated 2014-02-09 01:30:51 CET
+Last updated 2014-02-09 01:36:42 CET
 </div>
 </div>
 </body>
