@@ -21,8 +21,8 @@ asciidoc.install(2);
 <h1>jnanomsg documentation</h1>
 <span id="author">Andrey Antukh,</span><br>
 <span id="email" class="monospaced">&lt;<a href="mailto:niwi@niwi.be">niwi@niwi.be</a>&gt;</span><br>
-<span id="revnumber">version 0.2.0,</span>
-<span id="revdate">2014-01-08</span>
+<span id="revnumber">version 0.3.0,</span>
+<span id="revdate">2014-02-09</span>
 <div id="toc">
   <div id="toctitle">Table of Contents</div>
   <noscript><p><b>JavaScript must be enabled in your browser to display the table of contents.</b></p></noscript>
@@ -40,7 +40,7 @@ It aims to make the networking layer fast, scalable, and easy to use.</p></div>
 <div class="sect1">
 <h2 id="_project_maturity">2. Project Maturity</h2>
 <div class="sectionbody">
-<div class="paragraph"><p><em>jnanomsg</em> is a young project and can experiment some api changes.</p></div>
+<div class="paragraph"><p><em>jnanomsg</em> is a young project and is in experimental phase.</p></div>
 </div>
 </div>
 <div class="sect1">
@@ -53,7 +53,7 @@ It aims to make the networking layer fast, scalable, and easy to use.</p></div>
 vector of your <strong><em>project.clj</em></strong> file:</p></div>
 <div class="listingblock">
 <div class="title"><em>on project.clj</em></div>
-<div class="content"><div class="highlight"><pre><span class="p">[</span><span class="nv">jnanomsg</span> <span class="s">&quot;0.2.0&quot;</span><span class="p">]</span>
+<div class="content"><div class="highlight"><pre><span class="p">[</span><span class="nv">jnanomsg</span> <span class="s">&quot;0.3.0&quot;</span><span class="p">]</span>
 </pre></div></div></div>
 </div>
 <div class="sect2">
@@ -70,7 +70,7 @@ vector of your <strong><em>project.clj</em></strong> file:</p></div>
 <div class="content"><div class="highlight"><pre><span class="nt">&lt;dependency&gt;</span>
     <span class="nt">&lt;groupId&gt;</span>jnanomsg<span class="nt">&lt;/groupId&gt;</span>
     <span class="nt">&lt;artifactId&gt;</span>jnanomsg<span class="nt">&lt;/artifactId&gt;</span>
-    <span class="nt">&lt;version&gt;</span>0.2.0<span class="nt">&lt;/version&gt;</span>
+    <span class="nt">&lt;version&gt;</span>0.3.0<span class="nt">&lt;/version&gt;</span>
 <span class="nt">&lt;/dependency&gt;</span>
 </pre></div></div></div>
 </div>
@@ -552,16 +552,15 @@ features of akka (actors for scala) or pulsar actors.</p></div>
 </pre></div></div></div>
 <div class="listingblock">
 <div class="title"><em>client.clj</em></div>
-<div class="content monospaced">
-<pre>(ns clientns.core
-  (:require [nanomsg.async :as nna]
-            [clojure.core.async :refer [put!]]))
+<div class="content"><div class="highlight"><pre><span class="p">(</span><span class="kd">ns </span><span class="nv">clientns.core</span>
+  <span class="p">(</span><span class="ss">:require</span> <span class="p">[</span><span class="nv">nanomsg.async</span> <span class="ss">:as</span> <span class="nv">nna</span><span class="p">]</span>
+            <span class="p">[</span><span class="nv">clojure.core.async</span> <span class="ss">:refer</span> <span class="p">[</span><span class="nv">put!</span><span class="p">]]))</span>
 
-(defn -main
-  [&amp; args]
-  (let [c (nna/chan :pull :connect "ipc:///tmp/sock")]
-    (take! c (fn [msg] (println msg)))))</pre>
-</div></div>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">-main</span>
+  <span class="p">[</span><span class="o">&amp;</span> <span class="nv">args</span><span class="p">]</span>
+  <span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">c</span> <span class="p">(</span><span class="nf">nna/chan</span> <span class="ss">:pull</span> <span class="ss">:connect</span> <span class="s">&quot;ipc:///tmp/sock&quot;</span><span class="p">)]</span>
+    <span class="p">(</span><span class="nf">take!</span> <span class="nv">c</span> <span class="p">(</span><span class="k">fn </span><span class="p">[</span><span class="nv">msg</span><span class="p">]</span> <span class="p">(</span><span class="nb">println </span><span class="nv">msg</span><span class="p">)))))</span>
+</pre></div></div></div>
 <div class="admonitionblock">
 <table><tr>
 <td class="icon">
@@ -612,8 +611,8 @@ limitations under the License.</pre>
 <div id="footnotes"><hr></div>
 <div id="footer">
 <div id="footer-text">
-Version 0.2.0<br>
-Last updated 2014-01-27 21:54:05 CET
+Version 0.3.0<br>
+Last updated 2014-02-09 01:22:08 CET
 </div>
 </div>
 </body>
