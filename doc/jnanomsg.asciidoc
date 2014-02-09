@@ -513,19 +513,17 @@ such as link:https://github.com/puniverse/pulsar[Pulsar]).
 NOTE: async implementation is experimental and not efficient, because it uses a thread
 pool for execute all blocking call instead of use epoll (or any other poll implementaitions).
 
-core.async support
-++++++++++++++++++
+core.async channels support
++++++++++++++++++++++++++++
 
 WARNING: this feature is an experiment and it should be used with precaution.
 
-jnanomsg, also comes with simple **core.async** support (defacto clojure library for async programming),
-and exposes a partial implementation of core.async channels over jnanomsg sockets.
-
-This allows distributed communication between distinct processes like a clustering
-features of akka (actors for scala) or pulsar actors.
+jnanomsg exposes limited implementation of core.async channels over jnanomsg sockets,
+that allow create transparent distributed communication. 
 
 
-There one simple example of use **push/pull** (pipeline) scalability protocol with core.async channels:
+There one simple example of **core.async** channel over **push/pull** (pipeline) 
+scalability protocol:
 
 ._server.clj_
 [source,clojure]
@@ -563,6 +561,7 @@ to be implemented for use them as core.async channels.
 jnanomsg sockets have small default timeout value for send/recv operations
 and your code should handle well if a socket returns a exception or channel
 returns a nil (nil with jnanomsg channels not marks channel as closed).
+
 
 License
 -------
