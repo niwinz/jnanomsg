@@ -231,7 +231,11 @@ public abstract class Socket implements ISocket {
         return new Message(recvBytes(blocking));
     }
 
-    public void subscribe(final String data) throws IOException {
+    public void subscribe(final String topic) throws IOException {
+        throw new UnsupportedOperationException("This socket can not support subscribe method.");
+    }
+
+    public void unsubscribe(final String topic) throws IOException {
         throw new UnsupportedOperationException("This socket can not support subscribe method.");
     }
 
@@ -239,7 +243,8 @@ public abstract class Socket implements ISocket {
         final IntByReference fd = new IntByReference();
         final IntByReference size_t = new IntByReference(Native.SIZE_T_SIZE);
 
-        final int rc = NativeLibrary.nn_getsockopt(this.socket, Nanomsg.constants.NN_SOL_SOCKET, flag, fd.getPointer(), size_t.getPointer());
+        final int rc = NativeLibrary.nn_getsockopt(this.socket, Nanomsg.constants.NN_SOL_SOCKET,
+                                                   flag, fd.getPointer(), size_t.getPointer());
 
         if (rc < 0) {
             throw new IOException(Nanomsg.getError());
@@ -257,18 +262,11 @@ public abstract class Socket implements ISocket {
     public void setSendTimeout(final int milis) {
         final int socket = getNativeSocket();
 
-        /* IntByReference timeout = new IntByReference(milis); */
-        /* Pointer ptr = timeout.getPointer(); */
         Memory ptr = new Memory(Native.LONG_SIZE/2);
         ptr.setInt(0, milis);
 
-        final int rc = NativeLibrary.nn_setsockopt(socket, Nanomsg.constants.NN_SOL_SOCKET, Nanomsg.constants.NN_SNDTIMEO, ptr, Native.LONG_SIZE/2);
-
-        /* if (rc < 0) { */
-        /*     final int errno = Nanomsg.getErrorNumber(); */
-        /*     final String msg = Nanomsg.getError(); */
-        /*     throw new IOException(msg, errno); */
-        /* } */
+        final int rc = NativeLibrary.nn_setsockopt(socket, Nanomsg.constants.NN_SOL_SOCKET,
+                                                   Nanomsg.constants.NN_SNDTIMEO, ptr, Native.LONG_SIZE/2);
     }
 
     public void setRecvTimeout(int milis) {
@@ -277,12 +275,7 @@ public abstract class Socket implements ISocket {
         Memory ptr = new Memory(Native.LONG_SIZE/2);
         ptr.setInt(0, milis);
 
-        final int rc = NativeLibrary.nn_setsockopt(socket, Nanomsg.constants.NN_SOL_SOCKET, Nanomsg.constants.NN_RCVTIMEO, ptr, Native.LONG_SIZE/2);
-
-        /* if (rc < 0) { */
-        /*     final int errno = Nanomsg.getErrorNumber(); */
-        /*     final String msg = Nanomsg.getError(); */
-        /*     throw new IOException(msg, errno); */
-        /* } */
+        final int rc = NativeLibrary.nn_setsockopt(socket, Nanomsg.constants.NN_SOL_SOCKET,
+                                                   Nanomsg.constants.NN_RCVTIMEO, ptr, Native.LONG_SIZE/2);
     }
 }

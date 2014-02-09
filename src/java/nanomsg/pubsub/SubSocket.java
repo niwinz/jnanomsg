@@ -22,15 +22,32 @@ public class SubSocket extends Socket {
     }
 
     @Override
-    public void subscribe(final String data) throws IOException {
+    public void subscribe(final String topic) throws IOException {
         final int socket = getNativeSocket();
 
         try {
-            final byte[] patternBytes = data.getBytes("utf-8");
+            final byte[] patternBytes = topic.getBytes("utf-8");
             final Memory mem = new Memory(patternBytes.length);
             mem.write(0, patternBytes, 0, patternBytes.length);
 
-            NativeLibrary.nn_setsockopt(socket, Nanomsg.constants.NN_SUB, Nanomsg.constants.NN_SUB_SUBSCRIBE, mem, patternBytes.length);
+            NativeLibrary.nn_setsockopt(socket, Nanomsg.constants.NN_SUB, Nanomsg.constants.NN_SUB_SUBSCRIBE,
+                                        mem, patternBytes.length);
+        } catch (UnsupportedEncodingException e) {
+            throw new IOException(e);
+        }
+    }
+
+    @Override
+    public void unsubscribe(final String topic) throws IOException {
+        final int socket = getNativeSocket();
+
+        try {
+            final byte[] patternBytes = topic.getBytes("utf-8");
+            final Memory mem = new Memory(patternBytes.length);
+            mem.write(0, patternBytes, 0, patternBytes.length);
+
+            NativeLibrary.nn_setsockopt(socket, Nanomsg.constants.NN_SUB, Nanomsg.constants.NN_SUB_UNSUBSCRIBE,
+                                        mem, patternBytes.length);
         } catch (UnsupportedEncodingException e) {
             throw new IOException(e);
         }

@@ -40,7 +40,8 @@
 (defprotocol INNSocket
   (bind! [_ dir] "Bind to endpoint specified by dir parameter.")
   (connect! [_ dir] "Connect to endpoint specified by dir parameter.")
-  (subscribe! [_ pattern] "Subscribe current socket to specified pattern.")
+  (subscribe! [_ pattern] "Subscribe current socket to specified topic.")
+  (unsubscribe! [_ pattern] "Unsubscribe current socket from specified topic.")
   (send! [_ data] [_ data blocking] "Send string using a socket.")
   (recv! [_] [_ blocking] "Receive string using a socket.")
   (send-bytes! [_ data] [_ data blocking] "Send bytes using socket.")
@@ -55,6 +56,8 @@
     (.connect s endpoint))
   (subscribe! [_ pattern]
     (.subscribe s pattern))
+  (unsubscribe! [_ pattern]
+    (.unsubscribe s pattern))
   (send-bytes! [_ data]
     (.sendBytes s data))
   (recv-bytes! [_]
@@ -82,6 +85,8 @@
     (.connect s endpoint))
   (subscribe! [_ pattern]
     (.subscribe s pattern))
+  (unsubscribe! [_ pattern]
+    (.unsubscribe s pattern))
   (send-bytes! [_ data]
     (let [ch (chan)
           cb (make-iasynccallback ch)]
