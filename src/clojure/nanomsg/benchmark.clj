@@ -83,4 +83,4 @@
 
 (defn -main
   []
-  (bench-async))
+  (bench-fn1))
