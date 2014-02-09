@@ -534,7 +534,7 @@ scalability protocol:
 
 (defn -main
   [& args]
-  (let [c (nna/chan :push :bind "ipc:///tmp/sock")]
+  (let [c (nna/chan :socktype :push :bind "ipc:///tmp/sock")]
     (put! c "message")))
 ----
 
@@ -548,7 +548,7 @@ scalability protocol:
 
 (defn -main
   [& args]
-  (let [c (nna/chan :pull :connect "ipc:///tmp/sock")]
+  (let [c (nna/chan :socktype :pull :connect "ipc:///tmp/sock")]
     (take! c (fn [msg] (println msg)))))
 ----
 
