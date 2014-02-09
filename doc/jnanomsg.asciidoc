@@ -491,7 +491,7 @@ Clojure
 
 Clojure takes very different approach than java. For it, it uses `core.async` as dependency 
 (you always can use java/clojure api for implement the same behavior with other libraries,
-such as link:http://daasd.com[Pulsar]).
+such as link:https://github.com/puniverse/pulsar[Pulsar]).
 
 [source,clojure]
 ----
