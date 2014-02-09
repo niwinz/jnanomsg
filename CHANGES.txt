@@ -7,10 +7,10 @@ Version 0.3.0
 Date: 2014-02-09
 
 - New: async api support for java bindings.
-- New: core.async support for all sockets.
-- New: core.async channels implementation (only for pipeline sockets)
+- New: experimental core.async support for all sockets.
+- New: experimental core.async channels implementation (only for pipeline sockets)
 - Fixes: removed hardcoded symbols, and now them are resolved in runtime.
-
+- Add missing unsubscribe method for both bindings.
 
 Version 0.2.0
 -------------
