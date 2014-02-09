@@ -34,7 +34,7 @@ vector of your *_project.clj_* file:
 ._on project.clj_
 [source,clojure]
 ----
-[jnanomsg "0.3.0"]
+[jnanomsg "0.3.1"]
 ----
 
 Maven
@@ -57,7 +57,7 @@ Following of jnanomsg package dependecy:
 <dependency>
     <groupId>jnanomsg</groupId>
     <artifactId>jnanomsg</artifactId>
-    <version>0.3.0</version>
+    <version>0.3.1</version>
 </dependency>
 ----
 
