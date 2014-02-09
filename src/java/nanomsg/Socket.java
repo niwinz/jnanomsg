@@ -29,8 +29,8 @@ public abstract class Socket implements ISocket {
         this.socket = NativeLibrary.nn_socket(domain, protocol);
         this.opened = true;
 
-        this.setSendTimeout(10000);
-        this.setRecvTimeout(10000);
+        this.setSendTimeout(600);
+        this.setRecvTimeout(600);
     }
 
     public void close() throws IOException {
