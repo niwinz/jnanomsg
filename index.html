@@ -547,7 +547,7 @@ scalability protocol:</p></div>
 
 <span class="p">(</span><span class="kd">defn </span><span class="nv">-main</span>
   <span class="p">[</span><span class="o">&amp;</span> <span class="nv">args</span><span class="p">]</span>
-  <span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">c</span> <span class="p">(</span><span class="nf">nna/chan</span> <span class="ss">:push</span> <span class="ss">:bind</span> <span class="s">&quot;ipc:///tmp/sock&quot;</span><span class="p">)]</span>
+  <span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">c</span> <span class="p">(</span><span class="nf">nna/chan</span> <span class="ss">:socktype</span> <span class="ss">:push</span> <span class="ss">:bind</span> <span class="s">&quot;ipc:///tmp/sock&quot;</span><span class="p">)]</span>
     <span class="p">(</span><span class="nf">put!</span> <span class="nv">c</span> <span class="s">&quot;message&quot;</span><span class="p">)))</span>
 </pre></div></div></div>
 <div class="listingblock">
@@ -558,7 +558,7 @@ scalability protocol:</p></div>
 
 <span class="p">(</span><span class="kd">defn </span><span class="nv">-main</span>
   <span class="p">[</span><span class="o">&amp;</span> <span class="nv">args</span><span class="p">]</span>
-  <span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">c</span> <span class="p">(</span><span class="nf">nna/chan</span> <span class="ss">:pull</span> <span class="ss">:connect</span> <span class="s">&quot;ipc:///tmp/sock&quot;</span><span class="p">)]</span>
+  <span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">c</span> <span class="p">(</span><span class="nf">nna/chan</span> <span class="ss">:socktype</span> <span class="ss">:pull</span> <span class="ss">:connect</span> <span class="s">&quot;ipc:///tmp/sock&quot;</span><span class="p">)]</span>
     <span class="p">(</span><span class="nf">take!</span> <span class="nv">c</span> <span class="p">(</span><span class="k">fn </span><span class="p">[</span><span class="nv">msg</span><span class="p">]</span> <span class="p">(</span><span class="nb">println </span><span class="nv">msg</span><span class="p">)))))</span>
 </pre></div></div></div>
 <div class="admonitionblock">
@@ -612,7 +612,7 @@ limitations under the License.</pre>
 <div id="footer">
 <div id="footer-text">
 Version 0.3.0<br>
-Last updated 2014-02-09 11:27:34 CET
+Last updated 2014-02-09 11:31:24 CET
 </div>
 </div>
 </body>
