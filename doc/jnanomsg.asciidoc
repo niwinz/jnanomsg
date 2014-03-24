@@ -235,7 +235,7 @@ Example of using pub/sub protocols in clojure:
 Java
 ^^^^
 
-Example of using pub/sub protocols in clojure:
+Example of using pub/sub protocols in java:
 
 ._Publisher.java_
 [source,java]
