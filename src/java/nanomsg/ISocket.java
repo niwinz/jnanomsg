@@ -11,6 +11,7 @@ public interface ISocket {
     public void bind(final String dir) throws IOException;
     public void connect(final String dir) throws IOException;
     public void subscribe(final String data) throws IOException;
+    public void subscribe(final byte[] data) throws IOException;
 
     public int sendString(final String data, final boolean blocking) throws IOException, IOException;
     public int sendString(final String data) throws IOException, IOException;

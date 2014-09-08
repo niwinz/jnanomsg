@@ -1,15 +1,12 @@
 package nanomsg.pubsub;
 
-import com.sun.jna.Pointer;
 import com.sun.jna.Memory;
-import com.sun.jna.ptr.*;
-
-import java.io.UnsupportedEncodingException;
-
+import nanomsg.Nanomsg;
 import nanomsg.NativeLibrary;
 import nanomsg.Socket;
-import nanomsg.Nanomsg;
 import nanomsg.exceptions.IOException;
+
+import java.io.UnsupportedEncodingException;
 
 
 public class SubSocket extends Socket {
@@ -23,33 +20,40 @@ public class SubSocket extends Socket {
 
     @Override
     public void subscribe(final String topic) throws IOException {
-        final int socket = getNativeSocket();
-
         try {
-            final byte[] patternBytes = topic.getBytes("utf-8");
-            final Memory mem = new Memory(patternBytes.length);
-            mem.write(0, patternBytes, 0, patternBytes.length);
-
-            NativeLibrary.nn_setsockopt(socket, Nanomsg.constants.NN_SUB, Nanomsg.constants.NN_SUB_SUBSCRIBE,
-                                        mem, patternBytes.length);
+            subscribe(topic.getBytes("utf-8"));
         } catch (UnsupportedEncodingException e) {
             throw new IOException(e);
         }
     }
 
     @Override
-    public void unsubscribe(final String topic) throws IOException {
+    public void subscribe(final byte[] patternBytes) throws IOException {
         final int socket = getNativeSocket();
 
-        try {
-            final byte[] patternBytes = topic.getBytes("utf-8");
-            final Memory mem = new Memory(patternBytes.length);
-            mem.write(0, patternBytes, 0, patternBytes.length);
+        final Memory mem = new Memory(patternBytes.length);
+        mem.write(0, patternBytes, 0, patternBytes.length);
 
-            NativeLibrary.nn_setsockopt(socket, Nanomsg.constants.NN_SUB, Nanomsg.constants.NN_SUB_UNSUBSCRIBE,
-                                        mem, patternBytes.length);
+        NativeLibrary.nn_setsockopt(socket, Nanomsg.constants.NN_SUB, Nanomsg.constants.NN_SUB_SUBSCRIBE,
+                    mem, patternBytes.length);
+    }
+
+    @Override
+    public void unsubscribe(final String topic) throws IOException {
+        try {
+            unsubscribe(topic.getBytes("utf-8"));
         } catch (UnsupportedEncodingException e) {
             throw new IOException(e);
         }
+    }
+
+    @Override public void unsubscribe(byte[] patternBytes) throws IOException {
+        final int socket = getNativeSocket();
+
+        final Memory mem = new Memory(patternBytes.length);
+        mem.write(0, patternBytes, 0, patternBytes.length);
+
+        NativeLibrary.nn_setsockopt(socket, Nanomsg.constants.NN_SUB, Nanomsg.constants.NN_SUB_UNSUBSCRIBE,
+                    mem, patternBytes.length);
     }
 }
