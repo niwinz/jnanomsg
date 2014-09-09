@@ -235,7 +235,15 @@ public abstract class Socket implements ISocket {
         throw new UnsupportedOperationException("This socket can not support subscribe method.");
     }
 
+    public void subscribe(final byte[] topic) throws IOException {
+        throw new UnsupportedOperationException("This socket can not support subscribe method.");
+    }
+
     public void unsubscribe(final String topic) throws IOException {
+        throw new UnsupportedOperationException("This socket can not support subscribe method.");
+    }
+
+    public void unsubscribe(final byte[] topic) throws IOException {
         throw new UnsupportedOperationException("This socket can not support subscribe method.");
     }
 
