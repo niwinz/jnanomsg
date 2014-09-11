@@ -1,12 +1,15 @@
 package nanomsg.pubsub;
 
 import com.sun.jna.Memory;
+import com.sun.jna.Native;
+import com.sun.jna.Pointer;
 import nanomsg.Nanomsg;
 import nanomsg.NativeLibrary;
 import nanomsg.Socket;
 import nanomsg.exceptions.IOException;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
 
 
 public class SubSocket extends Socket {
@@ -31,11 +34,12 @@ public class SubSocket extends Socket {
     public void subscribe(final byte[] patternBytes) throws IOException {
         final int socket = getNativeSocket();
 
-        final Memory mem = new Memory(patternBytes.length);
-        mem.write(0, patternBytes, 0, patternBytes.length);
+        final ByteBuffer directBuffer = ByteBuffer.allocateDirect(patternBytes.length);
+        directBuffer.put(patternBytes);
+        Pointer pointer = Native.getDirectBufferPointer(directBuffer);
 
         NativeLibrary.nn_setsockopt(socket, Nanomsg.constants.NN_SUB, Nanomsg.constants.NN_SUB_SUBSCRIBE,
-                    mem, patternBytes.length);
+                    pointer, patternBytes.length);
     }
 
     @Override
