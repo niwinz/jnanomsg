@@ -8,7 +8,6 @@ import java.util.Queue;
 import java.util.LinkedList;
 import java.lang.Thread;
 
-import nanomsg.ISocket;
 import nanomsg.Nanomsg;
 import nanomsg.async.IAsyncRunnable;
 import nanomsg.async.IAsyncScheduler;

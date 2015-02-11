@@ -11,11 +11,10 @@ import com.sun.jna.ptr.IntByReference;
 import nanomsg.NativeLibrary;
 import nanomsg.Nanomsg;
 import nanomsg.Message;
-import nanomsg.ISocket;
 import nanomsg.exceptions.IOException;
 
 
-public abstract class Socket implements ISocket {
+public abstract class Socket {
   private final int domain;
   private final int protocol;
   private final int socket;

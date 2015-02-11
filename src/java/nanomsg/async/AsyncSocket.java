@@ -1,6 +1,5 @@
 package nanomsg.async;
 
-import nanomsg.ISocket;
 import nanomsg.Nanomsg;
 
 import nanomsg.exceptions.IOException;
@@ -18,29 +17,29 @@ import nanomsg.async.SimpleAsyncScheduler;
  * send or receive data from socket.
  */
 public class AsyncSocket {
-  private final ISocket socket;
+  private final Socket socket;
   private final IAsyncScheduler scheduler;
 
   /**
-   * Given any socket that implements ISocket interface
-   * create new AsyncSocket proxy for it.
+   * Given any Socket subclass create new
+   * AsyncSocket instance.
    *
    * NOTE: this reuses a common scheduler.
    *
-   * @param socket any socket that implements ISocket interface
+   * @param socket
    */
-  public AsyncSocket(final ISocket socket) {
+  public AsyncSocket(final Socket socket) {
     this(socket, SimpleAsyncScheduler.instance);
   }
 
   /**
-   * Given any socket that implements ISocket interface
-   * and scheduler instance, create new AsyncSocket proxy
-   * for it.
+   * Given any Socket subclass create new
+   * AsyncSocket instance.
    *
-   * @param socket any socket that implements ISocket interface
+   * @param socket
+   * @param scheduler A scheduler implementation.
    */
-  public AsyncSocket(final ISocket socket, IAsyncScheduler scheduler) {
+  public AsyncSocket(final Socket socket, IAsyncScheduler scheduler) {
     this.socket = socket;
     this.scheduler = scheduler;
 
