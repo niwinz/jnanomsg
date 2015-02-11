@@ -53,8 +53,8 @@
       (continuation nil throwable))))
 
 (defprotocol INNSocket
-  (bind! [_ dir] "Bind to endpoint specified by dir parameter.")
-  (connect! [_ dir] "Connect to endpoint specified by dir parameter.")
+  (bind! [_ ^String dir] "Bind to endpoint specified by dir parameter.")
+  (connect! [_ ^String dir] "Connect to endpoint specified by dir parameter.")
   (subscribe! [_ pattern] "Subscribe current socket to specified topic.")
   (unsubscribe! [_ pattern] "Unsubscribe current socket from specified topic.")
   (send! [_ data] [_ data blocking] "Send string using a socket.")
