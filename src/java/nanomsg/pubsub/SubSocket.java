@@ -12,7 +12,7 @@ import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 
 
-public class SubSocket extends Socket {
+public class SubSocket extends Socket implements ISubscriptionSocket {
   public SubSocket(int domain) {
     super(domain, Nanomsg.constants.NN_SUB);
   }

@@ -77,9 +77,9 @@ public abstract class Socket implements ISocket {
    * @param blocking set blocking or non blocking flag.
    * @return number of sended bytes.
    */
-  public int sendString(final String data, final boolean blocking) throws IOException {
+  public int send(final String data, final boolean blocking) throws IOException {
     final Charset encoding = Charset.forName("UTF-8");
-    return this.sendBytes(data.getBytes(encoding), blocking);
+    return this.send(data.getBytes(encoding), blocking);
   }
 
   /**
@@ -90,8 +90,8 @@ public abstract class Socket implements ISocket {
    * @param data string value that represents a message.
    * @return number of sended bytes.
    */
-  public int sendString(final String data) throws IOException {
-    return this.sendString(data, true);
+  public int send(final String data) throws IOException {
+    return this.send(data, true);
   }
 
   /**
@@ -101,7 +101,7 @@ public abstract class Socket implements ISocket {
    * @param blocking set blocking or non blocking flag.
    * @return number of sended bytes.
    */
-  public synchronized int sendBytes(final byte[] data, final boolean blocking) throws IOException {
+  public synchronized int send(final byte[] data, final boolean blocking) throws IOException {
     final int socket = getNativeSocket();
     final int rc = NativeLibrary.nn_send(socket, data, data.length, blocking ? 0 : Nanomsg.constants.NN_DONTWAIT);
 
@@ -122,8 +122,8 @@ public abstract class Socket implements ISocket {
    * @param data a bytes array that represents a message.
    * @return number of sended bytes.
    */
-  public int sendBytes(final byte[] data) throws IOException {
-    return this.sendBytes(data, true);
+  public int send(final byte[] data) throws IOException {
+    return this.send(data, true);
   }
 
   /**
@@ -196,8 +196,8 @@ public abstract class Socket implements ISocket {
    *
    * @return number of sended bytes.
    */
-  public int send(final Message msg) throws IOException {
-    return sendBytes(msg.toBytes());
+  public int send(final IMessage msg) throws IOException {
+    return send(msg.toBytes());
   }
 
   /**
@@ -206,8 +206,8 @@ public abstract class Socket implements ISocket {
    * @param blocking set blocking or non blocking flag.
    * @return number of sended bytes.
    */
-  public int send(final Message msg, boolean blocking) throws IOException {
-    return sendBytes(msg.toBytes(), blocking);
+  public int send(final IMessage msg, boolean blocking) throws IOException {
+    return send(msg.toBytes(), blocking);
   }
 
   /**
@@ -217,7 +217,7 @@ public abstract class Socket implements ISocket {
    *
    * @return Message instance.
    */
-  public Message recv() throws IOException {
+  public IMessage recv() throws IOException {
     return new Message(recvBytes());
   }
 
@@ -227,24 +227,8 @@ public abstract class Socket implements ISocket {
    * @param blocking set blocking or non blocking flag.
    * @return Message instance.
    */
-  public Message recv(final boolean blocking) throws IOException {
+  public IMessage recv(final boolean blocking) throws IOException {
     return new Message(recvBytes(blocking));
-  }
-
-  public void subscribe(final String topic) throws IOException {
-    throw new UnsupportedOperationException("This socket can not support subscribe method.");
-  }
-
-  public void subscribe(final byte[] topic) throws IOException {
-    throw new UnsupportedOperationException("This socket can not support subscribe method.");
-  }
-
-  public void unsubscribe(final String topic) throws IOException {
-    throw new UnsupportedOperationException("This socket can not support subscribe method.");
-  }
-
-  public void unsubscribe(final byte[] topic) throws IOException {
-    throw new UnsupportedOperationException("This socket can not support subscribe method.");
   }
 
   public int getFd(final int flag) throws IOException {

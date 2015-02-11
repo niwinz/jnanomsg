@@ -56,11 +56,11 @@ public class AsyncSocket {
    * @param data string to send.
    * @param callback IAsyncCallback interface object.
    */
-  public void sendString(final String data, final IAsyncCallback<Boolean> callback) throws InterruptedException {
+  public void send(final String data, final IAsyncCallback<Boolean> callback) throws InterruptedException {
     scheduler.schedule(new IAsyncRunnable() {
         public void run() throws EAgainException {
           try {
-            socket.sendString(data);
+            socket.send(data);
             callback.success(true);
           } catch (IOException e) {
             if (e.getErrno() == Nanomsg.constants.EAGAIN) {
@@ -105,11 +105,11 @@ public class AsyncSocket {
    * @param data string to send.
    * @param callback IAsyncCallback interface object.
    */
-  public void sendBytes(final byte[] data, final IAsyncCallback<Boolean> callback) throws InterruptedException {
+  public void send(final byte[] data, final IAsyncCallback<Boolean> callback) throws InterruptedException {
     scheduler.schedule(new IAsyncRunnable() {
         public void run() throws EAgainException {
           try {
-            socket.sendBytes(data);
+            socket.send(data);
             callback.success(true);
           } catch (IOException e) {
             if (e.getErrno() == Nanomsg.constants.EAGAIN) {
