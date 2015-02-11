@@ -48,9 +48,9 @@
   [^IFn continuation]
   (reify IAsyncCallback
     (success [_ result]
-      (put! ch result))
+      (continuation result nil))
     (fail [_ throwable]
-      (put! ch throwable))))
+      (continuation nil throwable))))
 
 (defprotocol INNSocket
   (bind! [_ dir] "Bind to endpoint specified by dir parameter.")
