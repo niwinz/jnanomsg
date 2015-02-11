@@ -1,5 +1,5 @@
 (ns nanomsg-tests
-  (:require [nanomsg :as nn]
+  (:require [nanomsg.core :as nn]
             [nanomsg.async :as nna]
             [clojure.core.async :refer [<! >! go put! take!]]
             [clojure.test :refer :all]))
