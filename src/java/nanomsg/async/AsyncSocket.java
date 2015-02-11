@@ -1,6 +1,7 @@
 package nanomsg.async;
 
 import nanomsg.Nanomsg;
+import nanomsg.Socket;
 
 import nanomsg.exceptions.IOException;
 import nanomsg.exceptions.EAgainException;
