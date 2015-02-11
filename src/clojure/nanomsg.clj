@@ -62,68 +62,73 @@
   (recv-bytes! [_] [_ blocking] "Receive bytes using socket.")
   (close! [_] "Close a socket."))
 
-(defrecord Connection [s]
-  INNSocket
-  (bind! [_ endpoint]
-    (.bind s endpoint))
-  (connect! [_ endpoint]
-    (.connect s endpoint))
-  (subscribe! [_ pattern]
-    (.subscribe s pattern))
-  (unsubscribe! [_ pattern]
-    (.unsubscribe s pattern))
-  (recv-bytes! [_]
-    (.recvBytes s))
-  (recv-bytes! [_ blocking]
-    (.recvBytes s blocking))
-  (recv! [_]
-    (.recvString s))
-  (send! [_ data]
-    (.send s data))
-  (send! [_ data blocking]
-    (.send s data blocking))
-  (recv! [_ blocking]
-    (.recvString s blocking))
-  (close! [_]
-    (.close s))
+(defn- async-socket
+  [^Socket socket ^AsyncSocket asocket]
+  (reify
+    INNSocket
+    (bind! [_ endpoint]
+      (.bind socket endpoint))
+    (connect! [_ endpoint]
+      (.connect socket endpoint))
+    (subscribe! [_ pattern]
+      (.subscribe socket pattern))
+    (unsubscribe! [_ pattern]
+      (.unsubscribe socket pattern))
+    (recv! [_]
+      (throw (UnsupportedOperationException.
+              "Unsuporded arity for async connection.")))
+    (recv-bytes! [_]
+      (throw (UnsupportedOperationException.
+              "Unsuporded arity for async connection.")))
+    (send! [_ data]
+      (throw (UnsupportedOperationException.
+              "Unsuporded arity for async connection.")))
+    (send! [_ data continuation]
+      (let [cb (->async-callback continuation)]
+        (.send asocket data cb)))
+    (recv! [_ continuation]
+      (let [cb (->async-callback continuation)]
+        (.recvString asocket cb)))
+    (recv-bytes! [_ continuation]
+      (let [cb (->async-callback continuation)]
+        (.recvBytes asocket cb)))
+    (close! [_]
+      (.close socket))
 
-  java.io.Closeable
-  (close [_]
-    (.close s)))
+    java.io.Closeable
+    (close [_]
+      (.close socket))))
 
-(defrecord AsyncConnection [s px]
-  INNSocket
-  (bind! [_ endpoint]
-    (.bind s endpoint))
-  (connect! [_ endpoint]
-    (.connect s endpoint))
-  (subscribe! [_ pattern]
-    (.subscribe s pattern))
-  (unsubscribe! [_ pattern]
-    (.unsubscribe s pattern))
-  (recv-bytes! [_]
-    (let [ch (chan)
-          cb (make-iasynccallback ch)]
-      (.recvBytes px cb)
-      ch))
-  (send! [_ data]
-    (let [ch (chan)
-          cb (make-iasynccallback ch)]
-      (.send px data cb)
-      ch))
-  (recv! [_]
-    (let [ch (chan)
-          cb (make-iasynccallback ch)]
-      (.recvString px cb)
-      ch))
-  (close! [_]
-    (.close s))
-  (send! [_ data blocking]
-    (throw (UnsupportedOperationException. "Unsuporded arity for async connection.")))
-  (recv! [_ blocking]
-    (throw (UnsupportedOperationException. "Unsuporded arity for async connection.")))
-  (recv-bytes! [_ blocking]
-    (throw (UnsupportedOperationException. "Unsuporded arity for async connection."))))
+(defn- blocking-socket
+  [^Socket socket]
+  (reify
+    INNSocket
+    (bind! [_ endpoint]
+      (.bind socket endpoint))
+    (connect! [_ endpoint]
+      (.connect socket endpoint))
+    (subscribe! [_ pattern]
+      (.subscribe socket pattern))
+    (unsubscribe! [_ pattern]
+      (.unsubscribe socket pattern))
+    (recv-bytes! [_]
+      (.recvBytes socket))
+    (recv-bytes! [_ blocking]
+      (.recvBytes socket blocking))
+    (recv! [_]
+      (.recvString socket))
+    (send! [_ data]
+      (.send socket data))
+    (send! [_ data blocking]
+      (.send socket data blocking))
+    (recv! [_ blocking]
+      (.recvString socket blocking))
+    (close! [_]
+      (.close socket))
+
+    java.io.Closeable
+    (close [_]
+      (.close socket))))
 
 (defn socket
   "Geiven a socket type, create a new instance
