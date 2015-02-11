@@ -29,11 +29,17 @@
            clojure.lang.IFn)
   (:require [clojure.core.async :refer [chan put!]]))
 
-(def ^:static ^:private supported-sockets
-  {:pub PubSocket   :sub SubSocket
-   :req ReqSocket   :rep RepSocket
-   :bus BusSocket   :pair PairSocket
-   :push PushSocket :pull PullSocket})
+(def ^{:dynamic true
+       :private true}
+  *supported-sockets*
+  {:pub #(PubSocket.)
+   :sub #(SubSocket.)
+   :req #(ReqSocket.)
+   :rep #(RepSocket.)
+   :bus #(BusSocket.)
+   :pair #(PairSocket.)
+   :push #(PushSocket.)
+   :pull #(PullSocket.)})
 
 (defn- make-iasynccallback
   "Private function that create a new
