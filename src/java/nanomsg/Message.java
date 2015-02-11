@@ -1,7 +1,8 @@
 package nanomsg;
+
 import java.nio.charset.Charset;
 
-public class Message {
+public class Message implements IMessage {
   private final byte[] messageData;
 
   public Message(final String data) {
