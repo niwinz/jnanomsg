@@ -12,13 +12,21 @@
   If you want send your more complex data types, create
   a new pair of send/recv functions that serializes and
   deserializers data before send and after receive."
-  (:import (nanomsg.pubsub PubSocket SubSocket)
-           (nanomsg.reqrep ReqSocket RepSocket)
-           (nanomsg.pipeline PushSocket PullSocket)
-           (nanomsg.pair PairSocket)
-           (nanomsg.bus BusSocket)
-           (nanomsg ISocket Socket Nanomsg Device)
-           (nanomsg.async IAsyncCallback AsyncSocket))
+  (:import nanomsg.pubsub.PubSocket
+           nanomsg.pubsub.SubSocket
+           nanomsg.reqrep.ReqSocket
+           nanomsg.reqrep.RepSocket
+           nanomsg.pipeline.PushSocket
+           nanomsg.pipeline.PullSocket
+           nanomsg.pair.PairSocket
+           nanomsg.bus.BusSocket
+           nanomsg.Socket
+           nanomsg.Nanomsg
+           nanomsg.Device
+           nanomsg.async.IAsyncCallback
+           nanomsg.async.AsyncSocket
+           clojure.lang.Keyword
+           clojure.lang.IFn)
   (:require [clojure.core.async :refer [chan put!]]))
 
 (def ^:static ^:private supported-sockets
