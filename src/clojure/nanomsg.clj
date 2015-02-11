@@ -41,10 +41,11 @@
    :push #(PushSocket.)
    :pull #(PullSocket.)})
 
-(defn- make-iasynccallback
-  "Private function that create a new
-  instance of IAsyncCallback."
-  [ch]
+(defn- ->async-callback
+  "Given a plain callback function, coerce
+  it to an anonymous instance of IAsyncCallback
+  interface."
+  [^IFn continuation]
   (reify IAsyncCallback
     (success [_ result]
       (put! ch result))
