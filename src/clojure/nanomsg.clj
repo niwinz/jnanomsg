@@ -44,7 +44,6 @@
   (unsubscribe! [_ pattern] "Unsubscribe current socket from specified topic.")
   (send! [_ data] [_ data blocking] "Send string using a socket.")
   (recv! [_] [_ blocking] "Receive string using a socket.")
-  (send-bytes! [_ data] [_ data blocking] "Send bytes using socket.")
   (recv-bytes! [_] [_ blocking] "Receive bytes using socket.")
   (close! [_] "Close a socket."))
 
@@ -58,20 +57,16 @@
     (.subscribe s pattern))
   (unsubscribe! [_ pattern]
     (.unsubscribe s pattern))
-  (send-bytes! [_ data]
-    (.sendBytes s data))
   (recv-bytes! [_]
     (.recvBytes s))
-  (send-bytes! [_ data blocking]
-    (.sendBytes s data blocking))
   (recv-bytes! [_ blocking]
     (.recvBytes s blocking))
-  (send! [_ data]
-    (.sendString s data))
   (recv! [_]
     (.recvString s))
+  (send! [_ data]
+    (.send s data))
   (send! [_ data blocking]
-    (.sendString s data blocking))
+    (.send s data blocking))
   (recv! [_ blocking]
     (.recvString s blocking))
   (close! [_]
@@ -87,11 +82,6 @@
     (.subscribe s pattern))
   (unsubscribe! [_ pattern]
     (.unsubscribe s pattern))
-  (send-bytes! [_ data]
-    (let [ch (chan)
-          cb (make-iasynccallback ch)]
-      (.sendBytes px cb)
-      ch))
   (recv-bytes! [_]
     (let [ch (chan)
           cb (make-iasynccallback ch)]
@@ -100,7 +90,7 @@
   (send! [_ data]
     (let [ch (chan)
           cb (make-iasynccallback ch)]
-      (.sendString px data cb)
+      (.send px data cb)
       ch))
   (recv! [_]
     (let [ch (chan)
@@ -112,8 +102,6 @@
   (send! [_ data blocking]
     (throw (UnsupportedOperationException. "Unsuporded arity for async connection.")))
   (recv! [_ blocking]
-    (throw (UnsupportedOperationException. "Unsuporded arity for async connection.")))
-  (send-bytes! [_ data blocking]
     (throw (UnsupportedOperationException. "Unsuporded arity for async connection.")))
   (recv-bytes! [_ blocking]
     (throw (UnsupportedOperationException. "Unsuporded arity for async connection."))))
