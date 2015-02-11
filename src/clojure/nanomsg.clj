@@ -133,14 +133,14 @@
 (defn socket
   "Geiven a socket type, create a new instance
   of corresponding socket."
-  ([^clojure.lang.Keyword socktype] (socket socktype {}))
-  ([^clojure.lang.Keyword socktype opts]
-   {:pre [(supported-sockets socktype)]}
-   (let [cls        (-> socktype supported-sockets)
-         instance   (.newInstance cls)
-         conn       (if (:async opts)
-                      (->AsyncConnection instance (AsyncSocket. instance))
-                      (->Connection instance))]
+  ([^Keyword socktype] (socket socktype {}))
+  ([^Keyword socktype opts]
+   {:pre [(contains? *supported-sockets* socktype)]}
+   (let [factory (get *supported-sockets* socktype)
+         socket (factory)
+         conn (if (:async opts)
+                (async-socket socket (AsyncSocket. socket))
+                (blocking-socket socket))]
      (cond
        (:bind opts) (bind! conn (:bind opts))
        (:connect opts) (connect! conn (:connect opts)))
