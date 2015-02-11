@@ -70,6 +70,10 @@
   (recv! [_ blocking]
     (.recvString s blocking))
   (close! [_]
+    (.close s))
+
+  java.io.Closeable
+  (close [_]
     (.close s)))
 
 (defrecord AsyncConnection [s px]
