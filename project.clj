@@ -6,7 +6,7 @@
   :dependencies [[org.clojure/clojure "1.6.0"]
                  [org.clojure/core.async "0.1.267.0-0d7780-alpha"]
                  [com.taoensso/nippy "2.6.3"]
-                 [net.java.dev.jna/jna "4.0.0"]]
+                 [net.java.dev.jna/jna "4.1.0"]]
   :jvm-opts ["-server" "-Xmx2g" "-XX:+UseG1GC"]
   :source-paths ["src/clojure"]
   :java-source-paths ["src/java"]
