@@ -1,22 +1,22 @@
 package nanomsg.exceptions;
 
 public class IOException extends java.io.IOException {
-    protected int errno = -1;
+  protected int errno = -1;
 
-    public IOException(final String message) {
-        super(message);
-    }
+  public IOException(final String message) {
+    super(message);
+  }
 
-    public IOException(final String message, final int errno) {
-        super(message);
-        this.errno = errno;
-    }
+  public IOException(final String message, final int errno) {
+    super(message);
+    this.errno = errno;
+  }
 
-    public IOException(Throwable cause) {
-        super(cause);
-    }
+  public IOException(Throwable cause) {
+    super(cause);
+  }
 
-    public int getErrno() {
-        return this.errno;
-    }
+  public int getErrno() {
+    return this.errno;
+  }
 }
