@@ -147,8 +147,7 @@
      conn)))
 
 (defn terminate!
-  "Send terminate signal to all open and/or blocked
-  sockets.
+  "Send terminate signal to all open and/or blocked sockets.
   This is usefull for multithreaded apps."
   []
   (Nanomsg/terminate))
@@ -159,7 +158,8 @@
   (let [d (Device. s1 s2)]
     (.run d)))
 
-(defn- resolve-symbols []
+(defn- resolve-symbols
+  []
   (into {} (for [[k v] (Nanomsg/symbols)]
              [(keyword (.toLowerCase k)) v])))
 
