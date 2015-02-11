@@ -1,4 +1,4 @@
-(ns nanomsg
+(ns nanomsg.core
   "Nanomsg is a socket library that provides several
   common communication patterns. It aims to make the
   networking layer fast, scalable, and easy to use.
