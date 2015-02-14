@@ -10,16 +10,35 @@ import nanomsg.async.IAsyncCallback;
 import nanomsg.async.IAsyncRunnable;
 import nanomsg.async.IAsyncScheduler;
 
-import nanomsg.async.SimpleAsyncScheduler;
-
+import nanomsg.async.impl.EPollScheduler;
+import nanomsg.async.impl.ThreadPoolScheduler;
 
 /**
  * Experimental socket proxy that enables async way to
  * send or receive data from socket.
  */
 public class AsyncSocket {
-  private final Socket socket;
-  private final IAsyncScheduler scheduler;
+  private Socket socket;
+  private IAsyncScheduler scheduler;
+
+  private void setSocket(final Socket socket) {
+    this.socket = socket;
+    this.socket.setSendTimeout(300);
+    this.socket.setRecvTimeout(300);
+  }
+
+  private void setScheduler(final IAsyncScheduler scheduler) {
+    if (scheduler == null) {
+      final String osName = System.getProperty("os.name");
+      if (osName.startsWith("Linux") || osName.startsWith("LINUX")) {
+        this.scheduler = EPollScheduler.getInstance();
+      } else {
+        this.scheduler = ThreadPoolScheduler.getInstance();
+      }
+    } else {
+      this.scheduler = scheduler;
+    }
+  }
 
   /**
    * Given any Socket subclass create new
@@ -30,7 +49,8 @@ public class AsyncSocket {
    * @param socket
    */
   public AsyncSocket(final Socket socket) {
-    this(socket, SimpleAsyncScheduler.instance);
+    this.setSocket(socket);
+    this.setScheduler(null);
   }
 
   /**
@@ -41,11 +61,8 @@ public class AsyncSocket {
    * @param scheduler A scheduler implementation.
    */
   public AsyncSocket(final Socket socket, IAsyncScheduler scheduler) {
-    this.socket = socket;
-    this.scheduler = scheduler;
-
-    this.socket.setSendTimeout(300);
-    this.socket.setRecvTimeout(300);
+    this.setSocket(socket);
+    this.setScheduler(scheduler);
   }
 
   /**
@@ -56,8 +73,8 @@ public class AsyncSocket {
    * @param data string to send.
    * @param callback IAsyncCallback interface object.
    */
-  public void send(final String data, final IAsyncCallback<Boolean> callback) throws InterruptedException {
-    scheduler.schedule(new IAsyncRunnable() {
+  public void send(final String data, final IAsyncCallback<Boolean> callback) {
+    final IAsyncRunnable runnable = new IAsyncRunnable() {
         public void run() throws EAgainException {
           try {
             socket.send(data);
@@ -70,8 +87,14 @@ public class AsyncSocket {
             }
           }
         }
-      });
+      };
+
+    try {
+      scheduler.schedule(socket, AsyncOperation.WRITE, runnable);
+    } catch (InterruptedException e) {
+      callback.fail(e);
     }
+  }
 
   /**
    * Given a callback, it try receive data from socket using
@@ -80,21 +103,27 @@ public class AsyncSocket {
    *
    * @param callback IAsyncCallback interface object.
    */
-  public void recvString(final IAsyncCallback<String> callback) throws InterruptedException {
-    scheduler.schedule(new IAsyncRunnable() {
+  public void recvString(final IAsyncCallback<String> callback) {
+    final IAsyncRunnable runnable = new IAsyncRunnable() {
         public void run() throws EAgainException {
           try {
             final String received = socket.recvString();
             callback.success(received);
           } catch (IOException e) {
             if (e.getErrno() == Nanomsg.constants.EAGAIN) {
-              throw new EAgainException(e);
+              throw e;
             } else {
               callback.fail(e);
             }
           }
         }
-      });
+      };
+
+    try {
+      scheduler.schedule(socket, AsyncOperation.READ, runnable);
+    } catch (InterruptedException e) {
+      callback.fail(e);
+    }
   }
 
   /**
@@ -105,8 +134,8 @@ public class AsyncSocket {
    * @param data string to send.
    * @param callback IAsyncCallback interface object.
    */
-  public void send(final byte[] data, final IAsyncCallback<Boolean> callback) throws InterruptedException {
-    scheduler.schedule(new IAsyncRunnable() {
+  public void send(final byte[] data, final IAsyncCallback<Boolean> callback) {
+    final IAsyncRunnable runnable = new IAsyncRunnable() {
         public void run() throws EAgainException {
           try {
             socket.send(data);
@@ -119,7 +148,13 @@ public class AsyncSocket {
             }
           }
         }
-      });
+      };
+
+    try {
+      scheduler.schedule(socket, AsyncOperation.WRITE, runnable);
+    } catch (InterruptedException e) {
+      callback.fail(e);
+    }
   }
 
   /**
@@ -129,8 +164,8 @@ public class AsyncSocket {
    *
    * @param callback IAsyncCallback interface object.
    */
-  public void recvBytes(final IAsyncCallback<byte[]> callback) throws InterruptedException {
-    scheduler.schedule(new IAsyncRunnable() {
+  public void recvBytes(final IAsyncCallback<byte[]> callback) {
+    final IAsyncRunnable runnable = new IAsyncRunnable() {
         public void run() throws EAgainException {
           try {
             final byte[] received = socket.recvBytes();
@@ -143,6 +178,12 @@ public class AsyncSocket {
             }
           }
         }
-      });
+      };
+
+    try {
+      scheduler.schedule(socket, AsyncOperation.READ, runnable);
+    } catch (InterruptedException e) {
+      callback.fail(e);
+    }
   }
 }
