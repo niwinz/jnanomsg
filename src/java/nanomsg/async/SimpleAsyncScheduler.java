@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.lang.Thread;
 
 import nanomsg.Nanomsg;
+import nanomsg.Socket;
 import nanomsg.async.IAsyncRunnable;
 import nanomsg.async.IAsyncScheduler;
 import nanomsg.exceptions.IOException;
@@ -32,7 +33,7 @@ public class SimpleAsyncScheduler implements Runnable, IAsyncScheduler {
     }
   }
 
-  public void schedule(final IAsyncRunnable handler) throws InterruptedException {
+  public void schedule(final Socket sock, final IAsyncRunnable handler) throws InterruptedException {
     /* Start scheduler if it not started */
     if (started.compareAndSet(false, true)) {
       startThreadGroup();

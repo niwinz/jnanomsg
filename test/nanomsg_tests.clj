@@ -1,6 +1,6 @@
 (ns nanomsg-tests
   (:require [nanomsg.core :as nn]
-            [nanomsg.async :as nna]
+            ;; [nanomsg.async :as nna]
             [clojure.core.async :refer [<! >! go put! take!]]
             [clojure.test :refer :all]))
 
@@ -27,6 +27,19 @@
 ;;       (put! c1 {:foo 1})
 ;;       (take! c2 (fn [v] (deliver p v)))
 ;;       (is (= @p {:foo 1})))))
+
+(deftest async-socket
+  (testing "FooBar"
+    (with-open [sock (nn/socket :rep {:async true})]
+      (nn/bind! sock s-bind-tcp)
+      (nn/recv! sock (fn [data error]
+                       (println "Received data:" data error)
+                       (nn/send! sock "pong" (fn [data error]
+                                               (println "Result:" data error)))))
+
+      (sleep 10000)
+      (println sock)
+      (is (= 1 2)))))
 
 (deftest socket-req-rep
   (testing "ReqRep"

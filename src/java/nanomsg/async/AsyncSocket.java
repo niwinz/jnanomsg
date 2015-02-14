@@ -11,7 +11,7 @@ import nanomsg.async.IAsyncRunnable;
 import nanomsg.async.IAsyncScheduler;
 
 import nanomsg.async.SimpleAsyncScheduler;
-
+import nanomsg.async.impl.PollScheduler;
 
 /**
  * Experimental socket proxy that enables async way to
@@ -30,7 +30,8 @@ public class AsyncSocket {
    * @param socket
    */
   public AsyncSocket(final Socket socket) {
-    this(socket, SimpleAsyncScheduler.instance);
+    // this(socket, SimpleAsyncScheduler.instance);
+    this(socket, PollScheduler.instance);
   }
 
   /**
@@ -57,7 +58,7 @@ public class AsyncSocket {
    * @param callback IAsyncCallback interface object.
    */
   public void send(final String data, final IAsyncCallback<Boolean> callback) throws InterruptedException {
-    scheduler.schedule(new IAsyncRunnable() {
+    scheduler.schedule(socket, new IAsyncRunnable() {
         public void run() throws EAgainException {
           try {
             socket.send(data);
@@ -81,7 +82,7 @@ public class AsyncSocket {
    * @param callback IAsyncCallback interface object.
    */
   public void recvString(final IAsyncCallback<String> callback) throws InterruptedException {
-    scheduler.schedule(new IAsyncRunnable() {
+    scheduler.schedule(socket, new IAsyncRunnable() {
         public void run() throws EAgainException {
           try {
             final String received = socket.recvString();
@@ -106,7 +107,7 @@ public class AsyncSocket {
    * @param callback IAsyncCallback interface object.
    */
   public void send(final byte[] data, final IAsyncCallback<Boolean> callback) throws InterruptedException {
-    scheduler.schedule(new IAsyncRunnable() {
+    scheduler.schedule(socket, new IAsyncRunnable() {
         public void run() throws EAgainException {
           try {
             socket.send(data);
@@ -130,7 +131,7 @@ public class AsyncSocket {
    * @param callback IAsyncCallback interface object.
    */
   public void recvBytes(final IAsyncCallback<byte[]> callback) throws InterruptedException {
-    scheduler.schedule(new IAsyncRunnable() {
+    scheduler.schedule(socket, new IAsyncRunnable() {
         public void run() throws EAgainException {
           try {
             final byte[] received = socket.recvBytes();

@@ -230,6 +230,16 @@ public abstract class Socket {
     return new Message(recvBytes(blocking));
   }
 
+  public int getRcvFd() throws IOException {
+    final int flag = Nanomsg.constants.NN_RCVFD;
+    return getFd(flag);
+  }
+
+  public int getSndFd() throws IOException {
+    final int flag = Nanomsg.constants.NN_SNDFD;
+    return getFd(flag);
+  }
+
   public int getFd(final int flag) throws IOException {
     final IntByReference fd = new IntByReference();
     final IntByReference size_t = new IntByReference(Native.SIZE_T_SIZE);
