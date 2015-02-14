@@ -25,13 +25,13 @@ import nanomsg.async.impl.epoll.Epoll;
 import nanomsg.exceptions.EAgainException;
 import nanomsg.exceptions.IOException;
 
-public class PollScheduler implements Runnable, IAsyncScheduler {
+public class EPollScheduler implements Runnable, IAsyncScheduler {
   /* Maps used for store references tu socket; */
   private final Map<Integer, IAsyncRunnable> runnableMap = new ConcurrentHashMap<Integer, IAsyncRunnable>();
 
   private final AtomicBoolean started = new AtomicBoolean(false);
   private final int epollFd = Epoll.epoll_create1(Epoll.EPOLL_CLOEXEC);
-  public static final PollScheduler instance = new PollScheduler();
+  public static final EPollScheduler instance = new EPollScheduler();
 
   public void register(final int fd, final int flags, final IAsyncRunnable runnable) {
       // Register a file description in a runnables map
@@ -77,18 +77,21 @@ public class PollScheduler implements Runnable, IAsyncScheduler {
 
   private void processFd(final Epoll.EpollEvent.ByReference event) {
     final int fd = event.data.fd;
-    final IAsyncRunnable runnable = runnableMap.get(fd);
 
-    try {
-      runnable.run();
-    } catch (IOException e) {
-      final int errno = e.getErrno();
+    if (runnableMap.containsKey(event.data.fd)) {
+      final IAsyncRunnable runnable = runnableMap.get(fd);
+      runnableMap.remove(event.data.fd);
 
-      if (errno == Nanomsg.constants.EAGAIN) {
-        System.out.println("EAGAIN error for fd=" + fd);
-        this.register(fd, event.events, runnable);
-      } else {
-        System.out.println("Error on runing the async runnable: " + errno);
+      try {
+        runnable.run();
+      } catch (IOException e) {
+        final int errno = e.getErrno();
+        if (errno == Nanomsg.constants.EAGAIN) {
+          System.out.println("EAGAIN error for fd=" + fd);
+          this.register(fd, event.events, runnable);
+        } else {
+          System.out.println("Error on runing the async runnable: " + errno);
+        }
       }
     }
   }
@@ -97,13 +100,10 @@ public class PollScheduler implements Runnable, IAsyncScheduler {
     int readyCount;
     int err;
 
-    final int MAX_EVENTS = 1;
+    final int MAX_EVENTS = 1024;
     final int size_of_struct = new Epoll.EpollEvent().size();
     final Memory ptr = new Memory(MAX_EVENTS * size_of_struct);
     final Epoll.EpollEvent.ByReference event = new Epoll.EpollEvent.ByReference();
-
-    // Debug only
-    // System.out.println("Starting epoll.");
 
     while (true) {
       readyCount = Epoll.epoll_wait(epollFd, ptr, MAX_EVENTS, -1);
@@ -113,22 +113,13 @@ public class PollScheduler implements Runnable, IAsyncScheduler {
         continue;
       }
 
-      err = Native.getLastError();
-      // Properly handle nanomsg errors
-      System.out.println("nn_err: " + err);
-
       for(int i = 0; i < readyCount; ++i) {
         event.reuse(ptr, size_of_struct * i);
 
         // System.out.println("Type EPOLLIN: " + (event.events & Epoll.EPOLLIN));
         // System.out.println("Type EPOLLOUT: " + (event.events & Epoll.EPOLLOUT));
         // System.out.println("Type EPOLLHUP: " + (event.events & Epoll.EPOLLHUP));
-
-        if (runnableMap.containsKey(event.data.fd)) {
-          Epoll.epoll_ctl(epollFd, Epoll.EPOLL_CTL_DEL, event.data.fd, event);
-          processFd(event);
-        }
-
+        processFd(event);
       }
     }
   }

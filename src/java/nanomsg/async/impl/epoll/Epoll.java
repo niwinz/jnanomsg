@@ -18,7 +18,6 @@
 // This code is taken from https://github.com/jcommon/process that are
 // licensed under Apache 2.0 License
 
-
 package nanomsg.async.impl.epoll;
 
 import com.sun.jna.Union;

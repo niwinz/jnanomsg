@@ -57,8 +57,8 @@ public class AsyncSocket {
    * @param data string to send.
    * @param callback IAsyncCallback interface object.
    */
-  public void send(final String data, final IAsyncCallback<Boolean> callback) throws InterruptedException {
-    scheduler.schedule(socket, AsyncOperation.WRITE, new IAsyncRunnable() {
+  public void send(final String data, final IAsyncCallback<Boolean> callback) {
+    final IAsyncRunnable runnable = new IAsyncRunnable() {
         public void run() throws EAgainException {
           try {
             socket.send(data);
@@ -71,7 +71,13 @@ public class AsyncSocket {
             }
           }
         }
-      });
+      };
+
+    try {
+      scheduler.schedule(socket, AsyncOperation.WRITE, runnable);
+    } catch (InterruptedException e) {
+      callback.fail(e);
+    }
   }
 
   /**
@@ -81,21 +87,27 @@ public class AsyncSocket {
    *
    * @param callback IAsyncCallback interface object.
    */
-  public void recvString(final IAsyncCallback<String> callback) throws InterruptedException {
-    scheduler.schedule(socket, AsyncOperation.READ, new IAsyncRunnable() {
+  public void recvString(final IAsyncCallback<String> callback) {
+    final IAsyncRunnable runnable = new IAsyncRunnable() {
         public void run() throws EAgainException {
           try {
             final String received = socket.recvString();
             callback.success(received);
           } catch (IOException e) {
             if (e.getErrno() == Nanomsg.constants.EAGAIN) {
-              throw new EAgainException(e);
+              throw e;
             } else {
               callback.fail(e);
             }
           }
         }
-      });
+      };
+
+    try {
+      scheduler.schedule(socket, AsyncOperation.READ, runnable);
+    } catch (InterruptedException e) {
+      callback.fail(e);
+    }
   }
 
   /**
@@ -106,8 +118,8 @@ public class AsyncSocket {
    * @param data string to send.
    * @param callback IAsyncCallback interface object.
    */
-  public void send(final byte[] data, final IAsyncCallback<Boolean> callback) throws InterruptedException {
-    scheduler.schedule(socket, AsyncOperation.WRITE, new IAsyncRunnable() {
+  public void send(final byte[] data, final IAsyncCallback<Boolean> callback) {
+    final IAsyncRunnable runnable = new IAsyncRunnable() {
         public void run() throws EAgainException {
           try {
             socket.send(data);
@@ -120,7 +132,13 @@ public class AsyncSocket {
             }
           }
         }
-      });
+      };
+
+    try {
+      scheduler.schedule(socket, AsyncOperation.WRITE, runnable);
+    } catch (InterruptedException e) {
+      callback.fail(e);
+    }
   }
 
   /**
@@ -130,8 +148,8 @@ public class AsyncSocket {
    *
    * @param callback IAsyncCallback interface object.
    */
-  public void recvBytes(final IAsyncCallback<byte[]> callback) throws InterruptedException {
-    scheduler.schedule(socket, AsyncOperation.READ, new IAsyncRunnable() {
+  public void recvBytes(final IAsyncCallback<byte[]> callback) {
+    final IAsyncRunnable runnable = new IAsyncRunnable() {
         public void run() throws EAgainException {
           try {
             final byte[] received = socket.recvBytes();
@@ -144,6 +162,12 @@ public class AsyncSocket {
             }
           }
         }
-      });
+      };
+
+    try {
+      scheduler.schedule(socket, AsyncOperation.READ, runnable);
+    } catch (InterruptedException e) {
+      callback.fail(e);
+    }
   }
 }
