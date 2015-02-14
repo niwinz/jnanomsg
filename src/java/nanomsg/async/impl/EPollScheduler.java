@@ -31,7 +31,15 @@ public class EPollScheduler implements Runnable, IAsyncScheduler {
 
   private final AtomicBoolean started = new AtomicBoolean(false);
   private final int epollFd = Epoll.epoll_create1(Epoll.EPOLL_CLOEXEC);
-  public static final EPollScheduler instance = new EPollScheduler();
+
+  private static EPollScheduler instance = null;
+
+  public synchronized static EPollScheduler getInstance() {
+    if(instance == null) {
+      instance = new EPollScheduler();
+    }
+    return instance;
+  }
 
   public void register(final int fd, final int flags, final IAsyncRunnable runnable) {
       // Register a file description in a runnables map
@@ -111,6 +119,10 @@ public class EPollScheduler implements Runnable, IAsyncScheduler {
 
       if (readyCount <= 0) {
         continue;
+      }
+
+      if (Thread.interrupted()) {
+        return;
       }
 
       for(int i = 0; i < readyCount; ++i) {

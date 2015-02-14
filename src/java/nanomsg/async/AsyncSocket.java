@@ -10,16 +10,35 @@ import nanomsg.async.IAsyncCallback;
 import nanomsg.async.IAsyncRunnable;
 import nanomsg.async.IAsyncScheduler;
 
-import nanomsg.async.SimpleAsyncScheduler;
-import nanomsg.async.impl.PollScheduler;
+import nanomsg.async.impl.EPollScheduler;
+import nanomsg.async.impl.ThreadPoolScheduler;
 
 /**
  * Experimental socket proxy that enables async way to
  * send or receive data from socket.
  */
 public class AsyncSocket {
-  private final Socket socket;
-  private final IAsyncScheduler scheduler;
+  private Socket socket;
+  private IAsyncScheduler scheduler;
+
+  private void setSocket(final Socket socket) {
+    this.socket = socket;
+    this.socket.setSendTimeout(300);
+    this.socket.setRecvTimeout(300);
+  }
+
+  private void setScheduler(final IAsyncScheduler scheduler) {
+    if (scheduler == null) {
+      final String osName = System.getProperty("os.name");
+      if (osName.startsWith("Linux") || osName.startsWith("LINUX")) {
+        this.scheduler = EPollScheduler.getInstance();
+      } else {
+        this.scheduler = ThreadPoolScheduler.getInstance();
+      }
+    } else {
+      this.scheduler = scheduler;
+    }
+  }
 
   /**
    * Given any Socket subclass create new
@@ -30,8 +49,8 @@ public class AsyncSocket {
    * @param socket
    */
   public AsyncSocket(final Socket socket) {
-    // this(socket, SimpleAsyncScheduler.instance);
-    this(socket, PollScheduler.instance);
+    this.setSocket(socket);
+    this.setScheduler(null);
   }
 
   /**
@@ -42,11 +61,8 @@ public class AsyncSocket {
    * @param scheduler A scheduler implementation.
    */
   public AsyncSocket(final Socket socket, IAsyncScheduler scheduler) {
-    this.socket = socket;
-    this.scheduler = scheduler;
-
-    this.socket.setSendTimeout(300);
-    this.socket.setRecvTimeout(300);
+    this.setSocket(socket);
+    this.setScheduler(scheduler);
   }
 
   /**

@@ -1,4 +1,4 @@
-package nanomsg.async;
+package nanomsg.async.impl;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -20,7 +20,15 @@ public class ThreadPoolScheduler implements Runnable, IAsyncScheduler {
   private final LinkedBlockingQueue<IAsyncRunnable> queue = new LinkedBlockingQueue<IAsyncRunnable>();
   private final int concurrency = Runtime.getRuntime().availableProcessors();
   private final AtomicBoolean started = new AtomicBoolean(false);
-  public static final IAsyncScheduler instance = new ThreadPoolScheduler();
+
+  private static ThreadPoolScheduler instance = null;
+
+  public synchronized static ThreadPoolScheduler getInstance() {
+    if(instance == null) {
+      instance = new ThreadPoolScheduler();
+    }
+    return instance;
+  }
 
   private void startThreadGroup() {
     final ThreadGroup group = new ThreadGroup("nanomsg-scheduler");
@@ -49,6 +57,10 @@ public class ThreadPoolScheduler implements Runnable, IAsyncScheduler {
 
   public void run() {
     while (true) {
+      if (Thread.interrupted()) {
+        return;
+      }
+
       try {
         final IAsyncRunnable handler = queue.take();
         try {
