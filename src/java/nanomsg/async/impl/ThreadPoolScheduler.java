@@ -12,15 +12,15 @@ import nanomsg.Nanomsg;
 import nanomsg.Socket;
 import nanomsg.async.IAsyncRunnable;
 import nanomsg.async.IAsyncScheduler;
+import nanomsg.async.AsyncOperation;
 import nanomsg.exceptions.IOException;
 
 
-public class SimpleAsyncScheduler implements Runnable, IAsyncScheduler {
+public class ThreadPoolScheduler implements Runnable, IAsyncScheduler {
   private final LinkedBlockingQueue<IAsyncRunnable> queue = new LinkedBlockingQueue<IAsyncRunnable>();
   private final int concurrency = Runtime.getRuntime().availableProcessors();
   private final AtomicBoolean started = new AtomicBoolean(false);
-
-  public static final IAsyncScheduler instance = new SimpleAsyncScheduler();
+  public static final IAsyncScheduler instance = new ThreadPoolScheduler();
 
   private void startThreadGroup() {
     final ThreadGroup group = new ThreadGroup("nanomsg-scheduler");
@@ -33,7 +33,7 @@ public class SimpleAsyncScheduler implements Runnable, IAsyncScheduler {
     }
   }
 
-  public void schedule(final Socket sock, final IAsyncRunnable handler) throws InterruptedException {
+  public void schedule(final Socket sock, final AsyncOperation op, final IAsyncRunnable handler) throws InterruptedException {
     /* Start scheduler if it not started */
     if (started.compareAndSet(false, true)) {
       startThreadGroup();

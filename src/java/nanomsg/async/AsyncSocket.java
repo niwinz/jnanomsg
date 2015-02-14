@@ -58,7 +58,7 @@ public class AsyncSocket {
    * @param callback IAsyncCallback interface object.
    */
   public void send(final String data, final IAsyncCallback<Boolean> callback) throws InterruptedException {
-    scheduler.schedule(socket, new IAsyncRunnable() {
+    scheduler.schedule(socket, AsyncOperation.WRITE, new IAsyncRunnable() {
         public void run() throws EAgainException {
           try {
             socket.send(data);
@@ -72,7 +72,7 @@ public class AsyncSocket {
           }
         }
       });
-    }
+  }
 
   /**
    * Given a callback, it try receive data from socket using
@@ -82,7 +82,7 @@ public class AsyncSocket {
    * @param callback IAsyncCallback interface object.
    */
   public void recvString(final IAsyncCallback<String> callback) throws InterruptedException {
-    scheduler.schedule(socket, new IAsyncRunnable() {
+    scheduler.schedule(socket, AsyncOperation.READ, new IAsyncRunnable() {
         public void run() throws EAgainException {
           try {
             final String received = socket.recvString();
@@ -107,7 +107,7 @@ public class AsyncSocket {
    * @param callback IAsyncCallback interface object.
    */
   public void send(final byte[] data, final IAsyncCallback<Boolean> callback) throws InterruptedException {
-    scheduler.schedule(socket, new IAsyncRunnable() {
+    scheduler.schedule(socket, AsyncOperation.WRITE, new IAsyncRunnable() {
         public void run() throws EAgainException {
           try {
             socket.send(data);
@@ -131,7 +131,7 @@ public class AsyncSocket {
    * @param callback IAsyncCallback interface object.
    */
   public void recvBytes(final IAsyncCallback<byte[]> callback) throws InterruptedException {
-    scheduler.schedule(socket, new IAsyncRunnable() {
+    scheduler.schedule(socket, AsyncOperation.READ, new IAsyncRunnable() {
         public void run() throws EAgainException {
           try {
             final byte[] received = socket.recvBytes();
