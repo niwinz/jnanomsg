@@ -1,6 +1,6 @@
 package nanomsg.exceptions;
 
-public class IOException extends java.io.IOException {
+public class IOException extends RuntimeException {
   protected int errno = -1;
 
   public IOException(final String message) {
