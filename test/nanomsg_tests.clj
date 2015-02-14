@@ -28,19 +28,37 @@
 ;;       (take! c2 (fn [v] (deliver p v)))
 ;;       (is (= @p {:foo 1})))))
 
+;; (deftest async-socket
+;;   (testing "FooBar"
+;;     (let [p (promise)
+;;           r1 (future
+;;                (with-open [sock (nn/socket :rep {:async true})]
+;;                  (nn/bind! sock s-bind-tcp)
+;;                  (nn/recv! sock (fn [data error]
+;;                                   (println "Received data:" data error)
+;;                                   (nn/send! sock "pong")))))
+;;           r2 (future
+;;                (with-open [sock (nn/socket :req {:async true})]
+;;                  (nn/connect! sock s-bind-tcp)
+;;                  (nn/send! sock "foobar")
+;;                  (nn/recv! sock (fn [data error]
+;;                                   (deliver p [data error])))))]
+;;       (println @p)
+;;       (is (= 1 2)))))
+
 (deftest socket-req-rep
   (testing "ReqRep"
     (with-open [req-sock (nn/socket :req)]
       (let [result (future
                      (with-open [rep-sock (nn/socket :rep)]
                        (nn/bind! rep-sock s-bind-ipc)
-                       (let [received (nn/recv! rep-sock)]
+                       (let [received (nn/recv-str! rep-sock)]
                          (nn/send! rep-sock received)
                          received)))]
         (sleep 500)
         (nn/connect! req-sock s-bind-ipc)
         (nn/send! req-sock "foo")
-        (is (= (nn/recv! req-sock) "foo"))))))
+        (is (= (nn/recv-str! req-sock) "foo"))))))
 
 (deftest socket-pub-sub
   (testing "PubSub"
@@ -50,12 +68,12 @@
                      (with-open [sub-socket (nn/socket :sub)]
                        (nn/connect! sub-socket s-bind-ipc)
                        (nn/subscribe! sub-socket "ss1")
-                       (nn/recv! sub-socket)))
+                       (nn/recv-str! sub-socket)))
             recvd2 (future
                      (with-open [sub-socket (nn/socket :sub)]
                        (nn/connect! sub-socket s-bind-ipc)
                        (nn/subscribe! sub-socket "ss2")
-                       (nn/recv! sub-socket)))]
+                       (nn/recv-str! sub-socket)))]
 
         (sleep 500)
         (nn/send! pub-sock "ss2 foo")
@@ -70,7 +88,7 @@
       (with-open [push-sock (nn/socket :push {:bind sockname})]
         (let [receiver  (future
                           (with-open [pull-sock (nn/socket :pull {:connect sockname})]
-                            (let [received  (nn/recv! pull-sock)]
+                            (let [received  (nn/recv-str! pull-sock)]
                               (nn/close! pull-sock)
                               received)))]
           (sleep 500)
@@ -85,7 +103,7 @@
       (let [recvd1 (future
                      (with-open [socket (nn/socket :pair)]
                        (nn/connect! socket s-bind-tcp)
-                       (nn/recv! socket)))]
+                       (nn/recv-str! socket)))]
         (sleep 500)
         (nn/send! sock "foo")
         (is (= @recvd1 "foo"))))))
@@ -97,11 +115,11 @@
       (let [recvd1   (future
                        (with-open [socket (nn/socket :bus)]
                          (nn/connect! socket s-bind-ipc)
-                         (nn/recv! socket)))
+                         (nn/recv-str! socket)))
             recvd2   (future
                        (with-open [socket (nn/socket :bus)]
                          (nn/connect! socket s-bind-ipc)
-                         (nn/recv! socket)))]
+                         (nn/recv-str! socket)))]
         (sleep 500)
         (nn/send! sock "foo")
         (is (= @recvd1 "foo"))
