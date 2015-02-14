@@ -12,135 +12,72 @@
   If you want send your more complex data types, create
   a new pair of send/recv functions that serializes and
   deserializers data before send and after receive."
-  (:import nanomsg.pubsub.PubSocket
-           nanomsg.pubsub.SubSocket
-           nanomsg.reqrep.ReqSocket
-           nanomsg.reqrep.RepSocket
-           nanomsg.pipeline.PushSocket
-           nanomsg.pipeline.PullSocket
-           nanomsg.pair.PairSocket
-           nanomsg.bus.BusSocket
-           nanomsg.Socket
+  (:require [nanomsg.proto :as proto]
+            [nanomsg.impl :as impl])
+  (:import nanomsg.Socket
+           nanomsg.async.AsyncSocket
            nanomsg.Nanomsg
            nanomsg.Device
-           nanomsg.async.IAsyncCallback
-           nanomsg.async.AsyncSocket
-           clojure.lang.Keyword
-           clojure.lang.IFn)
-  (:require [clojure.core.async :refer [chan put!]]))
+           clojure.lang.Keyword))
 
-(def ^{:dynamic true
-       :private true}
-  *supported-sockets*
-  {:pub #(PubSocket.)
-   :sub #(SubSocket.)
-   :req #(ReqSocket.)
-   :rep #(RepSocket.)
-   :bus #(BusSocket.)
-   :pair #(PairSocket.)
-   :push #(PushSocket.)
-   :pull #(PullSocket.)})
+(defn bind!
+  "Bind given socket to specified endpoint."
+  [socket ^String endpoint]
+  (proto/bind socket endpoint))
 
-(defn- ->async-callback
-  "Given a plain callback function, coerce
-  it to an anonymous instance of IAsyncCallback
-  interface."
-  [^IFn continuation]
-  (reify IAsyncCallback
-    (success [_ result]
-      (continuation result nil))
-    (fail [_ throwable]
-      (continuation nil throwable))))
+(defn connect!
+  "Connect given socket to specified endpoint."
+  [socket ^String endpoint]
+  (proto/connect socket endpoint))
 
-(defprotocol INNSocket
-  (bind! [_ ^String dir] "Bind to endpoint specified by dir parameter.")
-  (connect! [_ ^String dir] "Connect to endpoint specified by dir parameter.")
-  (subscribe! [_ pattern] "Subscribe current socket to specified topic.")
-  (unsubscribe! [_ pattern] "Unsubscribe current socket from specified topic.")
-  (send! [_ data] [_ data blocking] "Send string using a socket.")
-  (recv! [_] [_ blocking] "Receive string using a socket.")
-  (recv-bytes! [_] [_ blocking] "Receive bytes using socket.")
-  (close! [_] "Close a socket."))
+(defn subscribe!
+  "Subscribe given socket to specified topic."
+  [socket topic]
+  (proto/subscribe socket topic))
 
-(defn- async-socket
-  [^Socket socket ^AsyncSocket asocket]
-  (reify
-    INNSocket
-    (bind! [_ endpoint]
-      (.bind socket endpoint))
-    (connect! [_ endpoint]
-      (.connect socket endpoint))
-    (subscribe! [_ pattern]
-      (.subscribe socket pattern))
-    (unsubscribe! [_ pattern]
-      (.unsubscribe socket pattern))
-    (recv! [_]
-      (throw (UnsupportedOperationException.
-              "Unsuporded arity for async connection.")))
-    (recv-bytes! [_]
-      (throw (UnsupportedOperationException.
-              "Unsuporded arity for async connection.")))
-    (send! [_ data]
-      (throw (UnsupportedOperationException.
-              "Unsuporded arity for async connection.")))
-    (send! [_ data continuation]
-      (let [cb (->async-callback continuation)]
-        (.send asocket data cb)))
-    (recv! [_ continuation]
-      (let [cb (->async-callback continuation)]
-        (.recvString asocket cb)))
-    (recv-bytes! [_ continuation]
-      (let [cb (->async-callback continuation)]
-        (.recvBytes asocket cb)))
-    (close! [_]
-      (.close socket))
+(defn unsubscribe!
+  "Unsubscribe given socket from specified topic."
+  [socket topic]
+  (proto/unsubscribe socket topic))
 
-    java.io.Closeable
-    (close [_]
-      (.close socket))))
+(defn send!
+  "Send data through given socket."
+  ([socket data]
+   (send! socket data nil))
+  ([socket data opt]
+   (proto/send socket data opt)))
 
-(defn- blocking-socket
-  [^Socket socket]
-  (reify
-    INNSocket
-    (bind! [_ endpoint]
-      (.bind socket endpoint))
-    (connect! [_ endpoint]
-      (.connect socket endpoint))
-    (subscribe! [_ pattern]
-      (.subscribe socket pattern))
-    (unsubscribe! [_ pattern]
-      (.unsubscribe socket pattern))
-    (recv-bytes! [_]
-      (.recvBytes socket))
-    (recv-bytes! [_ blocking]
-      (.recvBytes socket blocking))
-    (recv! [_]
-      (.recvString socket))
-    (send! [_ data]
-      (.send socket data))
-    (send! [_ data blocking]
-      (.send socket data blocking))
-    (recv! [_ blocking]
-      (.recvString socket blocking))
-    (close! [_]
-      (.close socket))
+(defn recv!
+  "Receive data through given socket."
+  ([socket]
+   (recv! socket nil))
+  ([socket opt]
+   (proto/recv socket opt)))
 
-    java.io.Closeable
-    (close [_]
-      (.close socket))))
+(defn recv-str!
+  "Receive data through given socket."
+  ([socket]
+   (recv-str! socket nil))
+  ([socket opt]
+   (let [received (proto/recv socket opt)]
+     (String. received "UTF-8"))))
+
+(defn close!
+  "Close socket."
+  [^java.io.Closeable socket]
+  (.close socket))
 
 (defn socket
   "Geiven a socket type, create a new instance
   of corresponding socket."
   ([^Keyword socktype] (socket socktype {}))
   ([^Keyword socktype opts]
-   {:pre [(contains? *supported-sockets* socktype)]}
-   (let [factory (get *supported-sockets* socktype)
+   {:pre [(contains? impl/*supported-sockets* socktype)]}
+   (let [factory (get impl/*supported-sockets* socktype)
          socket (factory)
          conn (if (:async opts)
-                (async-socket socket (AsyncSocket. socket))
-                (blocking-socket socket))]
+                (impl/async-socket socket (AsyncSocket. socket))
+                (impl/blocking-socket socket))]
      (cond
        (:bind opts) (bind! conn (:bind opts))
        (:connect opts) (connect! conn (:connect opts)))
