@@ -7,6 +7,7 @@
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]
                  [net.java.dev.jna/jna "4.1.0"]]
   :jvm-opts ["-server" "-Xmx2g" "-XX:+UseG1GC"]
+  :javac-options ["-target" "1.7" "-source" "1.7" "-Xlint:-options"]
   :source-paths ["src/clojure"]
   :java-source-paths ["src/java"]
   :plugins [[lein-javadoc "0.1.1"]
