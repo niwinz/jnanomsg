@@ -1,6 +1,25 @@
 Changelog
 =========
 
+Version 0.4.0
+-------------
+
+Date: unreleased
+
+WARNING: This is a major api rework with a lot of breaking changes on java and clojure version.
+
+- Java: Update jna version from 4.0.0 to 4.1.0.
+- Java: Remove ISocket interface (due to wrong design).
+- Java: Remodeled IAsyncScheduler interface (for allow other implementations).
+- Java: Add EPoll and EPollScheduler implementation for async sockets in linux.
+- Java: Remodeled the Socket methods: now the default interface to send and recv is using ByteBuffer.
+- Java: Removed IMessage and Message abstractions (useless).
+- Clojure: Adapt internals to java api changes.
+- Clojure: Start working through abstractions (everything defined as protocol)
+- Clojure: Use reify instead usless defrecords.
+- Clojure: Low level async support is now modeled using callbacks instead core.async.
+
+
 Version 0.3.2
 -------------
 
