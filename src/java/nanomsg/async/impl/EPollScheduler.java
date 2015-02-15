@@ -107,6 +107,7 @@ public class EPollScheduler implements Runnable, IAsyncScheduler {
   }
 
   public void run() {
+    System.out.println("Starting event loop.");
     int readyCount;
     int err;
 
@@ -115,16 +116,12 @@ public class EPollScheduler implements Runnable, IAsyncScheduler {
     final Memory ptr = new Memory(MAX_EVENTS * size_of_struct);
     final Epoll.EpollEvent.ByReference event = new Epoll.EpollEvent.ByReference();
 
-    while (true) {
-      readyCount = Epoll.epoll_wait(epollFd, ptr, MAX_EVENTS, -1);
+    while (!Thread.interrupted()) {
+      readyCount = Epoll.epoll_wait(epollFd, ptr, MAX_EVENTS, 1000);
       System.out.println("Epoll loop: found " + readyCount + " events.");
 
       if (readyCount <= 0) {
         continue;
-      }
-
-      if (Thread.interrupted()) {
-        return;
       }
 
       for(int i = 0; i < readyCount; ++i) {
@@ -135,6 +132,13 @@ public class EPollScheduler implements Runnable, IAsyncScheduler {
         // System.out.println("Type EPOLLHUP: " + (event.events & Epoll.EPOLLHUP));
         processFd(event);
       }
+
+      if (runnableMap.size() == 0) {
+        System.out.println("Stoping event loop.");
+        started.compareAndSet(true, false);
+        break;
+      }
     }
+
   }
 }
