@@ -20,4 +20,4 @@
 (defprotocol ISocketData
   "Common interface for data that can be
   sended through nanomsg socket."
-  (get-bytes [_] "Get a byte array representation."))
+  (get-byte-buffer [_] "Get a byte array representation."))

@@ -14,6 +14,7 @@
            nanomsg.Device
            nanomsg.async.AsyncSocket
            nanomsg.async.IAsyncCallback
+           java.nio.ByteBuffer
            clojure.lang.Keyword
            clojure.lang.IFn))
 
@@ -58,11 +59,11 @@
       (.unsubscribe socket topic))
     (send [_ data opt]
       (let [cb (create-callback opt)
-            data (proto/get-bytes data)]
+            data (proto/get-byte-buffer data)]
         (.send asocket data cb)))
     (recv [_ opt]
       (let [cb (create-callback opt)]
-        (.recvBytes asocket cb)))
+        (.recv asocket cb)))
 
     java.io.Closeable
     (close [_]
@@ -83,10 +84,10 @@
       (.unsubscribe socket topic))
     (recv [_ opt]
       (let [blocking (if (nil? opt) true opt)]
-        (.recvBytes socket blocking)))
+        (.recv socket blocking)))
     (send [_ data opt]
       (let [blocking (if (nil? opt) true opt)
-            data (proto/get-bytes data)]
+            data (proto/get-byte-buffer data)]
         (.send socket data blocking)))
 
     java.io.Closeable
@@ -95,8 +96,12 @@
 
 (extend-protocol proto/ISocketData
   (Class/forName "[B")
-  (get-bytes [b] b)
+  (get-byte-buffer [b]
+    (ByteBuffer/wrap b))
+
+  java.nio.ByteBuffer
+  (get-byte-buffer [b] b)
 
   java.lang.String
-  (get-bytes [s]
-   (.getBytes s "UTF-8")))
+  (get-byte-buffer [s]
+    (proto/get-byte-buffer (.getBytes s "UTF-8"))))
