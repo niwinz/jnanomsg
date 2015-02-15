@@ -1,6 +1,7 @@
 package nanomsg;
 
 import java.nio.charset.Charset;
+import java.nio.ByteBuffer;
 
 import com.sun.jna.Pointer;
 import com.sun.jna.Memory;
@@ -32,7 +33,7 @@ public abstract class Socket {
     this.setRecvTimeout(600);
   }
 
-  public void close() throws IOException {
+  public synchronized void close() throws IOException {
     if (this.opened && !this.closed) {
       this.closed = true;
       final int rc = NativeLibrary.nn_close(this.socket);
@@ -49,7 +50,7 @@ public abstract class Socket {
     return this.socket;
   }
 
-  public void bind(final String dir) throws IOException {
+  public synchronized void bind(final String dir) throws IOException {
     final int rc = NativeLibrary.nn_bind(this.socket, dir);
 
     if (rc < 0) {
@@ -59,7 +60,7 @@ public abstract class Socket {
     }
   }
 
-  public void connect(final String dir) throws IOException {
+  public synchronized void connect(final String dir) throws IOException {
     final int rc = NativeLibrary.nn_connect(this.socket, dir);
 
     if (rc < 0) {
@@ -70,7 +71,8 @@ public abstract class Socket {
   }
 
   /**
-   * Send string to socket with option to set blocking flag.
+   * Helper method for send string to socket
+   * with option to set blocking flag.
    *
    * @param data string value that represents a message.
    * @param blocking set blocking or non blocking flag.
@@ -82,7 +84,7 @@ public abstract class Socket {
   }
 
   /**
-   * Send string to socket.
+   * Helper method for send string to socket.
    *
    * This operation is blocking by default.
    *
@@ -94,7 +96,8 @@ public abstract class Socket {
   }
 
   /**
-   * Send bytes array to socket with option to set blocking flag.
+   * Helper method for send bytes array to socket
+   * with option to set blocking flag.
    *
    * @param data a bytes array that represents a message.
    * @param blocking set blocking or non blocking flag.
@@ -102,7 +105,8 @@ public abstract class Socket {
    */
   public synchronized int send(final byte[] data, final boolean blocking) throws IOException {
     final int socket = getNativeSocket();
-    final int rc = NativeLibrary.nn_send(socket, data, data.length, blocking ? 0 : Nanomsg.constants.NN_DONTWAIT);
+    final int flags = blocking ? 0 : Nanomsg.constants.NN_DONTWAIT;
+    final int rc = NativeLibrary.nn_send(socket, data, data.length, flags);
 
     if (rc < 0) {
       final int errno = Nanomsg.getErrorNumber();
@@ -114,7 +118,7 @@ public abstract class Socket {
   }
 
   /**
-   * Send bytes array to socket.
+   * Helper method for send bytes array to socket.
    *
    * This operation is blocking by default.
    *
@@ -126,7 +130,8 @@ public abstract class Socket {
   }
 
   /**
-   * Receive message from socket as string with option for set blocking flag.
+   * Helper method for receive message from socket as string
+   * with option for set blocking flag.
    *
    * This method uses utf-8 encoding for converts a bytes array
    * to string.
@@ -141,7 +146,8 @@ public abstract class Socket {
   }
 
   /**
-   * Receive message from socket as string.
+   * Helper method for receive message from socket as string
+   * in a blocking mode.
    *
    * This method uses utf-8 encoding for converts a bytes array
    * to string.
@@ -153,7 +159,8 @@ public abstract class Socket {
   }
 
   /**
-   * Receive message from socket as bytes array with option for set blocking flag.
+   * Helper method for receive message from socket as bytes array
+   * with option for set blocking flag.
    *
    * @param blocking set blocking or non blocking flag.
    * @return receved data as bytes array
@@ -162,7 +169,8 @@ public abstract class Socket {
     final PointerByReference ptrBuff = new PointerByReference();
 
     final int socket = getNativeSocket();
-    final int received = NativeLibrary.nn_recv(socket, ptrBuff, Nanomsg.constants.NN_MSG, blocking ? 0: Nanomsg.constants.NN_DONTWAIT);
+    final int flags = blocking ? 0: Nanomsg.constants.NN_DONTWAIT;
+    final int received = NativeLibrary.nn_recv(socket, ptrBuff, Nanomsg.constants.NN_MSG, flags);
 
     if (received < 0) {
       final int errno = Nanomsg.getErrorNumber();
@@ -178,7 +186,8 @@ public abstract class Socket {
   }
 
   /**
-   * Receive message from socket as bytes array.
+   * Helper method for receive message from socket as bytes array
+   * in a blocking mode.
    *
    * This operation is blocking by default.
    *
@@ -189,58 +198,89 @@ public abstract class Socket {
   }
 
   /**
-   * High level function for send a message.
-   *
-   * This operation is blocking by default.
-   *
-   * @return number of sended bytes.
-   */
-  public int send(final IMessage msg) throws IOException {
-    return send(msg.toBytes());
-  }
-
-  /**
-   * High level function for send a message with option for set blocking flag.
-   *
-   * @param blocking set blocking or non blocking flag.
-   * @return number of sended bytes.
-   */
-  public int send(final IMessage msg, boolean blocking) throws IOException {
-    return send(msg.toBytes(), blocking);
-  }
-
-  /**
-   * High level function for receive message.
-   *
-   * This operation is blocking by default.
-   *
-   * @return Message instance.
-   */
-  public IMessage recv() throws IOException {
-    return new Message(recvBytes());
-  }
-
-  /**
-   * High level function for receive message with option for set blocking flag.
+   * Receive message with option for set blocking flag.
    *
    * @param blocking set blocking or non blocking flag.
    * @return Message instance.
    */
-  public IMessage recv(final boolean blocking) throws IOException {
-    return new Message(recvBytes(blocking));
+  public ByteBuffer recv(final boolean blocking) throws IOException {
+    final PointerByReference ptrBuff = new PointerByReference();
+
+    final int socket = getNativeSocket();
+    final int flags = blocking ? 0: Nanomsg.constants.NN_DONTWAIT;
+    final int received = NativeLibrary.nn_recv(socket, ptrBuff, Nanomsg.constants.NN_MSG, flags);
+
+    if (received < 0) {
+      final int errno = Nanomsg.getErrorNumber();
+      final String msg = Nanomsg.getError();
+      throw new IOException(msg, errno);
+    }
+
+    final Pointer result = ptrBuff.getValue();
+    final ByteBuffer buffer = result.getByteBuffer(0, received);
+
+    NativeLibrary.nn_freemsg(result);
+    return buffer;
   }
 
+  /**
+   * Send message to socket with option to set blocking flag.
+   *
+   * @param data byte buffer that represents a message.
+   * @param blocking set blocking or non blocking flag.
+   * @return number of sended bytes.
+   */
+  public synchronized int send(final ByteBuffer data, final boolean blocking) throws IOException {
+    final int socket = getNativeSocket();
+    final int flags = blocking ? 0 : Nanomsg.constants.NN_DONTWAIT;
+    final int rc = NativeLibrary.nn_send(socket, data, data.limit(), flags);
+
+    if (rc < 0) {
+      final int errno = Nanomsg.getErrorNumber();
+      final String msg = Nanomsg.getError();
+      throw new IOException(msg, errno);
+    }
+
+    return rc;
+  }
+
+  /**
+   * Send message to socket.
+   *
+   * @param data byte buffer that represents a message.
+   * @param blocking set blocking or non blocking flag.
+   * @return number of sended bytes.
+   */
+  public synchronized int send(final ByteBuffer data) throws IOException {
+    return this.send(data, true);
+  }
+
+  /**
+   * Get read file descriptor.
+   *
+   * @return file descriptor.
+   */
   public int getRcvFd() {
     final int flag = Nanomsg.constants.NN_RCVFD;
     return getFd(flag);
   }
 
+  /**
+   * Get write file descriptor.
+   *
+   * @return file descriptor.
+   */
   public int getSndFd() {
     final int flag = Nanomsg.constants.NN_SNDFD;
     return getFd(flag);
   }
 
-  public int getFd(final int flag) {
+  /**
+   * Get file descriptor.
+   *
+   * @return file descriptor.
+   */
+  private synchronized int getFd(final int flag) {
     final IntByReference fd = new IntByReference();
     final IntByReference size_t = new IntByReference(Native.SIZE_T_SIZE);
 
@@ -260,7 +300,10 @@ public abstract class Socket {
     return fd.getValue();
   }
 
-  public void setSendTimeout(final int milis) {
+  /**
+   * Set send timeout option to the socket.
+   */
+  public synchronized void setSendTimeout(final int milis) {
     final int socket = getNativeSocket();
 
     Memory ptr = new Memory(Native.LONG_SIZE/2);
@@ -270,7 +313,10 @@ public abstract class Socket {
                                                Nanomsg.constants.NN_SNDTIMEO, ptr, Native.LONG_SIZE/2);
   }
 
-  public void setRecvTimeout(int milis) {
+  /**
+   * Set recv timeout option to the socket.
+   */
+  public synchronized void setRecvTimeout(int milis) {
     final int socket = getNativeSocket();
 
     Memory ptr = new Memory(Native.LONG_SIZE/2);
