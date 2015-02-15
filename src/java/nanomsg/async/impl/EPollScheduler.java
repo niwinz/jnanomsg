@@ -25,6 +25,7 @@ import nanomsg.async.impl.epoll.Epoll;
 import nanomsg.exceptions.EAgainException;
 import nanomsg.exceptions.IOException;
 
+
 public class EPollScheduler implements Runnable, IAsyncScheduler {
   /* Maps used for store references tu socket; */
   private final Map<Integer, IAsyncRunnable> runnableMap = new ConcurrentHashMap<Integer, IAsyncRunnable>();
@@ -67,6 +68,7 @@ public class EPollScheduler implements Runnable, IAsyncScheduler {
   public void schedule(final Socket sock, final AsyncOperation op, final IAsyncRunnable handler) throws InterruptedException {
     if (started.compareAndSet(false, true)) {
       final Thread t = new Thread(this, "nanomsg-poll-scheduler");
+      t.setDaemon(true);
       t.start();
     }
 
