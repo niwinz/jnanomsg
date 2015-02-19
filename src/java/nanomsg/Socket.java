@@ -11,7 +11,6 @@ import com.sun.jna.ptr.IntByReference;
 
 import nanomsg.NativeLibrary;
 import nanomsg.Nanomsg;
-import nanomsg.Message;
 import nanomsg.exceptions.IOException;
 
 
@@ -306,11 +305,11 @@ public abstract class Socket {
   public synchronized void setSendTimeout(final int milis) {
     final int socket = getNativeSocket();
 
-    Memory ptr = new Memory(Native.LONG_SIZE/2);
+    Memory ptr = new Memory(Native.SIZE_T_SIZE/2);
     ptr.setInt(0, milis);
 
     final int rc = NativeLibrary.nn_setsockopt(socket, Nanomsg.constants.NN_SOL_SOCKET,
-                                               Nanomsg.constants.NN_SNDTIMEO, ptr, Native.LONG_SIZE/2);
+                                               Nanomsg.constants.NN_SNDTIMEO, ptr, Native.SIZE_T_SIZE/2);
   }
 
   /**
@@ -319,10 +318,10 @@ public abstract class Socket {
   public synchronized void setRecvTimeout(int milis) {
     final int socket = getNativeSocket();
 
-    Memory ptr = new Memory(Native.LONG_SIZE/2);
+    Memory ptr = new Memory(Native.SIZE_T_SIZE/2);
     ptr.setInt(0, milis);
 
     final int rc = NativeLibrary.nn_setsockopt(socket, Nanomsg.constants.NN_SOL_SOCKET,
-                                               Nanomsg.constants.NN_RCVTIMEO, ptr, Native.LONG_SIZE/2);
+                                               Nanomsg.constants.NN_RCVTIMEO, ptr, Native.SIZE_T_SIZE/2);
   }
 }
