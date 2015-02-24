@@ -299,29 +299,49 @@ public abstract class Socket {
     return fd.getValue();
   }
 
-  /**
-   * Set send timeout option to the socket.
-   */
-  public synchronized void setSendTimeout(final int milis) {
-    final int socket = getNativeSocket();
+    /**
+     * Set send timeout option to the socket.
+     */
+    public synchronized void setSendTimeout(final int milis) {
+        final int socket = getNativeSocket();
 
-    Memory ptr = new Memory(Native.SIZE_T_SIZE/2);
-    ptr.setInt(0, milis);
+        NativeLibrary.nn_setsockopt(socket, Nanomsg.constants.NN_SOL_SOCKET,
+                Nanomsg.constants.NN_SNDTIMEO, newSizeT(milis), Native.SIZE_T_SIZE);
+    }
 
-    final int rc = NativeLibrary.nn_setsockopt(socket, Nanomsg.constants.NN_SOL_SOCKET,
-                                               Nanomsg.constants.NN_SNDTIMEO, ptr, Native.SIZE_T_SIZE/2);
-  }
+    /**
+     * Set recv timeout option to the socket.
+     */
+    public synchronized void setRecvTimeout(int milis) {
+        final int socket = getNativeSocket();
 
-  /**
-   * Set recv timeout option to the socket.
-   */
-  public synchronized void setRecvTimeout(int milis) {
-    final int socket = getNativeSocket();
+        NativeLibrary.nn_setsockopt(socket, Nanomsg.constants.NN_SOL_SOCKET,
+                Nanomsg.constants.NN_RCVTIMEO, newSizeT(milis), Native.SIZE_T_SIZE);
+    }
 
-    Memory ptr = new Memory(Native.SIZE_T_SIZE/2);
-    ptr.setInt(0, milis);
+    /**
+     * Set memory.
+     * @param ptr pointer.
+     * @param value timeout.
+     */
+    private static void setSizeT(Memory ptr, long value)
+    {
+        if (Native.SIZE_T_SIZE == 8)
+            ptr.setLong(0, value);
+        else
+            ptr.setInt(0, (int)value);
+    }
 
-    final int rc = NativeLibrary.nn_setsockopt(socket, Nanomsg.constants.NN_SOL_SOCKET,
-                                               Nanomsg.constants.NN_RCVTIMEO, ptr, Native.SIZE_T_SIZE/2);
-  }
+    /**
+     * Pointer with allocated memory.
+     * @param value value.
+     * @return Memory pointer.
+     */
+    private Memory newSizeT(long value)
+    {
+        Memory ptr = new Memory(Native.SIZE_T_SIZE);
+        setSizeT(ptr, value);
+
+        return ptr;
+    }
 }
