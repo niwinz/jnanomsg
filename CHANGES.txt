@@ -18,6 +18,8 @@ WARNING: This is a major api rework with a lot of breaking changes on java and c
 - Clojure: Start working through abstractions (everything defined as protocol)
 - Clojure: Use reify instead usless defrecords.
 - Clojure: Low level async support is now modeled using callbacks instead core.async.
+- Fix compatibility issues with x86 and x86-64 platforms (thanks to @aarexer)
+- Fix windows related issues (thanks to @aarexer)
 
 
 Version 0.3.2
