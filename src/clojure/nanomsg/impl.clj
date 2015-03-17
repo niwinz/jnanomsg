@@ -45,29 +45,30 @@
       (fail [_ throwable]))))
 
 (defn async-socket
-  [^Socket socket ^AsyncSocket asocket]
-  (reify
-    proto/IAsyncSocket
-    proto/ISocket
-    (bind [_ endpoint]
-      (.bind socket endpoint))
-    (connect [_ endpoint]
-      (.connect socket endpoint))
-    (subscribe [_ topic]
-      (.subscribe socket topic))
-    (unsubscribe [_ topic]
-      (.unsubscribe socket topic))
-    (send [_ data opt]
-      (let [cb (create-callback opt)
-            data (proto/get-byte-buffer data)]
-        (.send asocket data cb)))
-    (recv [_ opt]
-      (let [cb (create-callback opt)]
-        (.recv asocket cb)))
+  [^Socket socket]
+  (let [^AsyncSocket asocket (AsyncSocket. socket)]
+    (reify
+      proto/IAsyncSocket
+      proto/ISocket
+      (bind [_ endpoint]
+        (.bind socket endpoint))
+      (connect [_ endpoint]
+        (.connect socket endpoint))
+      (subscribe [_ topic]
+        (.subscribe socket topic))
+      (unsubscribe [_ topic]
+        (.unsubscribe socket topic))
+      (send [_ data opt]
+        (let [cb (create-callback opt)
+              data (proto/get-byte-buffer data)]
+          (.send asocket data cb)))
+      (recv [_ opt]
+        (let [cb (create-callback opt)]
+          (.recv asocket cb)))
 
-    java.io.Closeable
-    (close [_]
-      (.close socket))))
+      java.io.Closeable
+      (close [_]
+        (.close socket)))))
 
 (defn blocking-socket
   [^Socket socket]
