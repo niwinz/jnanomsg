@@ -180,7 +180,7 @@ public abstract class Socket {
     final Pointer result = ptrBuff.getValue();
     final byte[] bytesResult = result.getByteArray(0, received);
 
-    NativeLibrary.nn_freemsg(result);
+    // NativeLibrary.nn_freemsg(result);
     return bytesResult;
   }
 
@@ -218,7 +218,7 @@ public abstract class Socket {
     final Pointer result = ptrBuff.getValue();
     final ByteBuffer buffer = result.getByteBuffer(0, received);
 
-    NativeLibrary.nn_freemsg(result);
+    // NativeLibrary.nn_freemsg(result);
     return buffer;
   }
 
