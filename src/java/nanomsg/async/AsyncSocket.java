@@ -2,14 +2,11 @@ package nanomsg.async;
 
 import nanomsg.Nanomsg;
 import nanomsg.Socket;
-
 import nanomsg.exceptions.IOException;
 import nanomsg.exceptions.EAgainException;
-
 import nanomsg.async.IAsyncCallback;
 import nanomsg.async.IAsyncRunnable;
 import nanomsg.async.IAsyncScheduler;
-
 import nanomsg.async.impl.EPollScheduler;
 import nanomsg.async.impl.ThreadPoolScheduler;
 
@@ -28,16 +25,7 @@ public class AsyncSocket {
   }
 
   private void setScheduler(final IAsyncScheduler scheduler) {
-    if (scheduler == null) {
-      final String osName = System.getProperty("os.name");
-      if (osName.startsWith("Linux") || osName.startsWith("LINUX")) {
-        this.scheduler = EPollScheduler.getInstance();
-      } else {
-        this.scheduler = ThreadPoolScheduler.getInstance();
-      }
-    } else {
-      this.scheduler = scheduler;
-    }
+    this.scheduler = scheduler;
   }
 
   /**
@@ -50,7 +38,13 @@ public class AsyncSocket {
    */
   public AsyncSocket(final Socket socket) {
     this.setSocket(socket);
-    this.setScheduler(null);
+
+    final String osName = System.getProperty("os.name");
+    if (osName.startsWith("Linux") || osName.startsWith("LINUX")) {
+      this.setScheduler(EPollScheduler.getInstance());
+    } else {
+      this.setScheduler(ThreadPoolScheduler.getInstance());
+    }
   }
 
   /**
