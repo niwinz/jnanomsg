@@ -76,7 +76,7 @@
    (let [factory (get impl/*supported-sockets* socktype)
          socket (factory)
          conn (if (:async opts)
-                (impl/async-socket socket (AsyncSocket. socket))
+                (impl/async-socket socket)
                 (impl/blocking-socket socket))]
      (cond
        (:bind opts) (bind! conn (:bind opts))
