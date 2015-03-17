@@ -34,12 +34,15 @@ public class SubSocket extends Socket implements ISubscriptionSocket {
   public void subscribe(final byte[] patternBytes) throws IOException {
     final int socket = getNativeSocket();
 
-    final ByteBuffer directBuffer = ByteBuffer.allocateDirect(patternBytes.length);
-    directBuffer.put(patternBytes);
-    Pointer pointer = Native.getDirectBufferPointer(directBuffer);
+    final Memory mem = new Memory(patternBytes.length);
+    mem.write(0, patternBytes, 0, patternBytes.length);
+
+    // final ByteBuffer directBuffer = ByteBuffer.allocateDirect(patternBytes.length);
+    // directBuffer.put(patternBytes);
+    // Pointer pointer = Native.getDirectBufferPointer(directBuffer);
 
     NativeLibrary.nn_setsockopt(socket, Nanomsg.constants.NN_SUB, Nanomsg.constants.NN_SUB_SUBSCRIBE,
-                                pointer, patternBytes.length);
+                                mem, patternBytes.length);
   }
 
   @Override
