@@ -19,5 +19,4 @@
   :codox {:output-dir "doc/api/clojure"
           :src-dir-uri "http://github.com/niwibe/jnanomsg/blob/master/"
           :src-linenum-anchor-prefix "L"}
-  :main nanomsg.benchmark
-  :profiles {:uberjar {:aot :all}})
+  :main  nanomsg.benchmark)
