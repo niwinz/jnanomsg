@@ -4,7 +4,7 @@ Changelog
 Version 0.4.0
 -------------
 
-Date: unreleased
+Date: 2015-03-22
 
 WARNING: This is a major api rework with a lot of breaking changes on java and clojure version.
 
