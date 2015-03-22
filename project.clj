@@ -10,11 +10,9 @@
 
   :jvm-opts ["-server" "-Xmx2g" "-XX:+UseG1GC"]
   :javac-options ["-target" "1.7" "-source" "1.7" "-Xlint:-options"]
+
   :source-paths ["src/clojure"]
   :java-source-paths ["src/java"]
-
-  :plugins [[lein-javadoc "0.1.1"]
-            [funcool/codeina "0.1.0-SNAPSHOT"]]
 
   :javadoc-opts {:output-dir "doc/api/java"
                  :package-names ["nanomsg" "nanomsg.jna" "nanomsg.pubsub" "nanomsg.exceptions"
@@ -23,4 +21,8 @@
             :src-dir-uri "http://github.com/niwibe/jnanomsg/blob/master/"
             :src-linenum-anchor-prefix "L"
             :exclude [nanomsg.benchmark nanomsg.impl]}
-  :main  nanomsg.benchmark)
+
+  :profiles {:dev {:plugins [[lein-javadoc "0.1.1"]
+                             [funcool/codeina "0.1.0-SNAPSHOT"]]
+                   :main nanomsg.benchmark}
+             :uberjar {:aot :all}})
