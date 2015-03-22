@@ -1,8 +1,6 @@
 (ns nanomsg.benchmark
   (:require [nanomsg.core :as nn]
-            [octet.core :as buf]
-            ;; [nanomsg.async :as nna]
-            [clojure.core.async :as async])
+            [octet.core :as buf])
   (:gen-class))
 
 (defn- sleep
