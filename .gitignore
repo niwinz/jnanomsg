@@ -1,7 +1,8 @@
 /target
 /classes
 /checkouts
-docs/_build/*
+/doc/api/
+/doc/index.html
 pom.xml
 pom.xml.asc
 *.jar
