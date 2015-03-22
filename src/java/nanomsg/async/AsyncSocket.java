@@ -1,5 +1,7 @@
 package nanomsg.async;
 
+import java.nio.ByteBuffer;
+
 import nanomsg.Nanomsg;
 import nanomsg.Socket;
 import nanomsg.exceptions.IOException;
@@ -121,7 +123,7 @@ public class AsyncSocket {
   }
 
   /**
-   * Given a string and callback, sends data using a proxied
+   * Given a byte array and callback, sends data using a proxied
    * socket using a common executor and execute a callback when it
    * are finished.
    *
@@ -163,6 +165,67 @@ public class AsyncSocket {
         public void run() throws EAgainException {
           try {
             final byte[] received = socket.recvBytes();
+            callback.success(received);
+          } catch (IOException e) {
+            if (e.getErrno() == Nanomsg.constants.EAGAIN) {
+              throw new EAgainException(e);
+            } else {
+              callback.fail(e);
+            }
+          }
+        }
+      };
+
+    try {
+      scheduler.schedule(socket, AsyncOperation.READ, runnable);
+    } catch (InterruptedException e) {
+      callback.fail(e);
+    }
+  }
+
+  /**
+   * Given a bytebuffer and callback, sends data using a proxied
+   * socket using a common executor and execute a callback when it
+   * are finished.
+   *
+   * @param data string to send.
+   * @param callback IAsyncCallback interface object.
+   */
+  public void send(final ByteBuffer data, final IAsyncCallback<Boolean> callback) {
+    final IAsyncRunnable runnable = new IAsyncRunnable() {
+        public void run() throws EAgainException {
+          try {
+            socket.send(data);
+            callback.success(true);
+          } catch (IOException e) {
+            if (e.getErrno() == Nanomsg.constants.EAGAIN) {
+              throw new EAgainException(e);
+            } else {
+              callback.fail(e);
+            }
+          }
+        }
+      };
+
+    try {
+      scheduler.schedule(socket, AsyncOperation.WRITE, runnable);
+    } catch (InterruptedException e) {
+      callback.fail(e);
+    }
+  }
+
+  /**
+   * Given a callback, it try receive data from socket using
+   * the common defined executor and execute callback whet
+   * any data received.
+   *
+   * @param callback IAsyncCallback interface object.
+   */
+  public void recv(final IAsyncCallback<ByteBuffer> callback) {
+    final IAsyncRunnable runnable = new IAsyncRunnable() {
+        public void run() throws EAgainException {
+          try {
+            final ByteBuffer received = socket.recv();
             callback.success(received);
           } catch (IOException e) {
             if (e.getErrno() == Nanomsg.constants.EAGAIN) {

@@ -188,8 +188,6 @@ public abstract class Socket {
    * Helper method for receive message from socket as bytes array
    * in a blocking mode.
    *
-   * This operation is blocking by default.
-   *
    * @return receved data as bytes array
    */
   public byte[] recvBytes() throws IOException {
@@ -220,6 +218,16 @@ public abstract class Socket {
 
     // NativeLibrary.nn_freemsg(result);
     return buffer;
+  }
+
+  /**
+   * Helper method for receive message from socket as ByteBuffer
+   * in a blocking mode.
+   *
+   * @return receved data as ByteBuffer
+   */
+  public ByteBuffer recv() throws IOException {
+    return this.recv(true);
   }
 
   /**
