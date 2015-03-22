@@ -7,7 +7,7 @@
   operating systems with no further dependencies.
 
   This is a clojure idiomatic wrapper for native C
-  libnanomsg library.
+  nanomsg library.
 
   If you want send your more complex data types, create
   a new pair of send/recv functions that serializes and
