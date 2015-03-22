@@ -37,12 +37,10 @@ public class SubSocket extends Socket implements ISubscriptionSocket {
     final Memory mem = new Memory(patternBytes.length);
     mem.write(0, patternBytes, 0, patternBytes.length);
 
-    // final ByteBuffer directBuffer = ByteBuffer.allocateDirect(patternBytes.length);
-    // directBuffer.put(patternBytes);
-    // Pointer pointer = Native.getDirectBufferPointer(directBuffer);
-
     NativeLibrary.nn_setsockopt(socket, Nanomsg.constants.NN_SUB, Nanomsg.constants.NN_SUB_SUBSCRIBE,
                                 mem, patternBytes.length);
+    // NativeLibrary.nn_setsockopt(socket, Nanomsg.constants.NN_SUB, Nanomsg.constants.NN_SUB_SUBSCRIBE,
+                                // null, 0);
   }
 
   @Override
