@@ -87,35 +87,20 @@
       (is (= result2 [true false]))
       (is (= result1 [false true])))))
 
+(deftest socket-pub-sub
+  (with-open [sock (nn/socket :pub)]
+    (nn/bind! sock s-bind-ipc)
 
-;; (deftest socket-pub-sub
-;;   (let [p1 (promise)
-;;         p2 (promise)]
+    (let [f1 (future
+               (with-open [sock (nn/socket :sub)]
+                 (nn/connect! sock s-bind-ipc)
+                 (nn/subscribe! sock (into-array Byte/TYPE [1]))
+                 (nn/recv! sock)))]
 
-;;     (future
-;;       (with-open [sock (nn/socket :sub)]
-;;         (nn/connect! sock s-bind-ipc)
-;;         (nn/subscribe! sock (into-array Byte/TYPE [1]))
-;;         (let [received (nn/recv! sock)]
-;;           (deliver p1 received))))
-
-;;     ;; (future
-;;     ;;   (with-open [sock (nn/socket :sub)]
-;;     ;;     (nn/connect! sock s-bind-ipc)
-;;     ;;     (nn/subscribe! sock (into-array Byte/TYPE [0]))
-;;     ;;     (let [received (nn/recv! sock)]
-;;     ;;       (deliver p2 received))))
-;;     (Thread/sleep 1000)
-;;     (with-open [sock (nn/socket :pub)]
-;;       (nn/bind! sock s-bind-ipc)
-;;       (nn/send! sock (into-buffer spec1 [true false])))
-
-;;     (let [buffer1 (deref p1)
-;;           ;; buffer2 (deref p2)
-;;           result1 (buf/read buffer1 spec1)]
-;;           ;; result2 (buf/read buffer2 spec1)]
-;;       (is (= result1 [true false])))))
-;;       ;; (is (= result2 [false true])))))
+      (nn/send! sock (into-buffer spec1 [true false]))
+      (let [buffer @f1
+            result (buf/read buffer spec1)]
+        (is (= result [true false]))))))
 
 (deftest socket-bus
   (let [p1 (promise)
@@ -141,5 +126,3 @@
           result2 (buf/read buffer2 spec1)]
       (is (= result1 [false true]))
       (is (= result2 [false true])))))
-
-
