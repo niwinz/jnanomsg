@@ -1,7 +1,6 @@
 (ns nanomsg.core-tests
   (:require [nanomsg.core :as nn]
             [octet.core :as buf]
-            [clojure.core.async :refer [<! >! go put! take!]]
             [clojure.test :refer :all]))
 
 (def s-bind-tcp "tcp://127.0.0.1:5555")

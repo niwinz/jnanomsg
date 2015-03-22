@@ -4,7 +4,6 @@
   :license {:name "Apache 2.0"
             :url "http://www.apache.org/licenses/LICENSE-2.0.txt"}
   :dependencies [[org.clojure/clojure "1.6.0"]
-                 [org.clojure/core.async "0.1.346.0-17112a-alpha"]
                  [funcool/octet "0.1.0"]
                  [net.java.dev.jna/jna "4.1.0"]]
 
