@@ -23,6 +23,10 @@ public class SubSocket extends Socket implements ISubscriptionSocket {
 
   @Override
   public void subscribe(final String topic) throws IOException {
+    if(topic.length == 0)
+    {
+        subscribe(new byte[1], 0);
+    }
     try {
       subscribe(topic.getBytes("utf-8"));
     } catch (UnsupportedEncodingException e) {
@@ -30,17 +34,24 @@ public class SubSocket extends Socket implements ISubscriptionSocket {
     }
   }
 
+  private void subscribe(final byte[] patternBytes, int length)
+  {
+    final int socket = getNativeSocket();
+          
+    final Memory mem = new Memory(patternBytes.length);
+    mem.write(0, patternBytes, 0, length);
+          
+    NativeLibrary.nn_setsockopt(socket, Nanomsg.constants.NN_SUB, Nanomsg.constants.NN_SUB_SUBSCRIBE,
+                                      mem, patternBytes.length);
+          // NativeLibrary.nn_setsockopt(socket, Nanomsg.constants.NN_SUB, Nanomsg.constants.NN_SUB_SUBSCRIBE,
+          // null, 0);
+  }
+    
   @Override
   public void subscribe(final byte[] patternBytes) throws IOException {
-    final int socket = getNativeSocket();
-
-    final Memory mem = new Memory(patternBytes.length);
-    mem.write(0, patternBytes, 0, patternBytes.length);
-
-    NativeLibrary.nn_setsockopt(socket, Nanomsg.constants.NN_SUB, Nanomsg.constants.NN_SUB_SUBSCRIBE,
-                                mem, patternBytes.length);
-    // NativeLibrary.nn_setsockopt(socket, Nanomsg.constants.NN_SUB, Nanomsg.constants.NN_SUB_SUBSCRIBE,
-                                // null, 0);
+    if(patternBytes.length <1)
+        subscribe(new byte[1], 0);
+    subscribe(patternBytes, patternBytes.length);
   }
 
   @Override
