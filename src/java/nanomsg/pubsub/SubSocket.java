@@ -23,7 +23,7 @@ public class SubSocket extends Socket implements ISubscriptionSocket {
 
   @Override
   public void subscribe(final String topic) throws IOException {
-    if(topic.length == 0)
+    if(topic.isEmpty())
     {
         subscribe(new byte[1], 0);
     }
