@@ -1,6 +1,14 @@
 Changelog
 =========
 
+Version 0.4.1
+-------------
+
+Date: 2015-08-14
+
+- Fix wrong call `.length` method.
+
+
 Version 0.4.0
 -------------
 
