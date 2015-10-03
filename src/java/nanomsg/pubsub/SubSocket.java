@@ -23,12 +23,15 @@ public class SubSocket extends Socket implements ISubscriptionSocket {
 
   @Override
   public void subscribe(final String topic) throws IOException {
-    if(topic.isEmpty())
-    {
-        subscribe(new byte[1], 0);
-    }
     try {
-      subscribe(topic.getBytes("utf-8"));
+      if (topic.isEmpty())
+      {
+          subscribe(new byte[1], 0);
+      }
+      else 
+      {
+        subscribe(topic.getBytes("utf-8"));
+      }
     } catch (UnsupportedEncodingException e) {
       throw new IOException(e);
     }
@@ -39,10 +42,10 @@ public class SubSocket extends Socket implements ISubscriptionSocket {
     final int socket = getNativeSocket();
           
     final Memory mem = new Memory(patternBytes.length);
-    mem.write(0, patternBytes, 0, length);
+    mem.write(0, patternBytes, 0, patternBytes.length);
           
     NativeLibrary.nn_setsockopt(socket, Nanomsg.constants.NN_SUB, Nanomsg.constants.NN_SUB_SUBSCRIBE,
-                                      mem, patternBytes.length);
+                                      mem, length);
           // NativeLibrary.nn_setsockopt(socket, Nanomsg.constants.NN_SUB, Nanomsg.constants.NN_SUB_SUBSCRIBE,
           // null, 0);
   }
