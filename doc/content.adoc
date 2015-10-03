@@ -1,5 +1,5 @@
 = jnanomsg documentation
-Andrey Antukh, <niwi@niwi.be>
+Andrey Antukh, <niwi@niwi.nz>
 :toc: left
 :numbered:
 :source-highlighter: pygments
@@ -31,7 +31,7 @@ vector of your *_project.clj_* file:
 ._on project.clj_
 [source,clojure]
 ----
-[jnanomsg "0.4.0"]
+[jnanomsg "0.4.2"]
 ----
 
 
