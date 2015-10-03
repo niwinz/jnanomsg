@@ -297,7 +297,7 @@ Let see some examples:
                      (nn/send! socket data))))
 ----
 
-.A req/reo echo client example using async socket.
+.A req/rep echo client example using async socket.
 [source, clojure]
 ----
 (with-open [socket (nn/socket :req {:async true})]
