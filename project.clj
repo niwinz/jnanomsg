@@ -1,4 +1,4 @@
-(defproject jnanomsg "0.4.1"
+(defproject jnanomsg "0.4.2"
   :description "Nanomsg library for Java & Clojure"
   :url "https://github.com/niwibe/jnanomsg"
   :license {:name "Apache 2.0"
@@ -18,11 +18,13 @@
                                  "nanomsg.reqrep" "nanomsg.bus" "nanomsg.pair" "nanomsg.pipeline"]}
 
   :codeina {:target "doc/api/clojure"
+            :reader :clojure
             :src-uri "http://github.com/niwibe/jnanomsg/blob/master/"
-            :src-uri-prefix "L"
+            :src-uri-prefix "#L"
             :exclude [nanomsg.benchmark nanomsg.impl]}
 
   :profiles {:dev {:plugins [[lein-javadoc "0.1.1"]
-                             [funcool/codeina "0.2.0"]]
+                             [lein-ancient "0.6.7"]
+                             [funcool/codeina "0.3.0"]]
                    :main nanomsg.benchmark}
              :uberjar {:aot :all}})
