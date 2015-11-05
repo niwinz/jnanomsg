@@ -312,19 +312,20 @@ public abstract class Socket {
    */
   public synchronized void setSendTimeout(final int milis) {
     final int socket = getNativeSocket();
-
+    IntByReference timeout = new IntByReference(milis);
     NativeLibrary.nn_setsockopt(socket, Nanomsg.constants.NN_SOL_SOCKET,
-                                Nanomsg.constants.NN_SNDTIMEO, newSizeT(milis), Native.SIZE_T_SIZE);
+                                Nanomsg.constants.NN_SNDTIMEO, timeout.getPointer() , 4);
   }
 
   /**
    * Set recv timeout option to the socket.
    */
-  public synchronized void setRecvTimeout(int milis) {
+  public synchronized void setRecvTimeout(final int milis) {
     final int socket = getNativeSocket();
 
+    IntByReference timeout = new IntByReference(milis);
     NativeLibrary.nn_setsockopt(socket, Nanomsg.constants.NN_SOL_SOCKET,
-                                Nanomsg.constants.NN_RCVTIMEO, newSizeT(milis), Native.SIZE_T_SIZE);
+                                Nanomsg.constants.NN_RCVTIMEO, timeout.getPointer(), 4);
   }
 
   /**
