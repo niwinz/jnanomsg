@@ -1,6 +1,13 @@
 Changelog
 =========
 
+Version 0.4.3
+-------------
+
+Date: 2015-11-05
+
+- Fix wrong ponter size on timeout is set.
+
 
 Version 0.4.2
 -------------
