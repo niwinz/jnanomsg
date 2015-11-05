@@ -4,8 +4,8 @@
   :license {:name "Apache 2.0"
             :url "http://www.apache.org/licenses/LICENSE-2.0.txt"}
   :dependencies [[org.clojure/clojure "1.7.0" :scope "provided"]
-                 [funcool/octet "0.1.0"]
-                 [net.java.dev.jna/jna "4.2.0"]]
+                 [funcool/octet "0.2.0" :scope "provided"]
+                 [net.java.dev.jna/jna "4.2.1"]]
 
   :jvm-opts ["-server" "-Xmx2g" "-XX:+UseG1GC"]
   :javac-options ["-target" "1.7" "-source" "1.7" "-Xlint:-options"]
