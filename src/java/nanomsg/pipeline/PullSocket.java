@@ -1,15 +1,15 @@
 package nanomsg.pipeline;
 
+import nanomsg.Nanomsg.Domain;
+import nanomsg.Nanomsg.SocketType;
 import nanomsg.Socket;
-import nanomsg.Nanomsg;
-
 
 public class PullSocket extends Socket {
-  public PullSocket(int domain) {
-    super(domain, Nanomsg.constants.NN_PULL);
+  public PullSocket(Domain domain) {
+    super(domain, SocketType.NN_PULL);
   }
 
   public PullSocket() {
-    this(Nanomsg.constants.AF_SP);
+    this(Domain.AF_SP);
   }
 }

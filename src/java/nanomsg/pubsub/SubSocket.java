@@ -1,24 +1,24 @@
 package nanomsg.pubsub;
 
 import com.sun.jna.Memory;
-import com.sun.jna.Native;
-import com.sun.jna.Pointer;
 import nanomsg.Nanomsg;
+import nanomsg.Nanomsg.Domain;
+import nanomsg.Nanomsg.SocketOption;
+import nanomsg.Nanomsg.SocketType;
 import nanomsg.NativeLibrary;
 import nanomsg.Socket;
 import nanomsg.exceptions.IOException;
 
 import java.io.UnsupportedEncodingException;
-import java.nio.ByteBuffer;
 
 
 public class SubSocket extends Socket implements ISubscriptionSocket {
-  public SubSocket(int domain) {
-    super(domain, Nanomsg.constants.NN_SUB);
+  public SubSocket(Domain domain) {
+    super(domain, Nanomsg.SocketType.NN_SUB);
   }
 
   public SubSocket() {
-    this(Nanomsg.constants.AF_SP);
+    this(Domain.AF_SP);
   }
 
   @Override
@@ -44,9 +44,9 @@ public class SubSocket extends Socket implements ISubscriptionSocket {
     final Memory mem = new Memory(patternBytes.length);
     mem.write(0, patternBytes, 0, patternBytes.length);
           
-    NativeLibrary.nn_setsockopt(socket, Nanomsg.constants.NN_SUB, Nanomsg.constants.NN_SUB_SUBSCRIBE,
+    NativeLibrary.nn_setsockopt(socket, SocketType.NN_SUB.value(), SocketOption.NN_SUB_SUBSCRIBE.value(),
                                       mem, length);
-          // NativeLibrary.nn_setsockopt(socket, Nanomsg.constants.NN_SUB, Nanomsg.constants.NN_SUB_SUBSCRIBE,
+          // NativeLibrary.nn_setsockopt(socket, NN_SUB.value(), NN_SUB_SUBSCRIBE.value(),
           // null, 0);
   }
     
@@ -72,7 +72,7 @@ public class SubSocket extends Socket implements ISubscriptionSocket {
     final Memory mem = new Memory(patternBytes.length);
     mem.write(0, patternBytes, 0, patternBytes.length);
 
-    NativeLibrary.nn_setsockopt(socket, Nanomsg.constants.NN_SUB, Nanomsg.constants.NN_SUB_UNSUBSCRIBE,
+    NativeLibrary.nn_setsockopt(socket, SocketType.NN_SUB.value(), SocketOption.NN_SUB_UNSUBSCRIBE.value(),
                                 mem, patternBytes.length);
   }
 }

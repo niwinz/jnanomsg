@@ -1,15 +1,16 @@
 package nanomsg.bus;
 
+import nanomsg.Nanomsg.Domain;
+import nanomsg.Nanomsg.SocketType;
 import nanomsg.Socket;
-import nanomsg.Nanomsg;
 
 
 public class BusSocket extends Socket {
-  public BusSocket(int domain) {
-    super(domain, Nanomsg.constants.NN_BUS);
+  public BusSocket(Domain domain) {
+    super(domain, SocketType.NN_BUS);
   }
 
   public BusSocket() {
-    this(Nanomsg.constants.AF_SP);
+    this(Domain.AF_SP);
   }
 }

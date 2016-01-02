@@ -1,19 +1,15 @@
 package nanomsg.async.impl;
 
-import java.util.concurrent.ConcurrentLinkedQueue;
+import nanomsg.Socket;
+import nanomsg.async.AsyncOperation;
+import nanomsg.async.IAsyncRunnable;
+import nanomsg.async.IAsyncScheduler;
+import nanomsg.exceptions.IOException;
+
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import java.util.Queue;
-import java.util.LinkedList;
-import java.lang.Thread;
-
-import nanomsg.Nanomsg;
-import nanomsg.Socket;
-import nanomsg.async.IAsyncRunnable;
-import nanomsg.async.IAsyncScheduler;
-import nanomsg.async.AsyncOperation;
-import nanomsg.exceptions.IOException;
+import static nanomsg.Nanomsg.Error.EAGAIN;
 
 
 public class ThreadPoolScheduler implements Runnable, IAsyncScheduler {
@@ -67,7 +63,7 @@ public class ThreadPoolScheduler implements Runnable, IAsyncScheduler {
           handler.run();
         } catch (IOException e) {
           final int errno = e.getErrno();
-          if (errno == Nanomsg.constants.EAGAIN) {
+          if (errno == EAGAIN.value()) {
             queue.put(handler);
           }
         }

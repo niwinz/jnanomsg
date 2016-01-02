@@ -1,15 +1,16 @@
 package nanomsg.reqrep;
 
+import nanomsg.Nanomsg.Domain;
+import nanomsg.Nanomsg.SocketType;
 import nanomsg.Socket;
-import nanomsg.Nanomsg;
 
 
 public class ReqSocket extends Socket {
-    public ReqSocket(int domain) {
-        super(domain, Nanomsg.constants.NN_REQ);
-    }
+  public ReqSocket(Domain domain) {
+    super(domain, SocketType.NN_REQ);
+  }
 
-    public ReqSocket() {
-        this(Nanomsg.constants.AF_SP);
-    }
+  public ReqSocket() {
+    this(Domain.AF_SP);
+  }
 }
