@@ -1,31 +1,26 @@
 package nanomsg;
 
-import java.nio.charset.Charset;
-import java.nio.ByteBuffer;
-
-import com.sun.jna.Pointer;
 import com.sun.jna.Memory;
 import com.sun.jna.Native;
-import com.sun.jna.ptr.PointerByReference;
+import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
-
-import nanomsg.NativeLibrary;
-import nanomsg.Nanomsg;
+import com.sun.jna.ptr.PointerByReference;
 import nanomsg.exceptions.IOException;
+
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+
+import static nanomsg.Nanomsg.*;
 
 
 public abstract class Socket {
-  private final int domain;
-  private final int protocol;
   private final int socket;
 
   private boolean closed = false;
   private boolean opened = false;
 
-  public Socket(final int domain, final int protocol) {
-    this.domain = domain;
-    this.protocol = protocol;
-    this.socket = NativeLibrary.nn_socket(domain, protocol);
+  public Socket(final Domain domain, final SocketType protocol) {
+    this.socket = NativeLibrary.nn_socket(domain.value(), protocol.value());
     this.opened = true;
 
     this.setSendTimeout(600);
@@ -38,8 +33,8 @@ public abstract class Socket {
       final int rc = NativeLibrary.nn_close(this.socket);
 
       if (rc < 0) {
-        final int errno = Nanomsg.getErrorNumber();
-        final String msg = Nanomsg.getError();
+        final int errno = getErrorNumber();
+        final String msg = getError();
         throw new IOException(msg, errno);
       }
     }
@@ -53,8 +48,8 @@ public abstract class Socket {
     final int rc = NativeLibrary.nn_bind(this.socket, dir);
 
     if (rc < 0) {
-      final int errno = Nanomsg.getErrorNumber();
-      final String msg = Nanomsg.getError();
+      final int errno = getErrorNumber();
+      final String msg = getError();
       throw new IOException(msg, errno);
     }
   }
@@ -63,8 +58,8 @@ public abstract class Socket {
     final int rc = NativeLibrary.nn_connect(this.socket, dir);
 
     if (rc < 0) {
-      final int errno = Nanomsg.getErrorNumber();
-      final String msg = Nanomsg.getError();
+      final int errno = getErrorNumber();
+      final String msg = getError();
       throw new IOException(msg, errno);
     }
   }
@@ -104,12 +99,12 @@ public abstract class Socket {
    */
   public synchronized int send(final byte[] data, final boolean blocking) throws IOException {
     final int socket = getNativeSocket();
-    final int flags = blocking ? 0 : Nanomsg.constants.NN_DONTWAIT;
+    final int flags = blocking ? 0 : MethodOption.NN_DONTWAIT.value();
     final int rc = NativeLibrary.nn_send(socket, data, data.length, flags);
 
     if (rc < 0) {
-      final int errno = Nanomsg.getErrorNumber();
-      final String msg = Nanomsg.getError();
+      final int errno = getErrorNumber();
+      final String msg = getError();
       throw new IOException(msg, errno);
     }
 
@@ -168,12 +163,12 @@ public abstract class Socket {
     final PointerByReference ptrBuff = new PointerByReference();
 
     final int socket = getNativeSocket();
-    final int flags = blocking ? 0: Nanomsg.constants.NN_DONTWAIT;
-    final int received = NativeLibrary.nn_recv(socket, ptrBuff, Nanomsg.constants.NN_MSG, flags);
+    final int flags = blocking ? 0: MethodOption.NN_DONTWAIT.value();
+    final int received = NativeLibrary.nn_recv(socket, ptrBuff, MethodOption.NN_MSG.value(), flags);
 
     if (received < 0) {
-      final int errno = Nanomsg.getErrorNumber();
-      final String msg = Nanomsg.getError();
+      final int errno = getErrorNumber();
+      final String msg = getError();
       throw new IOException(msg, errno);
     }
 
@@ -204,12 +199,12 @@ public abstract class Socket {
     final PointerByReference ptrBuff = new PointerByReference();
 
     final int socket = getNativeSocket();
-    final int flags = blocking ? 0: Nanomsg.constants.NN_DONTWAIT;
-    final int received = NativeLibrary.nn_recv(socket, ptrBuff, Nanomsg.constants.NN_MSG, flags);
+    final int flags = blocking ? 0: MethodOption.NN_DONTWAIT.value();
+    final int received = NativeLibrary.nn_recv(socket, ptrBuff, MethodOption.NN_MSG.value(), flags);
 
     if (received < 0) {
-      final int errno = Nanomsg.getErrorNumber();
-      final String msg = Nanomsg.getError();
+      final int errno = getErrorNumber();
+      final String msg = getError();
       throw new IOException(msg, errno);
     }
 
@@ -239,12 +234,12 @@ public abstract class Socket {
    */
   public synchronized int send(final ByteBuffer data, final boolean blocking) throws IOException {
     final int socket = getNativeSocket();
-    final int flags = blocking ? 0 : Nanomsg.constants.NN_DONTWAIT;
+    final int flags = blocking ? 0 : MethodOption.NN_DONTWAIT.value();
     final int rc = NativeLibrary.nn_send(socket, data, data.limit(), flags);
 
     if (rc < 0) {
-      final int errno = Nanomsg.getErrorNumber();
-      final String msg = Nanomsg.getError();
+      final int errno = getErrorNumber();
+      final String msg = getError();
       throw new IOException(msg, errno);
     }
 
@@ -255,7 +250,6 @@ public abstract class Socket {
    * Send message to socket.
    *
    * @param data byte buffer that represents a message.
-   * @param blocking set blocking or non blocking flag.
    * @return number of sended bytes.
    */
   public synchronized int send(final ByteBuffer data) throws IOException {
@@ -268,7 +262,7 @@ public abstract class Socket {
    * @return file descriptor.
    */
   public int getRcvFd() {
-    final int flag = Nanomsg.constants.NN_RCVFD;
+    final int flag = SocketOption.NN_RCVFD.value();
     return getFd(flag);
   }
 
@@ -278,7 +272,7 @@ public abstract class Socket {
    * @return file descriptor.
    */
   public int getSndFd() {
-    final int flag = Nanomsg.constants.NN_SNDFD;
+    final int flag = SocketOption.NN_SNDFD.value();
     return getFd(flag);
   }
 
@@ -291,16 +285,16 @@ public abstract class Socket {
     final IntByReference fd = new IntByReference();
     final IntByReference size_t = new IntByReference(Native.SIZE_T_SIZE);
 
-    final int rc = NativeLibrary.nn_getsockopt(this.socket, Nanomsg.constants.NN_SOL_SOCKET,
+    final int rc = NativeLibrary.nn_getsockopt(this.socket, MethodOption.NN_SOL_SOCKET.value(),
                                                flag, fd.getPointer(), size_t.getPointer());
 
     if (rc < 0) {
-      throw new IOException(Nanomsg.getError());
+      throw new IOException(getError());
     }
 
     if (rc < 0) {
-      final int errno = Nanomsg.getErrorNumber();
-      final String msg = Nanomsg.getError();
+      final int errno = getErrorNumber();
+      final String msg = getError();
       throw new IOException(msg, errno);
     }
 
@@ -313,8 +307,8 @@ public abstract class Socket {
   public synchronized void setSendTimeout(final int milis) {
     final int socket = getNativeSocket();
     IntByReference timeout = new IntByReference(milis);
-    NativeLibrary.nn_setsockopt(socket, Nanomsg.constants.NN_SOL_SOCKET,
-                                Nanomsg.constants.NN_SNDTIMEO, timeout.getPointer() , 4);
+    NativeLibrary.nn_setsockopt(socket, MethodOption.NN_SOL_SOCKET.value(),
+                                SocketOption.NN_SNDTIMEO.value(), timeout.getPointer() , 4);
   }
 
   /**
@@ -324,8 +318,8 @@ public abstract class Socket {
     final int socket = getNativeSocket();
 
     IntByReference timeout = new IntByReference(milis);
-    NativeLibrary.nn_setsockopt(socket, Nanomsg.constants.NN_SOL_SOCKET,
-                                Nanomsg.constants.NN_RCVTIMEO, timeout.getPointer(), 4);
+    NativeLibrary.nn_setsockopt(socket, MethodOption.NN_SOL_SOCKET.value(),
+                                SocketOption.NN_RCVTIMEO.value(), timeout.getPointer(), 4);
   }
 
   /**

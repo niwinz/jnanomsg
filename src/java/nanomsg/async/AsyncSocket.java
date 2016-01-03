@@ -1,16 +1,14 @@
 package nanomsg.async;
 
-import java.nio.ByteBuffer;
-
-import nanomsg.Nanomsg;
 import nanomsg.Socket;
-import nanomsg.exceptions.IOException;
-import nanomsg.exceptions.EAgainException;
-import nanomsg.async.IAsyncCallback;
-import nanomsg.async.IAsyncRunnable;
-import nanomsg.async.IAsyncScheduler;
 import nanomsg.async.impl.EPollScheduler;
 import nanomsg.async.impl.ThreadPoolScheduler;
+import nanomsg.exceptions.EAgainException;
+import nanomsg.exceptions.IOException;
+
+import java.nio.ByteBuffer;
+
+import static nanomsg.Nanomsg.Error.EAGAIN;
 
 /**
  * Experimental socket proxy that enables async way to
@@ -76,7 +74,7 @@ public class AsyncSocket {
             socket.send(data);
             callback.success(true);
           } catch (IOException e) {
-            if (e.getErrno() == Nanomsg.constants.EAGAIN) {
+            if (e.getErrno() == EAGAIN.value()) {
               throw new EAgainException(e);
             } else {
               callback.fail(e);
@@ -106,7 +104,7 @@ public class AsyncSocket {
             final String received = socket.recvString();
             callback.success(received);
           } catch (IOException e) {
-            if (e.getErrno() == Nanomsg.constants.EAGAIN) {
+            if (e.getErrno() == EAGAIN.value()) {
               throw e;
             } else {
               callback.fail(e);
@@ -137,7 +135,7 @@ public class AsyncSocket {
             socket.send(data);
             callback.success(true);
           } catch (IOException e) {
-            if (e.getErrno() == Nanomsg.constants.EAGAIN) {
+            if (e.getErrno() == EAGAIN.value()) {
               throw new EAgainException(e);
             } else {
               callback.fail(e);
@@ -167,7 +165,7 @@ public class AsyncSocket {
             final byte[] received = socket.recvBytes();
             callback.success(received);
           } catch (IOException e) {
-            if (e.getErrno() == Nanomsg.constants.EAGAIN) {
+            if (e.getErrno() == EAGAIN.value()) {
               throw new EAgainException(e);
             } else {
               callback.fail(e);
@@ -198,7 +196,7 @@ public class AsyncSocket {
             socket.send(data);
             callback.success(true);
           } catch (IOException e) {
-            if (e.getErrno() == Nanomsg.constants.EAGAIN) {
+            if (e.getErrno() == EAGAIN.value()) {
               throw new EAgainException(e);
             } else {
               callback.fail(e);
@@ -228,7 +226,7 @@ public class AsyncSocket {
             final ByteBuffer received = socket.recv();
             callback.success(received);
           } catch (IOException e) {
-            if (e.getErrno() == Nanomsg.constants.EAGAIN) {
+            if (e.getErrno() == EAGAIN.value()) {
               throw new EAgainException(e);
             } else {
               callback.fail(e);

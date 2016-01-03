@@ -1,9 +1,5 @@
 package nanomsg;
 
-import java.lang.Runnable;
-import nanomsg.NativeLibrary;
-
-
 public class Device implements Runnable {
   private final int sourceSocket;
   private final int destSocket;

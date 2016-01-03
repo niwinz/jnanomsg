@@ -1,7 +1,6 @@
 package nanomsg.async;
 
 import nanomsg.Socket;
-import nanomsg.async.AsyncOperation;
 
 
 public interface IAsyncScheduler {

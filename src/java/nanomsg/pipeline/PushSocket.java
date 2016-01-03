@@ -1,15 +1,16 @@
 package nanomsg.pipeline;
 
+import nanomsg.Nanomsg.Domain;
+import nanomsg.Nanomsg.SocketType;
 import nanomsg.Socket;
-import nanomsg.Nanomsg;
 
 
 public class PushSocket extends Socket {
-  public PushSocket(int domain) {
-    super(domain, Nanomsg.constants.NN_PUSH);
+  public PushSocket(Domain domain) {
+    super(domain, SocketType.NN_PUSH);
   }
 
   public PushSocket() {
-    this(Nanomsg.constants.AF_SP);
+    this(Domain.AF_SP);
   }
 }
