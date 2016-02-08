@@ -12,7 +12,11 @@ import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;
 
 import nanomsg.exceptions.IOException;
+import nanomsg.exceptions.EAgainException;
+
 import static nanomsg.Nanomsg.*;
+import static nanomsg.Nanomsg.Error.EAGAIN;
+
 
 public abstract class AbstractSocket implements Socket {
   protected final int socket;
@@ -35,7 +39,12 @@ public abstract class AbstractSocket implements Socket {
       if (rc < 0) {
         final int errno = getErrorNumber();
         final String msg = getError();
-        throw new IOException(msg, errno);
+
+        if (errno == EAGAIN.value()) {
+          throw new EAgainException(msg, errno);
+        } else {
+          throw new IOException(msg, errno);
+        }
       }
     }
   }
@@ -50,7 +59,12 @@ public abstract class AbstractSocket implements Socket {
     if (rc < 0) {
       final int errno = getErrorNumber();
       final String msg = getError();
-      throw new IOException(msg, errno);
+
+      if (errno == EAGAIN.value()) {
+        throw new EAgainException(msg, errno);
+      } else {
+        throw new IOException(msg, errno);
+      }
     }
   }
 
@@ -60,7 +74,12 @@ public abstract class AbstractSocket implements Socket {
     if (rc < 0) {
       final int errno = getErrorNumber();
       final String msg = getError();
-      throw new IOException(msg, errno);
+
+      if (errno == EAGAIN.value()) {
+        throw new EAgainException(msg, errno);
+      } else {
+        throw new IOException(msg, errno);
+      }
     }
   }
 
@@ -83,7 +102,12 @@ public abstract class AbstractSocket implements Socket {
     if (rc < 0) {
       final int errno = getErrorNumber();
       final String msg = getError();
-      throw new IOException(msg, errno);
+
+      if (errno == EAGAIN.value()) {
+        throw new EAgainException(msg, errno);
+      } else {
+        throw new IOException(msg, errno);
+      }
     }
 
     return rc;
@@ -113,7 +137,12 @@ public abstract class AbstractSocket implements Socket {
     if (received < 0) {
       final int errno = getErrorNumber();
       final String msg = getError();
-      throw new IOException(msg, errno);
+
+      if (errno == EAGAIN.value()) {
+        throw new EAgainException(msg, errno);
+      } else {
+        throw new IOException(msg, errno);
+      }
     }
 
     final Pointer result = ptrBuff.getValue();
@@ -137,7 +166,12 @@ public abstract class AbstractSocket implements Socket {
     if (received < 0) {
       final int errno = getErrorNumber();
       final String msg = getError();
-      throw new IOException(msg, errno);
+
+      if (errno == EAGAIN.value()) {
+        throw new EAgainException(msg, errno);
+      } else {
+        throw new IOException(msg, errno);
+      }
     }
 
     final Pointer result = ptrBuff.getValue();
@@ -159,7 +193,12 @@ public abstract class AbstractSocket implements Socket {
     if (rc < 0) {
       final int errno = getErrorNumber();
       final String msg = getError();
-      throw new IOException(msg, errno);
+
+      if (errno == EAGAIN.value()) {
+        throw new EAgainException(msg, errno);
+      } else {
+        throw new IOException(msg, errno);
+      }
     }
 
     return rc;
@@ -215,7 +254,12 @@ public abstract class AbstractSocket implements Socket {
     if (rc < 0) {
       final int errno = getErrorNumber();
       final String msg = getError();
-      throw new IOException(msg, errno);
+
+      if (errno == EAGAIN.value()) {
+        throw new EAgainException(msg, errno);
+      } else {
+        throw new IOException(msg, errno);
+      }
     }
 
     return fd.getValue();
