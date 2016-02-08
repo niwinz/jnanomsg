@@ -2,10 +2,11 @@ package nanomsg.bus;
 
 import nanomsg.Nanomsg.Domain;
 import nanomsg.Nanomsg.SocketType;
-import nanomsg.Socket;
+import nanomsg.AbstractSocket;
 
+public class BusSocket
+  extends AbstractSocket {
 
-public class BusSocket extends Socket {
   public BusSocket(Domain domain) {
     super(domain, SocketType.NN_BUS);
   }

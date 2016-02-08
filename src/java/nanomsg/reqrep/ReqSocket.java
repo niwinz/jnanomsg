@@ -2,10 +2,11 @@ package nanomsg.reqrep;
 
 import nanomsg.Nanomsg.Domain;
 import nanomsg.Nanomsg.SocketType;
-import nanomsg.Socket;
+import nanomsg.AbstractSocket;
 
+public class ReqSocket
+  extends AbstractSocket {
 
-public class ReqSocket extends Socket {
   public ReqSocket(Domain domain) {
     super(domain, SocketType.NN_REQ);
   }

@@ -2,10 +2,10 @@ package nanomsg.pipeline;
 
 import nanomsg.Nanomsg.Domain;
 import nanomsg.Nanomsg.SocketType;
-import nanomsg.Socket;
+import nanomsg.AbstractSocket;
 
 
-public class PushSocket extends Socket {
+public class PushSocket extends AbstractSocket {
   public PushSocket(Domain domain) {
     super(domain, SocketType.NN_PUSH);
   }
