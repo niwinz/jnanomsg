@@ -12,55 +12,58 @@
   If you want send your more complex data types, create
   a new pair of send/recv functions that serializes and
   deserializers data before send and after receive."
-  (:require [nanomsg.proto :as proto]
+  (:require [nanomsg.proto :as p]
             [nanomsg.impl :as impl])
   (:import nanomsg.Socket
            nanomsg.async.AsyncSocket
            nanomsg.Nanomsg
            nanomsg.Device
+           java.nio.ByteBuffer
            clojure.lang.Keyword))
 
 (defn bind!
   "Bind given socket to specified endpoint."
   [socket ^String endpoint]
-  (proto/bind socket endpoint))
+  (p/-bind socket endpoint))
 
 (defn connect!
   "Connect given socket to specified endpoint."
   [socket ^String endpoint]
-  (proto/connect socket endpoint))
+  (p/-connect socket endpoint))
 
 (defn subscribe!
   "Subscribe given socket to specified topic."
   [socket topic]
-  (proto/subscribe socket topic))
+  (p/-subscribe socket topic))
 
 (defn unsubscribe!
   "Unsubscribe given socket from specified topic."
   [socket topic]
-  (proto/unsubscribe socket topic))
+  (p/-unsubscribe socket topic))
 
 (defn send!
   "Send data through given socket."
   ([socket data]
-   (send! socket data nil))
-  ([socket data opt]
-   (proto/send socket data opt)))
+   (send! socket data true))
+  ([socket data blocking]
+   (p/-send socket data blocking)))
 
 (defn recv!
   "Receive data through given socket."
   ([socket]
-   (recv! socket nil))
-  ([socket opt]
-   (proto/recv socket opt)))
+   (recv! socket true))
+  ([socket blocking]
+   (p/-recv socket blocking)))
 
 (defn recv-str!
   "Receive data through given socket."
   ([socket]
-   (recv-str! socket nil))
-  ([socket opt]
-   (let [received (proto/recv socket opt)]
-     (String. received "UTF-8"))))
+   (recv-str! socket true))
+  ([socket blocking]
+   (let [^ByteBuffer buffer (p/-recv socket blocking)
+         ^bytes data (byte-array (.remaining buffer))]
+     (doto buffer .mark (.get data) .reset)
+     (String. data "UTF-8"))))
 
 (defn close!
   "Close socket."
@@ -97,7 +100,7 @@
 
 (defn- resolve-symbols
   []
-  (into {} (for [[k v] (Nanomsg/symbols)]
+  (into {} (for [[k v] (Nanomsg/nn_symbols)]
              [(keyword (.toLowerCase k)) v])))
 
 (def ^{:doc "Get all symbols"}

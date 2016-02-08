@@ -1,6 +1,6 @@
 (ns nanomsg.impl
   "Implementation details of nanomsg sockets."
-  (:require [nanomsg.proto :as proto])
+  (:require [nanomsg.proto :as p])
   (:import nanomsg.pubsub.PubSocket
            nanomsg.pubsub.SubSocket
            nanomsg.reqrep.ReqSocket
@@ -29,80 +29,78 @@
    :push #(PushSocket.)
    :pull #(PullSocket.)})
 
-(defn- create-callback
-  [opt]
-  (cond
-    (instance? clojure.lang.IFn opt)
-    (reify IAsyncCallback
-      (success [_ result]
-        (opt result nil))
-      (fail [_ throwable]
-        (opt nil throwable)))
+;; (defn- create-callback
+;;   [opt]
+;;   (cond
+;;     (instance? clojure.lang.IFn opt)
+;;     (reify IAsyncCallback
+;;       (success [_ result]
+;;         (opt result nil))
+;;       (fail [_ throwable]
+;;         (opt nil throwable)))
 
-    (nil? opt)
-    (reify IAsyncCallback
-      (success [_ result])
-      (fail [_ throwable]))))
+;;     (nil? opt)
+;;     (reify IAsyncCallback
+;;       (success [_ result])
+;;       (fail [_ throwable]))))
 
-(defn async-socket
-  [^Socket socket]
-  (let [^AsyncSocket asocket (AsyncSocket. socket)]
-    (reify
-      proto/IAsyncSocket
-      proto/ISocket
-      (bind [_ endpoint]
-        (.bind socket endpoint))
-      (connect [_ endpoint]
-        (.connect socket endpoint))
-      (subscribe [_ topic]
-        (.subscribe socket topic))
-      (unsubscribe [_ topic]
-        (.unsubscribe socket topic))
-      (send [_ data opt]
-        (let [cb (create-callback opt)
-              data (proto/get-byte-buffer data)]
-          (.send asocket data cb)))
-      (recv [_ opt]
-        (let [cb (create-callback opt)]
-          (.recv asocket cb)))
+;; (defn async-socket
+;;   [^Socket socket]
+;;   (let [^AsyncSocket asocket (AsyncSocket. socket)]
+;;     (reify
+;;       p/IAsyncSocket
+;;       p/ISocket
+;;       (bind [_ endpoint]
+;;         (.bind socket endpoint))
+;;       (connect [_ endpoint]
+;;         (.connect socket endpoint))
+;;       (subscribe [_ topic]
+;;         (.subscribe socket topic))
+;;       (unsubscribe [_ topic]
+;;         (.unsubscribe socket topic))
+;;       (send [_ data opt]
+;;         (let [cb (create-callback opt)
+;;               data (p/get-byte-buffer data)]
+;;           (.send asocket data cb)))
+;;       (recv [_ opt]
+;;         (let [cb (create-callback opt)]
+;;           (.recv asocket cb)))
 
-      java.io.Closeable
-      (close [_]
-        (.close socket)))))
+;;       java.io.Closeable
+;;       (close [_]
+;;         (.close socket)))))
 
 (defn blocking-socket
   [^Socket socket]
   (reify
-    proto/IBlockingSocket
-    proto/ISocket
-    (bind [_ endpoint]
+    p/IBlockingSocket
+    p/ISocket
+    (-bind [_ endpoint]
       (.bind socket endpoint))
-    (connect [_ endpoint]
+    (-connect [_ endpoint]
       (.connect socket endpoint))
-    (subscribe [_ topic]
+    (-subscribe [_ topic]
       (.subscribe socket topic))
-    (unsubscribe [_ topic]
+    (-unsubscribe [_ topic]
       (.unsubscribe socket topic))
-    (recv [_ opt]
-      (let [blocking (if (nil? opt) true opt)]
-        (.recv socket blocking)))
-    (send [_ data opt]
-      (let [blocking (if (nil? opt) true opt)
-            data (proto/get-byte-buffer data)]
+    (-recv [_ blocking]
+      (.recv socket blocking))
+    (-send [_ data blocking]
+      (let [data (p/-byte-buffer data)]
         (.send socket data blocking)))
 
     java.io.Closeable
     (close [_]
       (.close socket))))
 
-(extend-protocol proto/ISocketData
+(extend-protocol p/ISocketData
   (Class/forName "[B")
-  (get-byte-buffer [b]
+  (-byte-buffer [b]
     (ByteBuffer/wrap b))
 
   java.nio.ByteBuffer
-  (get-byte-buffer [b] b)
+  (-byte-buffer [b] b)
 
   java.lang.String
-  (get-byte-buffer [s]
-    (proto/get-byte-buffer (.getBytes s "UTF-8"))))
+  (-byte-buffer [s]
+    (p/-byte-buffer (.getBytes s "UTF-8"))))
