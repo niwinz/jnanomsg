@@ -1,14 +1,14 @@
 package nanomsg;
 
+import com.sun.jna.Native;
+import com.sun.jna.Memory;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
 
 import java.util.HashMap;
 import java.util.Map;
 
-
 public final class Nanomsg {
-
   /* Low level native interface wrapper */
 
   public static final int getErrorNumber() {
