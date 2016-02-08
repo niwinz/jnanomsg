@@ -114,4 +114,27 @@ public final class Nanomsg {
       return nn_symbols.get(name());
     }
   }
+
+  // /**
+  //  * Set memory.
+  //  * @param ptr pointer.
+  //  * @param value timeout.
+  //  */
+  // public static void setSizeT(Memory ptr, long value) {
+  //   if (Native.SIZE_T_SIZE == 8)
+  //     ptr.setLong(0, value);
+  //   else
+  //     ptr.setInt(0, (int)value);
+  // }
+
+  // /**
+  //  * Pointer with allocated memory.
+  //  * @param value value.
+  //  * @return Memory pointer.
+  //  */
+  // public static Memory newSizeT(long value) {
+  //   Memory ptr = new Memory(Native.SIZE_T_SIZE);
+  //   setSizeT(ptr, value);
+  //   return ptr;
+  // }
 }
