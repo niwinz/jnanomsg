@@ -1,244 +1,246 @@
 package nanomsg.async;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ForkJoinPool;
+import java.nio.ByteBuffer;
+
 import nanomsg.Socket;
-import nanomsg.async.impl.EPollScheduler;
-import nanomsg.async.impl.ThreadPoolScheduler;
+import nanomsg.Poller;
 import nanomsg.exceptions.EAgainException;
 import nanomsg.exceptions.IOException;
 
-import java.nio.ByteBuffer;
-
 import static nanomsg.Nanomsg.Error.EAGAIN;
 
-/**
- * Experimental socket proxy that enables async way to
- * send or receive data from socket.
- */
+
 public class AsyncSocket {
-  private Socket socket;
-  private IAsyncScheduler scheduler;
+  private final Socket socket;
+  private final ExecutorService executor;
 
-  private void setSocket(final Socket socket) {
+  /**
+   * Given any Socket subclass create new AsyncSocket instance.
+   *
+   * @param socket a socket instance.
+   * @param executor a executor service used for the event loop.
+   */
+  public AsyncSocket(final Socket socket, final ExecutorService executor) {
     this.socket = socket;
-    this.socket.setSendTimeout(300);
-    this.socket.setRecvTimeout(300);
-  }
-
-  private void setScheduler(final IAsyncScheduler scheduler) {
-    this.scheduler = scheduler;
+    this.executor = executor;
   }
 
   /**
-   * Given any Socket subclass create new
-   * AsyncSocket instance.
+   * Given any Socket subclass create new AsyncSocket instance.
    *
-   * NOTE: this reuses a common scheduler.
+   * The ForkJoinPool.commonPool() will be used as executor.
    *
-   * @param socket
+   * @param socket a socket instance.
    */
   public AsyncSocket(final Socket socket) {
-    this.setSocket(socket);
+    this.socket = socket;
+    this.executor = ForkJoinPool.commonPool();
+  }
 
-    final String osName = System.getProperty("os.name");
-    if (osName.startsWith("Linux") || osName.startsWith("LINUX")) {
-      this.setScheduler(EPollScheduler.getInstance());
-    } else {
-      this.setScheduler(ThreadPoolScheduler.getInstance());
+  /**
+   * Send a message.
+   *
+   * @param data byte buffer that represents a message.
+   * @return a completable future that eventuall will be
+   * resolved with the number of sended bytes.
+   */
+  CompletionStage<Integer> send(final String v) {
+    final CompletableFuture<Integer> result = new CompletableFuture<Integer>();
+    final AsyncSendTask task = new AsyncSendStringTask(v, socket, result, executor);
+    executor.execute(task);
+    return result;
+  }
+
+  /**
+   * Send a message.
+   *
+   * @param data byte buffer that represents a message.
+   * @return a completable future that eventuall will be
+   * resolved with the number of sended bytes.
+   */
+  CompletionStage<Integer> send(final byte[] v) {
+    final CompletableFuture<Integer> result = new CompletableFuture<Integer>();
+    final AsyncSendTask task = new AsyncSendBytesTask(v, socket, result, executor);
+    executor.execute(task);
+    return result;
+  }
+
+  private static abstract class AsyncTask implements Runnable {
+    protected final Poller poller;
+    protected final ExecutorService executor;
+    protected final CompletableFuture result;
+    protected final Socket socket;
+
+    protected boolean setup = false;
+
+    public AsyncTask(final Socket socket,
+                     final CompletableFuture result,
+                     final ExecutorService executor) {
+      this.poller = new Poller(1, 600);
+      this.executor = executor;
+      this.result = result;
+      this.socket = socket;
+    }
+
+    protected void schedule() {
+      this.executor.execute(this);
     }
   }
 
-  /**
-   * Given any Socket subclass create new
-   * AsyncSocket instance.
-   *
-   * @param socket
-   * @param scheduler A scheduler implementation.
-   */
-  public AsyncSocket(final Socket socket, IAsyncScheduler scheduler) {
-    this.setSocket(socket);
-    this.setScheduler(scheduler);
-  }
+  private static abstract class AsyncSendTask extends AsyncTask {
+    public AsyncSendTask(final Socket socket,
+                         final CompletableFuture result,
+                         final ExecutorService executor) {
+      super(socket, result, executor);
+    }
 
-  /**
-   * Given a string and callback, sends data using a proxied
-   * socket using a common executor and execute a callback when it
-   * are finished.
-   *
-   * @param data string to send.
-   * @param callback IAsyncCallback interface object.
-   */
-  public void send(final String data, final IAsyncCallback<Boolean> callback) {
-    final IAsyncRunnable runnable = new IAsyncRunnable() {
-        public void run() throws EAgainException {
-          try {
-            socket.send(data);
-            callback.success(true);
-          } catch (IOException e) {
-            if (e.getErrno() == EAGAIN.value()) {
-              throw new EAgainException(e);
-            } else {
-              callback.fail(e);
-            }
+    protected abstract void doSend();
+
+    public void run() {
+      if (this.result.isDone()) {
+        return;
+      }
+
+      if (!this.setup) {
+        this.poller.register(this.socket, Poller.POLLOUT);
+        this.setup = true;
+      }
+
+      try {
+        int num = this.poller.poll(1000);
+        if (num == 0) {
+          this.schedule();
+        } else {
+          final boolean isWritable = this.poller.isWritable(this.socket);
+
+          if (isWritable) {
+            this.doSend();
+          } else {
+            this.schedule();
           }
         }
-      };
-
-    try {
-      scheduler.schedule(socket, AsyncOperation.WRITE, runnable);
-    } catch (InterruptedException e) {
-      callback.fail(e);
+      } catch (Exception e) {
+        this.result.completeExceptionally(e);
+      }
     }
   }
 
-  /**
-   * Given a callback, it try receive data from socket using
-   * the common defined executor and execute callback whet
-   * any data received.
-   *
-   * @param callback IAsyncCallback interface object.
-   */
-  public void recvString(final IAsyncCallback<String> callback) {
-    final IAsyncRunnable runnable = new IAsyncRunnable() {
-        public void run() throws EAgainException {
-          try {
-            final String received = socket.recvString();
-            callback.success(received);
-          } catch (IOException e) {
-            if (e.getErrno() == EAGAIN.value()) {
-              throw e;
-            } else {
-              callback.fail(e);
-            }
+  private static abstract class AsyncRecvTask extends AsyncTask {
+    public AsyncRecvTask(final Socket socket,
+                         final CompletableFuture result,
+                         final ExecutorService executor) {
+      super(socket, result, executor);
+    }
+
+    protected abstract void doReceive();
+
+    public void run() {
+      if (this.result.isDone()) {
+        return;
+      }
+
+      if (!this.setup) {
+        this.poller.register(this.socket, Poller.POLLIN);
+        this.setup = true;
+      }
+
+      try {
+        int num = this.poller.poll(1000);
+        if (num == 0) {
+          this.schedule();
+        } else {
+          final boolean isReadable = this.poller.isReadable(this.socket);
+
+          if (isReadable) {
+            this.doReceive();
+          } else {
+            this.schedule();
           }
         }
-      };
-
-    try {
-      scheduler.schedule(socket, AsyncOperation.READ, runnable);
-    } catch (InterruptedException e) {
-      callback.fail(e);
+      } catch (Exception e) {
+        this.result.completeExceptionally(e);
+      }
     }
   }
 
-  /**
-   * Given a byte array and callback, sends data using a proxied
-   * socket using a common executor and execute a callback when it
-   * are finished.
-   *
-   * @param data string to send.
-   * @param callback IAsyncCallback interface object.
-   */
-  public void send(final byte[] data, final IAsyncCallback<Boolean> callback) {
-    final IAsyncRunnable runnable = new IAsyncRunnable() {
-        public void run() throws EAgainException {
-          try {
-            socket.send(data);
-            callback.success(true);
-          } catch (IOException e) {
-            if (e.getErrno() == EAGAIN.value()) {
-              throw new EAgainException(e);
-            } else {
-              callback.fail(e);
-            }
-          }
-        }
-      };
+  private static class AsyncSendStringTask
+    extends AsyncSendTask {
 
-    try {
-      scheduler.schedule(socket, AsyncOperation.WRITE, runnable);
-    } catch (InterruptedException e) {
-      callback.fail(e);
+    private final String data;
+
+    public AsyncSendStringTask(final String data,
+                               final Socket socket,
+                               final CompletableFuture result,
+                               final ExecutorService executor) {
+      super(socket, result, executor);
+      this.data = data;
+    }
+
+    protected void doSend() {
+      final Integer result = this.socket.send(this.data);
+      this.result.complete(result);
     }
   }
 
-  /**
-   * Given a callback, it try receive data from socket using
-   * the common defined executor and execute callback whet
-   * any data received.
-   *
-   * @param callback IAsyncCallback interface object.
-   */
-  public void recvBytes(final IAsyncCallback<byte[]> callback) {
-    final IAsyncRunnable runnable = new IAsyncRunnable() {
-        public void run() throws EAgainException {
-          try {
-            final byte[] received = socket.recvBytes();
-            callback.success(received);
-          } catch (IOException e) {
-            if (e.getErrno() == EAGAIN.value()) {
-              throw new EAgainException(e);
-            } else {
-              callback.fail(e);
-            }
-          }
-        }
-      };
+  private static class AsyncSendBytesTask
+    extends AsyncSendTask {
 
-    try {
-      scheduler.schedule(socket, AsyncOperation.READ, runnable);
-    } catch (InterruptedException e) {
-      callback.fail(e);
+    private final byte[] data;
+
+    public AsyncSendBytesTask(final byte[] data,
+                              final Socket socket,
+                              final CompletableFuture result,
+                              final ExecutorService executor) {
+      super(socket, result, executor);
+      this.data = data;
+    }
+
+    protected void doSend() {
+      final Integer result = this.socket.send(this.data);
+      this.result.complete(result);
     }
   }
 
-  /**
-   * Given a bytebuffer and callback, sends data using a proxied
-   * socket using a common executor and execute a callback when it
-   * are finished.
-   *
-   * @param data string to send.
-   * @param callback IAsyncCallback interface object.
-   */
-  public void send(final ByteBuffer data, final IAsyncCallback<Boolean> callback) {
-    final IAsyncRunnable runnable = new IAsyncRunnable() {
-        public void run() throws EAgainException {
-          try {
-            socket.send(data);
-            callback.success(true);
-          } catch (IOException e) {
-            if (e.getErrno() == EAGAIN.value()) {
-              throw new EAgainException(e);
-            } else {
-              callback.fail(e);
-            }
-          }
-        }
-      };
+  private static class AsyncRecvStringTask extends AsyncRecvTask {
+    public AsyncRecvStringTask(final Socket socket,
+                               final CompletableFuture result,
+                               final ExecutorService executor) {
+      super(socket, result, executor);
+    }
 
-    try {
-      scheduler.schedule(socket, AsyncOperation.WRITE, runnable);
-    } catch (InterruptedException e) {
-      callback.fail(e);
+    protected void doReceive() {
+      String data = this.socket.recvString(false);
+      this.result.complete(data);
     }
   }
 
-  /**
-   * Given a callback, it try receive data from socket using
-   * the common defined executor and execute callback whet
-   * any data received.
-   *
-   * @param callback IAsyncCallback interface object.
-   */
-  public void recv(final IAsyncCallback<ByteBuffer> callback) {
-    final IAsyncRunnable runnable = new IAsyncRunnable() {
-        public void run() throws EAgainException {
-          try {
-            final ByteBuffer received = socket.recv();
-            callback.success(received);
-          } catch (IOException e) {
-            if (e.getErrno() == EAGAIN.value()) {
-              throw new EAgainException(e);
-            } else {
-              callback.fail(e);
-            }
-          }
-        }
-      };
+  private static class AsyncRecvBytesTask extends AsyncRecvTask {
+    public AsyncRecvBytesTask(final Socket socket,
+                              final CompletableFuture result,
+                              final ExecutorService executor) {
+      super(socket, result, executor);
+    }
 
-    try {
-      scheduler.schedule(socket, AsyncOperation.READ, runnable);
-    } catch (InterruptedException e) {
-      callback.fail(e);
+    protected void doReceive() {
+      byte[] data = this.socket.recvBytes(false);
+      this.result.complete(data);
+    }
+  }
+
+  private static class AsyncRecvBufferTask extends AsyncRecvTask {
+    public AsyncRecvBufferTask(final Socket socket,
+                              final CompletableFuture result,
+                              final ExecutorService executor) {
+      super(socket, result, executor);
+    }
+
+    protected void doReceive() {
+      ByteBuffer data = this.socket.recv(false);
+      this.result.complete(data);
     }
   }
 }
