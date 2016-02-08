@@ -18,17 +18,34 @@
            nanomsg.async.AsyncSocket
            nanomsg.Nanomsg
            nanomsg.Device
+           nanomsg.Poller
            java.nio.ByteBuffer
            clojure.lang.Keyword))
 
+(declare bind!)
+(declare connect!)
+
+(defn socket
+  "Geiven a socket type, create a new instance
+  of corresponding socket."
+  ([type] (socket type nil))
+  ([type opts]
+   {:pre [(contains? impl/+socket-types-map+ type)]}
+   (let [factory (get impl/+socket-types-map+ type)
+         conn (factory)]
+     (cond
+       (:bind opts) (bind! conn (:bind opts))
+       (:connect opts) (connect! conn (:connect opts)))
+     conn)))
+
 (defn bind!
   "Bind given socket to specified endpoint."
-  [socket ^String endpoint]
+  [socket endpoint]
   (p/-bind socket endpoint))
 
 (defn connect!
   "Connect given socket to specified endpoint."
-  [socket ^String endpoint]
+  [socket endpoint]
   (p/-connect socket endpoint))
 
 (defn subscribe!
@@ -70,21 +87,39 @@
   [^java.io.Closeable socket]
   (.close socket))
 
-(defn socket
-  "Geiven a socket type, create a new instance
-  of corresponding socket."
-  ([^Keyword socktype] (socket socktype {}))
-  ([^Keyword socktype opts]
-   {:pre [(contains? impl/*supported-sockets* socktype)]}
-   (let [factory (get impl/*supported-sockets* socktype)
-         socket (factory)
-         conn (if (:async opts)
-                (impl/async-socket socket)
-                (impl/blocking-socket socket))]
-     (cond
-       (:bind opts) (bind! conn (:bind opts))
-       (:connect opts) (connect! conn (:connect opts)))
-     conn)))
+(defn poller
+  "Create a new poller instance."
+  ([] (Poller.))
+  ([n] (Poller. n))
+  ([n ms] (Poller. n ms)))
+
+(defn register!
+  "Register a socket into the poller."
+  ([p socket]
+   (p/-register p socket #{:poll-in :poll-out}))
+  ([p socket flags]
+   (p/-register p socket flags)))
+
+(defn unregister!
+  "Unregister the socker from the poller."
+  [p socket]
+  (p/-unregister p socket))
+
+(defn poll!
+  "Poll a set of registered sockets for readability
+  and/or writability."
+  ([p] (p/-poll p Poller/TIMEOUT_DEFAULT))
+  ([p ms] (p/-poll p ms)))
+
+(defn readable?
+  "Check if socket is readable."
+  [p socket]
+  (p/-readable? p socket))
+
+(defn writable?
+  "Check if socket is writable."
+  [p socket]
+  (p/-writable? p socket))
 
 (defn terminate!
   "Send terminate signal to all open and/or blocked sockets.

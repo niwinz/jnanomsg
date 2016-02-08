@@ -10,11 +10,12 @@
   (-send [_ data opt])
   (-recv [_ opt]))
 
-(defprotocol IBlockingSocket
-  "Mark for blocking socket.")
-
-(defprotocol IAsyncSocket
-  "Mark for async socket.")
+(defprotocol IPoller
+  (-register [_ socket flags])
+  (-unregister [_ socket])
+  (-readable? [_ socket])
+  (-writable? [_ socket])
+  (-poll [_ ms]))
 
 (defprotocol ISocketData
   "Common interface for data that can be

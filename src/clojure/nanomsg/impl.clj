@@ -12,14 +12,18 @@
            nanomsg.Socket
            nanomsg.Nanomsg
            nanomsg.Device
+           nanomsg.Poller
            nanomsg.async.AsyncSocket
            nanomsg.async.IAsyncCallback
            java.nio.ByteBuffer
            clojure.lang.Keyword
            clojure.lang.IFn))
 
-(def ^{:dynamic true}
-  *supported-sockets*
+(def ^:const +poll-flags-map+
+  {:poll-in  Poller/POLLIN
+   :poll-out Poller/POLLOUT})
+
+(def ^:const +socket-types-map+
   {:pub #(PubSocket.)
    :sub #(SubSocket.)
    :req #(ReqSocket.)
@@ -70,28 +74,35 @@
 ;;       (close [_]
 ;;         (.close socket)))))
 
-(defn blocking-socket
-  [^Socket socket]
-  (reify
-    p/IBlockingSocket
-    p/ISocket
-    (-bind [_ endpoint]
-      (.bind socket endpoint))
-    (-connect [_ endpoint]
-      (.connect socket endpoint))
-    (-subscribe [_ topic]
-      (.subscribe socket topic))
-    (-unsubscribe [_ topic]
-      (.unsubscribe socket topic))
-    (-recv [_ blocking]
-      (.recv socket blocking))
-    (-send [_ data blocking]
-      (let [data (p/-byte-buffer data)]
-        (.send socket data blocking)))
+(extend-type Socket
+  p/ISocket
+  (-bind [socket endpoint]
+    (.bind socket endpoint))
+  (-connect [socket endpoint]
+    (.connect socket endpoint))
+  (-subscribe [socket topic]
+    (.subscribe socket topic))
+  (-unsubscribe [socket topic]
+    (.unsubscribe socket topic))
+  (-recv [socket blocking]
+    (.recv socket blocking))
+  (-send [socket data blocking]
+    (let [data (p/-byte-buffer data)]
+      (.send socket data blocking))))
 
-    java.io.Closeable
-    (close [_]
-      (.close socket))))
+(extend-type Poller
+  p/IPoller
+  (-register [p socket flags]
+    (let [flags (apply bit-or 0 0 (keep +poll-flags-map+ flags))]
+      (.register p socket flags)))
+  (-unregister [p socket]
+    (.unregister p socket))
+  (-poll [p ms]
+    (.poll p ms))
+  (-readable? [p socket]
+    (.isReadable p socket))
+  (-writable? [p socket]
+    (.isWritable p socket)))
 
 (extend-protocol p/ISocketData
   (Class/forName "[B")
