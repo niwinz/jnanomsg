@@ -14,23 +14,26 @@ public class Poller {
   public static final int POLLIN = nn_symbols.get("NN_POLLIN");
   public static final int POLLOUT = nn_symbols.get("NN_POLLOUT");
 
+  // TODO: rename constants
+  public static final int TIMEOUT_DEFAULT = 6000;
   private static final int SIZE_DEFAULT = 32;
   private static final int SIZE_INCREMENT = 16;
   private static final int EVENT_SIZE = (new NNPollEvent()).size();
 
+  private final NNPollEvent.ByReference base_event = new NNPollEvent.ByReference();
   private final Map<Integer,Integer> offsetMap = new HashMap<Integer,Integer>(SIZE_DEFAULT);
   private Memory items;
   private int next;
   private int timeout;
 
-  protected Poller(int size, int timeout) {
+  public Poller(int size, int timeout) {
     this.items = new Memory(size * EVENT_SIZE);
     this.timeout = timeout;
     this.next = 0;
   }
 
   public Poller(int size) {
-    this(size, -1);
+    this(size, TIMEOUT_DEFAULT);
   }
 
   public Poller() {
@@ -59,6 +62,7 @@ public class Poller {
     event.reuse(this.items, pos);
     event.fd = socketFd;
     event.events = (short)flags;
+    event.write();
 
     this.offsetMap.put(socketFd, pos);
   }
@@ -85,6 +89,7 @@ public class Poller {
           event.fd = socketFd;
           event.events = socketEvents;
           event.revents = socketRevents;
+          event.write();
 
           this.offsetMap.put(socketFd, i);
         }
@@ -99,6 +104,30 @@ public class Poller {
 
   public int size() {
     return this.offsetMap.size();
+  }
+
+  public boolean isReadable(final Socket socket) {
+    final Integer fd = socket.getNativeSocket();
+    if (!this.offsetMap.containsKey(fd)) {
+      return false;
+    }
+
+    final int offset = this.offsetMap.get(fd);
+    this.base_event.reuse(this.items, offset);
+    final int revents = this.base_event.revents;
+    return (revents & POLLIN) == POLLIN;
+  }
+
+  public boolean isWritable(final Socket socket) {
+    final Integer fd = socket.getNativeSocket();
+    if (!this.offsetMap.containsKey(fd)) {
+      return false;
+    }
+
+    final int offset = this.offsetMap.get(fd);
+    this.base_event.reuse(this.items, offset);
+    final int revents = this.base_event.revents;
+    return (revents & POLLOUT) == POLLOUT;
   }
 
   public int poll(int timeout) {
