@@ -11,16 +11,18 @@ public interface Socket {
   void connect(final String endpoint) throws IOException;
 
   /**
-   * Send message to socket with option to set blocking flag.
+   * Send a message with option to set blocking flag.
    *
-   * @param data byte buffer that represents a message.
+   * @param data a `ByteBuffer` that represents a message.
    * @param blocking set blocking or non blocking flag.
    * @return number of sended bytes.
    */
   int send(final ByteBuffer data, final boolean blocking) throws IOException;
 
   /**
-   * Send message to socket.
+   * Send a message.
+   *
+   * This operation is blocking by default.
    *
    * @param data byte buffer that represents a message.
    * @return number of sended bytes.
@@ -28,8 +30,7 @@ public interface Socket {
   int send(final ByteBuffer data) throws IOException;
 
   /**
-   * Helper method for send string to socket
-   * with option to set blocking flag.
+   * Send a message with option to set blocking flag.
    *
    * @param data string value that represents a message.
    * @param blocking set blocking or non blocking flag.
@@ -38,7 +39,7 @@ public interface Socket {
   int send(final String data, final boolean blocking) throws IOException;
 
   /**
-   * Helper method for send string to socket.
+   * Send a message.
    *
    * This operation is blocking by default.
    *
@@ -48,8 +49,7 @@ public interface Socket {
   int send(final String data) throws IOException;
 
   /**
-   * Helper method for send bytes array to socket
-   * with option to set blocking flag.
+   * Send a message with option to set blocking flag.
    *
    * @param data a bytes array that represents a message.
    * @param blocking set blocking or non blocking flag.
@@ -58,7 +58,7 @@ public interface Socket {
   int send(final byte[] data, final boolean blocking) throws IOException;
 
   /**
-   * Helper method for send bytes array to socket.
+   * Send a message.
    *
    * This operation is blocking by default.
    *
@@ -68,8 +68,7 @@ public interface Socket {
   int send(final byte[] data) throws IOException;
 
   /**
-   * Helper method for receive message from socket as string
-   * with option for set blocking flag.
+   * Receive a message with option for set blocking flag.
    *
    * This method uses utf-8 encoding for converts a bytes array
    * to string.
@@ -80,19 +79,17 @@ public interface Socket {
   String recvString(boolean blocking) throws IOException;
 
   /**
-   * Helper method for receive message from socket as string
-   * in a blocking mode.
+   * Receive a message with option for set blocking flag.
    *
    * This method uses utf-8 encoding for converts a bytes array
-   * to string.
+   * to string. This operation is blocking by default.
    *
    * @return receved data as unicode string.
    */
   String recvString() throws IOException;
 
   /**
-   * Helper method for receive message from socket as bytes array
-   * with option for set blocking flag.
+   * Receive a message with option for set blocking flag.
    *
    * @param blocking set blocking or non blocking flag.
    * @return receved data as bytes array
@@ -100,15 +97,16 @@ public interface Socket {
   byte[] recvBytes(boolean blocking) throws IOException;
 
   /**
-   * Helper method for receive message from socket as bytes array
-   * in a blocking mode.
+   * Receive a message.
+   *
+   * This operation is blocking by default.
    *
    * @return receved data as bytes array
    */
   byte[] recvBytes() throws IOException;
 
   /**
-   * Receive message with option for set blocking flag.
+   * Receive a message with option for set blocking flag.
    *
    * @param blocking set blocking or non blocking flag.
    * @return Message instance.
@@ -116,13 +114,13 @@ public interface Socket {
   ByteBuffer recv(boolean blocking) throws IOException;
 
   /**
-   * Helper method for receive message from socket as ByteBuffer
-   * in a blocking mode.
+   * Receive a message.
+   *
+   * This operation is blocking by default.
    *
    * @return receved data as ByteBuffer
    */
   ByteBuffer recv() throws IOException;
-
 
   /**
    * Subscribe to a particular topic.
