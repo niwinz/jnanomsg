@@ -7,7 +7,11 @@ import java.util.Map;
 import nanomsg.NativeLibrary.NNPollEvent;
 import nanomsg.exceptions.IOException;
 import nanomsg.Socket;
-import static nanomsg.Nanomsg.*;
+
+// import nanomsg.Nanomsg.NNPollEvent;
+
+import static nanomsg.Nanomsg.nn_symbols;
+import static nanomsg.NativeLibrary.nn_poll;
 
 
 public class Poller {
@@ -57,7 +61,7 @@ public class Poller {
       }
     }
 
-    final int socketFd = socket.getNativeSocket();
+    final int socketFd = socket.getFd();
     final NNPollEvent.ByReference event = new NNPollEvent.ByReference();
     event.reuse(this.items, pos);
     event.fd = socketFd;
@@ -69,7 +73,7 @@ public class Poller {
 
   public void unregister(Socket socket) {
     final NNPollEvent.ByReference event = new NNPollEvent.ByReference();
-    final int fd = socket.getNativeSocket();
+    final int fd = socket.getFd();
 
     this.offsetMap.remove(fd);
 
@@ -107,7 +111,7 @@ public class Poller {
   }
 
   public boolean isReadable(final Socket socket) {
-    final Integer fd = socket.getNativeSocket();
+    final Integer fd = socket.getFd();
     if (!this.offsetMap.containsKey(fd)) {
       return false;
     }
@@ -119,7 +123,7 @@ public class Poller {
   }
 
   public boolean isWritable(final Socket socket) {
-    final Integer fd = socket.getNativeSocket();
+    final Integer fd = socket.getFd();
     if (!this.offsetMap.containsKey(fd)) {
       return false;
     }
@@ -132,12 +136,10 @@ public class Poller {
 
   public int poll(int timeout) {
     final int maxEvents = this.offsetMap.size();
-    final int rc = NativeLibrary.nn_poll(this.items, maxEvents, timeout);
+    final int rc = nn_poll(this.items, maxEvents, timeout);
 
     if (rc < 0) {
-      final int errno = getErrorNumber();
-      final String msg = getError();
-      throw new IOException(msg, errno);
+      Nanomsg.handleError(rc);
     }
 
     return rc;

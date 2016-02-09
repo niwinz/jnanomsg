@@ -23,21 +23,11 @@ public class SubSocket extends AbstractSocket {
 
   @Override
   public void subscribe(final byte[] topic) {
-    final int socket = getNativeSocket();
-
-    final Memory mem = new Memory(topic.length);
-    mem.write(0, topic, 0, topic.length);
-
-    NativeLibrary.nn_setsockopt(socket, SocketType.NN_SUB.value(), SocketOption.NN_SUB_SUBSCRIBE.value(), mem, topic.length);
+    this.setSocketOpt(SocketOption.NN_SUB_SUBSCRIBE, topic);
   }
 
   @Override
   public void unsubscribe(byte[] topic) throws IOException {
-    final int socket = getNativeSocket();
-
-    final Memory mem = new Memory(topic.length);
-    mem.write(0, topic, 0, topic.length);
-
-    NativeLibrary.nn_setsockopt(socket, SocketType.NN_SUB.value(), SocketOption.NN_SUB_UNSUBSCRIBE.value(), mem, topic.length);
+    this.setSocketOpt(SocketOption.NN_SUB_UNSUBSCRIBE, topic);
   }
 }

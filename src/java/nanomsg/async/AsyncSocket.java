@@ -4,14 +4,15 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ForkJoinPool;
+import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
+import java.util.EnumSet;
 
 import nanomsg.Socket;
 import nanomsg.Poller;
+import nanomsg.Nanomsg.SocketFlag;
 import nanomsg.exceptions.EAgainException;
 import nanomsg.exceptions.IOException;
-
-import static nanomsg.Nanomsg.Error.EAGAIN;
 
 
 public class AsyncSocket {
@@ -180,8 +181,9 @@ public class AsyncSocket {
       this.data = data;
     }
 
-    protected void doSend() {
-      final Integer result = this.socket.send(this.data);
+    @SuppressWarnings("unchecked")
+    protected void doSend()  {
+      final Integer result = this.socket.send(this.data, EnumSet.of(SocketFlag.NN_DONTWAIT));
       this.result.complete(result);
     }
   }
@@ -199,8 +201,9 @@ public class AsyncSocket {
       this.data = data;
     }
 
+    @SuppressWarnings("unchecked")
     protected void doSend() {
-      final Integer result = this.socket.send(this.data);
+      final Integer result = this.socket.send(this.data, EnumSet.of(SocketFlag.NN_DONTWAIT));
       this.result.complete(result);
     }
   }
@@ -212,8 +215,9 @@ public class AsyncSocket {
       super(socket, result, executor);
     }
 
+    @SuppressWarnings("unchecked")
     protected void doReceive() {
-      String data = this.socket.recvString(false);
+      String data = this.socket.recvString(EnumSet.of(SocketFlag.NN_DONTWAIT));
       this.result.complete(data);
     }
   }
@@ -225,8 +229,9 @@ public class AsyncSocket {
       super(socket, result, executor);
     }
 
+    @SuppressWarnings("unchecked")
     protected void doReceive() {
-      byte[] data = this.socket.recvBytes(false);
+      byte[] data = this.socket.recvBytes(EnumSet.of(SocketFlag.NN_DONTWAIT));
       this.result.complete(data);
     }
   }
@@ -238,8 +243,9 @@ public class AsyncSocket {
       super(socket, result, executor);
     }
 
+    @SuppressWarnings("unchecked")
     protected void doReceive() {
-      ByteBuffer data = this.socket.recv(false);
+      ByteBuffer data = this.socket.recv(EnumSet.of(SocketFlag.NN_DONTWAIT));
       this.result.complete(data);
     }
   }

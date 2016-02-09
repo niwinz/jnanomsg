@@ -8,7 +8,12 @@ import com.sun.jna.ptr.IntByReference;
 import java.util.HashMap;
 import java.util.Map;
 
+import nanomsg.exceptions.IOException;
+import nanomsg.exceptions.EAgainException;
+
 public final class Nanomsg {
+  public static int NN_MSG = -1;
+
   /* Low level native interface wrapper */
 
   public static final int getErrorNumber() {
@@ -19,6 +24,19 @@ public final class Nanomsg {
     final int currentError = Nanomsg.getErrorNumber();
     return NativeLibrary.nn_strerror(currentError);
   }
+
+  public static void handleError(int rc) {
+    final int errno = getErrorNumber();
+    final String msg = getError();
+
+    if (errno == Error.EAGAIN.value()) {
+      throw new EAgainException(msg, errno);
+    } else {
+      throw new IOException(msg, errno);
+    }
+  }
+
+
 
   public static final void terminate() {
     NativeLibrary.nn_term();
@@ -81,25 +99,40 @@ public final class Nanomsg {
 
   public enum SocketOption {
     NN_SUB_UNSUBSCRIBE,
-    NN_REQ_RESEND_IVL,
     NN_SUB_SUBSCRIBE,
-    NN_SNDTIMEO,
     NN_SNDFD,
     NN_RCVFD,
-    NN_RCVTIMEO;
+    NN_LINGER,
+    NN_SNDBUF,
+    NN_RCVBUF,
+    NN_RCVMAXSIZE,
+    NN_SNDTIMEO,
+    NN_RCVTIMEO,
+    NN_RECONNECT_IVL,
+    NN_RECONNECT_IVL_MAX,
+    NN_SNDPRIO,
+    NN_RCVPRIO,
+    NN_IPV4ONLY,
+    NN_SOCKET_NAME;
 
     public Integer value() {
       return nn_symbols.get(name());
     }
   }
 
-  public enum MethodOption {
-    NN_SOL_SOCKET,
-    NN_MSG,
+  public enum SocketFlag {
     NN_DONTWAIT;
 
     public Integer value() {
-      return name().equals("NN_MSG") ? -1 : nn_symbols.get(name());
+      return nn_symbols.get(name());
+    }
+  }
+
+  public enum OptionLevel {
+    NN_SOL_SOCKET,
+    NN_TCP;
+    public Integer value() {
+      return nn_symbols.get(name());
     }
   }
 
@@ -109,32 +142,8 @@ public final class Nanomsg {
     EFSM,
     EAGAIN,
     ECONNREFUSED;
-
     public Integer value() {
       return nn_symbols.get(name());
     }
   }
-
-  // /**
-  //  * Set memory.
-  //  * @param ptr pointer.
-  //  * @param value timeout.
-  //  */
-  // public static void setSizeT(Memory ptr, long value) {
-  //   if (Native.SIZE_T_SIZE == 8)
-  //     ptr.setLong(0, value);
-  //   else
-  //     ptr.setInt(0, (int)value);
-  // }
-
-  // /**
-  //  * Pointer with allocated memory.
-  //  * @param value value.
-  //  * @return Memory pointer.
-  //  */
-  // public static Memory newSizeT(long value) {
-  //   Memory ptr = new Memory(Native.SIZE_T_SIZE);
-  //   setSizeT(ptr, value);
-  //   return ptr;
-  // }
 }
