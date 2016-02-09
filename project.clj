@@ -8,7 +8,7 @@
                  [net.java.dev.jna/jna "4.2.1"]]
 
   :jvm-opts ["-server" "-Xmx2g" "-XX:+UseG1GC"]
-  :javac-options ["-target" "1.7" "-source" "1.7" "-Xlint:-options"]
+  :javac-options ["-target" "1.8" "-source" "1.8" "-Xlint:-options", "-Xlint:unchecked"]
 
   :source-paths ["src/clojure"]
   :java-source-paths ["src/java"]
