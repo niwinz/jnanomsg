@@ -130,6 +130,7 @@ public abstract class AbstractSocket implements Socket {
     final Pointer result = ptrBuff.getValue();
     final byte[] bytesResult = result.getByteArray(0, rc);
 
+    NativeLibrary.nn_freemsg(result);
     return bytesResult;
   }
 
