@@ -3,7 +3,7 @@ package nanomsg;
 import java.nio.ByteBuffer;
 import java.util.EnumSet;
 
-import nanomsg.exceptions.IOException;
+import nanomsg.exceptions.SocketException;
 
 import nanomsg.Nanomsg.SocketOption;
 import nanomsg.Nanomsg.SocketFlag;
@@ -20,9 +20,11 @@ import nanomsg.pubsub.SubSocket;
 
 
 public interface Socket {
-  void close() throws IOException;
-  void bind(final String endpoint) throws IOException;
-  void connect(final String endpoint) throws IOException;
+  void close() throws SocketException;
+  int bind(final String endpoint) throws SocketException;
+  int connect(final String endpoint) throws SocketException;
+
+  void shutdown(final String endpoint) throws SocketException;
 
   /**
    * Send a message with option to set blocking flag.
@@ -31,7 +33,7 @@ public interface Socket {
    * @param blocking set blocking or non blocking flag.
    * @return number of sended bytes.
    */
-  int send(final ByteBuffer data, final EnumSet<SocketFlag> flagSet) throws IOException;
+  int send(final ByteBuffer data, final EnumSet<SocketFlag> flagSet) throws SocketException;
 
   /**
    * Send a message.
@@ -41,7 +43,7 @@ public interface Socket {
    * @param data byte buffer that represents a message.
    * @return number of sended bytes.
    */
-  int send(final ByteBuffer data) throws IOException;
+  int send(final ByteBuffer data) throws SocketException;
 
   /**
    * Send a message with option to set blocking flag.
@@ -51,7 +53,7 @@ public interface Socket {
    * @return number of sended bytes.
    */
   int send(final String data, final EnumSet<SocketFlag> flagSet)
-    throws IOException;
+    throws SocketException;
 
   /**
    * Send a message.
@@ -61,7 +63,7 @@ public interface Socket {
    * @param data string value that represents a message.
    * @return number of sended bytes.
    */
-  int send(final String data) throws IOException;
+  int send(final String data) throws SocketException;
 
   /**
    * Send a message with option to set blocking flag.
@@ -70,7 +72,7 @@ public interface Socket {
    * @param blocking set blocking or non blocking flag.
    * @return number of sended bytes.
    */
-  int send(final byte[] data, final EnumSet<SocketFlag> flagSet) throws IOException;
+  int send(final byte[] data, final EnumSet<SocketFlag> flagSet) throws SocketException;
 
   /**
    * Send a message.
@@ -80,7 +82,7 @@ public interface Socket {
    * @param data a bytes array that represents a message.
    * @return number of sended bytes.
    */
-  int send(final byte[] data) throws IOException;
+  int send(final byte[] data) throws SocketException;
 
   /**
    * Receive a message with option for set blocking flag.
@@ -91,7 +93,7 @@ public interface Socket {
    * @param blocking set blocking or non blocking flag.
    * @return receved data as unicode string.
    */
-  String recvString(final EnumSet<SocketFlag> flagSet) throws IOException;
+  String recvString(final EnumSet<SocketFlag> flagSet) throws SocketException;
 
   /**
    * Receive a message with option for set blocking flag.
@@ -101,7 +103,7 @@ public interface Socket {
    *
    * @return receved data as unicode string.
    */
-  String recvString() throws IOException;
+  String recvString() throws SocketException;
 
   /**
    * Receive a message with option for set blocking flag.
@@ -109,7 +111,7 @@ public interface Socket {
    * @param blocking set blocking or non blocking flag.
    * @return receved data as bytes array
    */
-  byte[] recvBytes(final EnumSet<SocketFlag> flagSet) throws IOException;
+  byte[] recvBytes(final EnumSet<SocketFlag> flagSet) throws SocketException;
 
   /**
    * Receive a message.
@@ -118,7 +120,7 @@ public interface Socket {
    *
    * @return receved data as bytes array
    */
-  byte[] recvBytes() throws IOException;
+  byte[] recvBytes() throws SocketException;
 
   /**
    * Receive a message with option for set blocking flag.
@@ -126,7 +128,7 @@ public interface Socket {
    * @param blocking set blocking or non blocking flag.
    * @return Message instance.
    */
-  ByteBuffer recv(final EnumSet<SocketFlag> flagSet) throws IOException;
+  ByteBuffer recv(final EnumSet<SocketFlag> flagSet) throws SocketException;
 
   /**
    * Receive a message.
@@ -135,7 +137,7 @@ public interface Socket {
    *
    * @return receved data as ByteBuffer
    */
-  ByteBuffer recv() throws IOException;
+  ByteBuffer recv() throws SocketException;
 
   /**
    * Subscribe to a particular topic.
@@ -145,7 +147,7 @@ public interface Socket {
    * @param topic the topic represented as string.
    */
   void subscribe(final String topic)
-    throws IOException;
+    throws SocketException;
 
   /**
    * Subscribe to a particular topic.
@@ -154,7 +156,7 @@ public interface Socket {
    *
    * @param topic the topic represented as byte array.
    */
-  void subscribe(final byte[] topic) throws IOException;
+  void subscribe(final byte[] topic) throws SocketException;
 
   /**
    * Unsubscribe from a particular topic.
@@ -164,7 +166,7 @@ public interface Socket {
    * @param topic the topic represented as String.
    */
   void unsubscribe(final String topic)
-    throws IOException;
+    throws SocketException;
 
   /**
    * Unsubscribe from a particular topic.
@@ -173,7 +175,7 @@ public interface Socket {
    *
    * @param topic the topic represented as byte array.
    */
-  void unsubscribe(final byte[] topic) throws IOException;
+  void unsubscribe(final byte[] topic) throws SocketException;
 
   /**
    * Get socket file descriptor.
@@ -187,24 +189,14 @@ public interface Socket {
    *
    * @return file descriptor.
    */
-  int getRcvFd() throws IOException;
+  int getRcvFd() throws SocketException;
 
   /**
    * Get write file descriptor.
    *
    * @return file descriptor.
    */
-  int getSndFd() throws IOException;
-
-  // /**
-  //  * Set send timeout option to the socket.
-  //  */
-  // void setSendTimeout(final int ms);
-
-  // /**
-  //  * Set recv timeout option to the socket.
-  //  */
-  // void setRecvTimeout(final int ms);
+  int getSndFd() throws SocketException;
 
   void setSocketOpt(SocketOption type, Object value);
 
@@ -224,7 +216,7 @@ public interface Socket {
     } else if (type == SocketType.NN_PUSH) {
       return new PushSocket(domain);
     } else if (type == SocketType.NN_PULL) {
-      return new PushSocket(domain);
+      return new PullSocket(domain);
     } else {
       return new BusSocket(domain);
     }

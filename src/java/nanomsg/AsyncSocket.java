@@ -1,4 +1,4 @@
-package nanomsg.async;
+package nanomsg;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.CompletableFuture;
@@ -11,8 +11,6 @@ import java.util.EnumSet;
 import nanomsg.Socket;
 import nanomsg.Poller;
 import nanomsg.Nanomsg.SocketFlag;
-import nanomsg.exceptions.EAgainException;
-import nanomsg.exceptions.IOException;
 
 
 public class AsyncSocket {
@@ -107,7 +105,7 @@ public class AsyncSocket {
       }
 
       if (!this.setup) {
-        this.poller.register(this.socket, Poller.POLLOUT);
+        this.poller.register(this.socket, EnumSet.of(Poller.POLLOUT));
         this.setup = true;
       }
 
@@ -145,7 +143,7 @@ public class AsyncSocket {
       }
 
       if (!this.setup) {
-        this.poller.register(this.socket, Poller.POLLIN);
+        this.poller.register(this.socket, EnumSet.of(Poller.POLLIN));
         this.setup = true;
       }
 

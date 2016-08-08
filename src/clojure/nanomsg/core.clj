@@ -15,7 +15,7 @@
   (:require [nanomsg.proto :as p]
             [nanomsg.impl :as impl])
   (:import nanomsg.Socket
-           nanomsg.async.AsyncSocket
+           nanomsg.AsyncSocket
            nanomsg.Nanomsg
            nanomsg.Device
            nanomsg.Poller
@@ -31,8 +31,8 @@
   ([type] (socket type nil))
   ([type opts]
    {:pre [(contains? impl/+socket-types-map+ type)]}
-   (let [factory (get impl/+socket-types-map+ type)
-         conn (factory)]
+   (let [type (get impl/+socket-types-map+ type)
+         conn (Socket/create type)]
      (cond
        (:bind opts) (bind! conn (:bind opts))
        (:connect opts) (connect! conn (:connect opts)))
@@ -61,23 +61,23 @@
 (defn send!
   "Send data through given socket."
   ([socket data]
-   (send! socket data true))
-  ([socket data blocking]
-   (p/-send socket data blocking)))
+   (send! socket data #{}))
+  ([socket data flags]
+   (p/-send socket data flags)))
 
 (defn recv!
   "Receive data through given socket."
   ([socket]
-   (recv! socket true))
-  ([socket blocking]
-   (p/-recv socket blocking)))
+   (recv! socket #{}))
+  ([socket flags]
+   (p/-recv socket flags)))
 
 (defn recv-str!
   "Receive data through given socket."
   ([socket]
-   (recv-str! socket true))
-  ([socket blocking]
-   (let [^ByteBuffer buffer (p/-recv socket blocking)
+   (recv-str! socket #{}))
+  ([socket flags]
+   (let [^ByteBuffer buffer (p/-recv socket flags)
          ^bytes data (byte-array (.remaining buffer))]
      (doto buffer .mark (.get data) .reset)
      (String. data "UTF-8"))))

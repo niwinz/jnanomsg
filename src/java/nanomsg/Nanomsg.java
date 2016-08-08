@@ -8,8 +8,6 @@ import com.sun.jna.ptr.IntByReference;
 import java.util.HashMap;
 import java.util.Map;
 
-import nanomsg.exceptions.IOException;
-import nanomsg.exceptions.EAgainException;
 
 public final class Nanomsg {
   public static int NN_MSG = -1;
@@ -24,19 +22,6 @@ public final class Nanomsg {
     final int currentError = Nanomsg.getErrorNumber();
     return NativeLibrary.nn_strerror(currentError);
   }
-
-  public static void handleError(int rc) {
-    final int errno = getErrorNumber();
-    final String msg = getError();
-
-    if (errno == Error.EAGAIN.value()) {
-      throw new EAgainException(msg, errno);
-    } else {
-      throw new IOException(msg, errno);
-    }
-  }
-
-
 
   public static final void terminate() {
     NativeLibrary.nn_term();
@@ -66,6 +51,15 @@ public final class Nanomsg {
   public enum Domain {
     AF_SP,
     AF_SP_RAW;
+
+    public Integer value() {
+      return nn_symbols.get(name());
+    }
+  }
+
+  public enum PollFlag {
+    NN_POLLIN,
+    NN_POLLOUT;
 
     public Integer value() {
       return nn_symbols.get(name());
@@ -137,11 +131,38 @@ public final class Nanomsg {
   }
 
   public enum Error {
+    ENOTSUP,
+    EPROTONOSUPPORT,
+    ENOBUFS,
+    ENETDOWN,
+    EADDRINUSE,
+    EADDRNOTAVAIL,
+    ECONNREFUSED,
+    EINPROGRESS,
+    ENOTSOCK,
     EAFNOSUPPORT,
-    ETERM,
-    EFSM,
+    EPROTO,
     EAGAIN,
-    ECONNREFUSED;
+    EBADF,
+    EINVAL,
+    EMFILE,
+    EFAULT,
+    EACCES,
+    // EACCESS,
+    ENETRESET,
+    ENETUNREACH,
+    EHOSTUNREACH,
+    ENOTCONN,
+    EMSGSIZE,
+    ETIMEDOUT,
+    ECONNABORTED,
+    ECONNRESET,
+    ENOPROTOOPT,
+    // EISCONN,
+    // ESOCKTNOSUPPORT,
+    ETERM,
+    EFSM;
+
     public Integer value() {
       return nn_symbols.get(name());
     }

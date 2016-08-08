@@ -4,6 +4,8 @@ import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.sun.jna.Memory;
 import com.sun.jna.Native;
@@ -11,8 +13,7 @@ import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;
 
-import nanomsg.exceptions.IOException;
-import nanomsg.exceptions.EAgainException;
+import nanomsg.exceptions.SocketException;
 
 import nanomsg.Nanomsg.SocketFlag;
 import nanomsg.Nanomsg.SocketType;
@@ -29,6 +30,7 @@ import static nanomsg.Nanomsg.NN_MSG;
 
 public abstract class AbstractSocket implements Socket {
   protected final int fd;
+  protected final Map<String,Integer> endpoints;
   protected boolean closed = false;
   protected boolean open = false;
 
@@ -36,52 +38,75 @@ public abstract class AbstractSocket implements Socket {
     this.fd = nn_socket(domain.value(), protocol.value());
     this.open = true;
 
-    this.setSocketOpt(SocketOption.NN_SNDTIMEO, 600);
-    this.setSocketOpt(SocketOption.NN_RCVTIMEO, 600);
+    this.endpoints = new HashMap<String,Integer>(5, 1);
+
+    this.setSocketOpt(SocketOption.NN_SNDTIMEO, 6000);
+    this.setSocketOpt(SocketOption.NN_RCVTIMEO, 6000);
   }
 
-  public synchronized void close() throws IOException {
+  public synchronized void close() throws SocketException {
     if (this.open && !this.closed) {
       this.closed = true;
       final int rc = nn_close(this.fd);
 
       if (rc < 0) {
-        Nanomsg.handleError(rc);
+        throw new SocketException(rc);
       }
     }
   }
 
-  public synchronized void bind(final String dir) throws IOException {
+  public synchronized int bind(final String dir) throws SocketException {
     final int rc = nn_bind(this.fd, dir);
 
     if (rc < 0) {
-      Nanomsg.handleError(rc);
+      throw new SocketException(rc);
     }
+
+    this.endpoints.put(dir, rc);
+
+    return rc;
   }
 
-  public synchronized void connect(final String dir) throws IOException {
+  public synchronized int connect(final String dir) throws SocketException {
     final int rc = nn_connect(this.fd, dir);
 
     if (rc < 0) {
-      Nanomsg.handleError(rc);
+      throw new SocketException(rc);
+    }
+
+    this.endpoints.put(dir, rc);
+
+    return rc;
+  }
+
+  public void shutdown(final String dir) {
+    if (this.endpoints.contains(dir)) {
+      final int id = this.endpoints.get(dir);
+      final int rc = nn_shutdown(this.fd, id);
+
+      if (rc < 0) {
+        throw new SocketException(rc);
+      }
+
+      this.endpoints.remove(dir);
     }
   }
 
   public int send(final String data, final EnumSet<SocketFlag> flags)
-    throws IOException {
+    throws SocketException {
 
       final Charset encoding = Charset.forName("UTF-8");
       return this.send(data.getBytes(encoding), flags);
   }
 
   public int send(final String data)
-    throws IOException {
+    throws SocketException {
 
     return this.send(data, EnumSet.noneOf(SocketFlag.class));
   }
 
   public synchronized int send(final byte[] data, final EnumSet<SocketFlag> flagSet)
-    throws IOException {
+    throws SocketException {
 
     int flags = 0;
     if (flagSet.contains(SocketFlag.NN_DONTWAIT)){
@@ -91,28 +116,28 @@ public abstract class AbstractSocket implements Socket {
     final int rc = nn_send(this.fd, data, data.length, flags);
 
     if (rc < 0) {
-      Nanomsg.handleError(rc);
+      throw new SocketException(rc);
     }
 
     return rc;
   }
 
-  public int send(final byte[] data) throws IOException {
+  public int send(final byte[] data) throws SocketException {
     return this.send(data, EnumSet.noneOf(SocketFlag.class));
   }
 
-  public String recvString(final EnumSet<SocketFlag> flagSet) throws IOException {
+  public String recvString(final EnumSet<SocketFlag> flagSet) throws SocketException {
     final byte[] received = this.recvBytes(flagSet);
     final Charset encoding = Charset.forName("UTF-8");
     return new String(received, encoding);
   }
 
-  public String recvString() throws IOException {
+  public String recvString() throws SocketException {
     return this.recvString(EnumSet.noneOf(SocketFlag.class));
   }
 
   public synchronized byte[] recvBytes(final EnumSet<SocketFlag> flagSet)
-    throws IOException {
+    throws SocketException {
 
     final PointerByReference ptrBuff = new PointerByReference();
 
@@ -124,7 +149,7 @@ public abstract class AbstractSocket implements Socket {
     final int rc = nn_recv(this.fd, ptrBuff, NN_MSG, flags);
 
     if (rc < 0) {
-      Nanomsg.handleError(rc);
+      throw new SocketException(rc);
     }
 
     final Pointer result = ptrBuff.getValue();
@@ -133,11 +158,13 @@ public abstract class AbstractSocket implements Socket {
     return bytesResult;
   }
 
-  public byte[] recvBytes() throws IOException {
+  public byte[] recvBytes() throws SocketException {
     return this.recvBytes(EnumSet.noneOf(SocketFlag.class));
   }
 
-  public ByteBuffer recv(final EnumSet<SocketFlag> flagSet) throws IOException {
+  public ByteBuffer recv(final EnumSet<SocketFlag> flagSet) 
+    throws SocketException {
+
     final PointerByReference ptrBuff = new PointerByReference();
 
     int flags = 0;
@@ -148,7 +175,7 @@ public abstract class AbstractSocket implements Socket {
     final int rc = nn_recv(this.fd, ptrBuff, NN_MSG, flags);
 
     if (rc < 0) {
-      Nanomsg.handleError(rc);
+      throw new SocketException(rc);
     }
 
     final Pointer result = ptrBuff.getValue();
@@ -157,13 +184,13 @@ public abstract class AbstractSocket implements Socket {
     return buffer;
   }
 
-  public ByteBuffer recv() throws IOException {
+  public ByteBuffer recv() throws SocketException {
     return this.recv(EnumSet.noneOf(SocketFlag.class));
   }
 
   public synchronized int send(final ByteBuffer data,
                                final EnumSet<SocketFlag> flagSet)
-    throws IOException {
+    throws SocketException {
 
     int flags = 0;
     if (flagSet.contains(SocketFlag.NN_DONTWAIT)){
@@ -173,18 +200,18 @@ public abstract class AbstractSocket implements Socket {
     final int rc = nn_send(this.fd, data, data.limit(), flags);
 
     if (rc < 0) {
-      Nanomsg.handleError(rc);
+      throw new SocketException(rc);
     }
 
     return rc;
   }
 
-  public synchronized int send(final ByteBuffer data) throws IOException {
+  public synchronized int send(final ByteBuffer data) throws SocketException {
     return this.send(data, EnumSet.noneOf(SocketFlag.class));
   }
 
   public void subscribe(final String topic)
-    throws IOException {
+    throws SocketException {
 
     try {
       this.subscribe(topic.getBytes("UTF-8"));
@@ -193,12 +220,12 @@ public abstract class AbstractSocket implements Socket {
     }
   }
 
-  public void subscribe(final byte[] topic) throws IOException {
+  public void subscribe(final byte[] topic) throws SocketException {
     throw new UnsupportedOperationException("You can use subscribe on this socket.");
   }
 
   public void unsubscribe(final String topic)
-    throws IOException {
+    throws SocketException {
 
     try {
       this.unsubscribe(topic.getBytes("UTF-8"));
@@ -207,7 +234,7 @@ public abstract class AbstractSocket implements Socket {
     }
   }
 
-  public void unsubscribe(final byte[] topic) throws IOException {
+  public void unsubscribe(final byte[] topic) throws SocketException {
     throw new UnsupportedOperationException("You can use unsubscribe on this socket.");
   }
 
@@ -215,11 +242,11 @@ public abstract class AbstractSocket implements Socket {
     return this.fd;
   }
 
-  public int getRcvFd() throws IOException {
+  public int getRcvFd() throws SocketException {
     return getSocketFd(SocketOption.NN_RCVFD);
   }
 
-  public int getSndFd() throws IOException {
+  public int getSndFd() throws SocketException {
     return getSocketFd(SocketOption.NN_SNDFD);
   }
 
@@ -228,7 +255,7 @@ public abstract class AbstractSocket implements Socket {
    *
    * @return file descriptor.
    */
-  private synchronized int getSocketFd(SocketOption opt) throws IOException {
+  private synchronized int getSocketFd(SocketOption opt) throws SocketException {
     final int flag = opt.value();
     final IntByReference fd = new IntByReference();
     final IntByReference size_t = new IntByReference(Native.SIZE_T_SIZE);
@@ -238,7 +265,7 @@ public abstract class AbstractSocket implements Socket {
                                                flag, fd.getPointer(),
                                                size_t.getPointer());
     if (rc < 0) {
-      Nanomsg.handleError(rc);
+      throw new SocketException(rc);
     }
 
     return fd.getValue();
@@ -249,7 +276,6 @@ public abstract class AbstractSocket implements Socket {
     int typeVal = type.value();
 
     final int socket_level = OptionLevel.NN_SOL_SOCKET.value();
-    final int sub_level = SocketType.NN_SUB.value();
 
     switch(type) {
     case NN_LINGER:
@@ -285,9 +311,11 @@ public abstract class AbstractSocket implements Socket {
           throw new RuntimeException("Wrong type.");
         }
 
+        final int level = SocketType.NN_SUB.value();
         final Memory mem = new Memory(topic.length);
         mem.write(0, topic, 0, topic.length);
-        rc = nn_setsockopt(this.fd, sub_level, type.value(), mem, topic.length);
+
+        rc = nn_setsockopt(this.fd, level, type.value(), mem, topic.length);
       }
       break;
 
@@ -318,7 +346,7 @@ public abstract class AbstractSocket implements Socket {
     }
 
     if (rc < 0) {
-      Nanomsg.handleError(rc);
+      throw new SocketException(rc);
     }
   }
 

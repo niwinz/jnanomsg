@@ -7,9 +7,7 @@ import nanomsg.Nanomsg.SocketOption;
 import nanomsg.Nanomsg.SocketType;
 import nanomsg.NativeLibrary;
 import nanomsg.AbstractSocket;
-import nanomsg.exceptions.IOException;
-
-import java.io.UnsupportedEncodingException;
+import nanomsg.exceptions.SocketException;
 
 
 public class SubSocket extends AbstractSocket {
@@ -22,12 +20,12 @@ public class SubSocket extends AbstractSocket {
   }
 
   @Override
-  public void subscribe(final byte[] topic) {
+  public void subscribe(final byte[] topic) throws SocketException {
     this.setSocketOpt(SocketOption.NN_SUB_SUBSCRIBE, topic);
   }
 
   @Override
-  public void unsubscribe(byte[] topic) throws IOException {
+  public void unsubscribe(final byte[] topic) throws SocketException {
     this.setSocketOpt(SocketOption.NN_SUB_UNSUBSCRIBE, topic);
   }
 }

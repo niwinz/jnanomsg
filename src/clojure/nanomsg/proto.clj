@@ -5,6 +5,7 @@
   "Common socket protocol."
   (-bind [_ dir])
   (-connect [_ dir])
+  (-shutdown [_ dir])
   (-subscribe [_ pattern])
   (-unsubscribe [_ pattern])
   (-send [_ data opt])

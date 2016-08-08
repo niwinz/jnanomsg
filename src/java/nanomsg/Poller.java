@@ -3,20 +3,20 @@ package nanomsg;
 import com.sun.jna.Memory;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.EnumSet;
 
 import nanomsg.NativeLibrary.NNPollEvent;
-import nanomsg.exceptions.IOException;
+import nanomsg.exceptions.SocketException;
 import nanomsg.Socket;
 
-// import nanomsg.Nanomsg.NNPollEvent;
-
+import nanomsg.Nanomsg.PollFlag;
 import static nanomsg.Nanomsg.nn_symbols;
 import static nanomsg.NativeLibrary.nn_poll;
 
 
 public class Poller {
-  public static final int POLLIN = nn_symbols.get("NN_POLLIN");
-  public static final int POLLOUT = nn_symbols.get("NN_POLLOUT");
+  public static final PollFlag POLLIN = PollFlag.NN_POLLIN;
+  public static final PollFlag POLLOUT = PollFlag.NN_POLLOUT;
 
   // TODO: rename constants
   public static final int TIMEOUT_DEFAULT = 6000;
@@ -44,13 +44,22 @@ public class Poller {
     this(SIZE_DEFAULT);
   }
 
-  public void register(Socket socket) {
-    this.register(socket, POLLIN | POLLOUT);
+  public void register(final Socket socket) {
+    this.register(socket, EnumSet.of(POLLIN, POLLOUT));
   }
 
-  public void register(Socket socket, int flags) {
+  public void register(final Socket socket, final EnumSet<PollFlag> flagSet) {
     int pos = this.next;
     this.next += EVENT_SIZE;
+
+    short flags = 0;
+    if (flagSet.contains(PollFlag.NN_POLLIN)){
+      flags |= PollFlag.NN_POLLIN.value().shortValue();
+    }
+
+    if (flagSet.contains(PollFlag.NN_POLLOUT)){
+      flags |= PollFlag.NN_POLLOUT.value().shortValue();
+    }
 
     if (pos > this.items.size()) {
       final long newSize = this.items.size() + (EVENT_SIZE * SIZE_INCREMENT);
@@ -65,13 +74,13 @@ public class Poller {
     final NNPollEvent.ByReference event = new NNPollEvent.ByReference();
     event.reuse(this.items, pos);
     event.fd = socketFd;
-    event.events = (short)flags;
+    event.events = flags;
     event.write();
 
     this.offsetMap.put(socketFd, pos);
   }
 
-  public void unregister(Socket socket) {
+  public void unregister(final Socket socket) {
     final NNPollEvent.ByReference event = new NNPollEvent.ByReference();
     final int fd = socket.getFd();
 
@@ -119,7 +128,7 @@ public class Poller {
     final int offset = this.offsetMap.get(fd);
     this.base_event.reuse(this.items, offset);
     final int revents = this.base_event.revents;
-    return (revents & POLLIN) == POLLIN;
+    return (revents & POLLIN.value()) == POLLIN.value();
   }
 
   public boolean isWritable(final Socket socket) {
@@ -131,7 +140,7 @@ public class Poller {
     final int offset = this.offsetMap.get(fd);
     this.base_event.reuse(this.items, offset);
     final int revents = this.base_event.revents;
-    return (revents & POLLOUT) == POLLOUT;
+    return (revents & POLLOUT.value()) == POLLOUT.value();
   }
 
   public int poll(int timeout) {
@@ -139,7 +148,7 @@ public class Poller {
     final int rc = nn_poll(this.items, maxEvents, timeout);
 
     if (rc < 0) {
-      Nanomsg.handleError(rc);
+      throw new SocketException(rc);
     }
 
     return rc;
